@@ -1,0 +1,12 @@
+{
+  "root": true,
+  "extends": [
+    "plugin:prettier/recommended"
+  ],
+  "rules": {
+    "no-console": "off"
+  },
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser"
+  }
+}

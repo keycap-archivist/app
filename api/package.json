@@ -1,0 +1,37 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "nodemon -e ts -w ./src -x npm run watch:serve",
+    "watch:serve": "ts-node -r tsconfig-paths/register src/server.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fastify": "^2.12.1",
+    "fastify-cors": "^3.0.2",
+    "fastify-oauth2": "^3.0.0",
+    "fastify-openapi-glue": "^1.5.0",
+    "fastify-static": "^2.6.0",
+    "js-yaml": "^3.13.1",
+    "pino-pretty": "^3.6.1",
+    "sequelize": "^5.21.5",
+    "sqlite3": "^4.1.1"
+  },
+  "devDependencies": {
+    "@ava/typescript": "^1.1.1",
+    "@types/node": "^13.9.0",
+    "@types/sequelize": "^4.28.8",
+    "ava": "^3.5.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "nodemon": "^2.0.2",
+    "prettier": "^1.19.1",
+    "sass-loader": "^8.0.2",
+    "ts-node": "^8.6.2",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^3.8.3"
+  }
+}
