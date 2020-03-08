@@ -3,11 +3,11 @@ name: Api testing
 on:
   pull_request:
     paths:
-      - workflows/api.yaml
+      - .github/workflows/api.yaml
       - api/**
   push:
     paths:
-      - workflows/api.yaml
+      - .github/workflows/api.yaml
       - api/**
     branches:
       - master
