@@ -1,0 +1,26 @@
+name: Api testing
+
+on:
+  pull_request:
+    paths:
+      - api/**
+  push:
+    paths:
+      - api/**
+    branches:
+      - master
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/cache@v1
+        with:
+          path: ui/node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('api/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node_modules-
+      - name: build
+        run: yarn build

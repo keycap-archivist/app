@@ -21,3 +21,43 @@ paths:
       responses:
         200:
           description: success
+  /artist/{name}:
+    get:
+      responses:
+        200:
+          description: success
+  /artist/{name}/sculpts:
+    get:
+      responses:
+        200:
+          description: success
+  /artist/{name}/sculpt/{sculptname}:
+    get:
+      responses:
+        200:
+          description: success
+  /artist/{name}/sculpt/{sculptname}/colorways:
+    get:
+      responses:
+        200:
+          description: success
+  /artist/{name}/sculpt/{sculptname}/colorway/{cwname}:
+    get:
+      responses:
+        200:
+          description: success
+  /user/{name}:
+    get:
+      responses:
+        200:
+          description: success
+  /collection/{username}:
+    get:
+      responses:
+        200:
+          description: success
+  /wantlist/{username}:
+    get:
+      responses:
+        200:
+          description: success

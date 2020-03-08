@@ -7,25 +7,12 @@ import { controllers } from 'api/controllers';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import { join } from 'path';
-import { Sequelize } from 'sequelize';
-import * as User from 'db/models/users';
-
-async function dbInit() {
-  const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: ':memory:'
-  });
-  User.init(sequelize);
-  await sequelize.sync();
-  await sequelize.authenticate();
-}
+import { dbInit, devProvisionning, buildRelationship } from 'db/utils';
+import { apiLogger, appLogger, dbLogger } from 'logger';
 
 export async function createServer() {
-  const logger = pino({
-    prettyPrint: { colorize: true }
-  });
   const server = fastify({
-    logger
+    logger: apiLogger
   });
   server.register(fastifyStatic, {
     root: join(__dirname, 'public')
@@ -34,15 +21,17 @@ export async function createServer() {
   const specs = yaml.safeLoad(
     fs.readFileSync(join(__dirname, 'api', 'specs.yaml'), 'utf8')
   );
-  const openApioptions = {
+
+  const openApiOptions = {
     specification: specs,
     service: controllers,
     prefix: 'api/v1'
   };
-  server.register(openApiGlue, openApioptions);
+  server.register(openApiGlue, openApiOptions);
+
+  await buildRelationship();
   await dbInit();
-  await User.User.create({ username: 'bob' });
-  const r = await User.User.findAll();
-  server.log.info(r);
+  await devProvisionning();
+
   return server;
 }

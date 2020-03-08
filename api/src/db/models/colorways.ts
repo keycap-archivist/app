@@ -1,12 +1,6 @@
-import { Sequelize, Model, DataTypes } from 'sequelize';
+import { Model } from 'sequelize';
 
-export class Colorway extends Model {}
-
-export default function init(sequelize: Sequelize) {
-  Colorway.init(
-    {
-      name: DataTypes.STRING
-    },
-    { sequelize, tableName: 'colorways' }
-  );
+export class Colorway extends Model {
+  public id!: number;
+  public name!: string;
 }

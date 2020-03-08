@@ -1,12 +1,9 @@
-import { Sequelize, Model, DataTypes } from 'sequelize';
-// const sequelize = new Sequelize('sqlite::memory:');
+import { Model } from 'sequelize';
 
-export class User extends Model {}
-export function init(sequelize: Sequelize) {
-  User.init(
-    {
-      username: DataTypes.STRING
-    },
-    { sequelize, tableName: 'users' }
-  );
+export class User extends Model {
+  public id!: number;
+  public name!: string;
+  public instagram: string;
+  public reddit: string;
+  public discord: string;
 }
