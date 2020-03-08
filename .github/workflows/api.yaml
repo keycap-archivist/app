@@ -22,7 +22,15 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('api/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node_modules-
+      - name: install
+        run: |
+          cd api
+          yarn
       - name: lint
-        run: yarn lint
+        run: |
+          cd api
+          yarn lint
       - name: build
-        run: yarn build
+        run: |
+          cd api
+          yarn build
