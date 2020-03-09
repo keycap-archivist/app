@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.19.2",
     "canvas": "^2.6.1",
     "fastify": "^2.12.1",
     "fastify-cors": "^3.0.2",
@@ -21,9 +22,9 @@
     "fastify-static": "^2.6.0",
     "js-yaml": "^3.13.1",
     "pino": "^5.17.0",
-    "sharp": "0.24.1",
     "pino-pretty": "^3.6.1",
     "sequelize": "^5.21.5",
+    "sharp": "0.24.1",
     "sqlite3": "^4.1.1"
   },
   "devDependencies": {
