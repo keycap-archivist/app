@@ -1,7 +1,6 @@
 import { join, resolve } from 'path';
 import axios from 'axios';
-import { createCanvas, loadImage, registerFont } from 'canvas';
-import * as sharp from 'sharp';
+import { createCanvas, loadImage, registerFont, Image } from 'canvas';
 
 let font = resolve(join(__dirname, '..', '..', 'fonts', 'RedRock.ttf'));
 registerFont(font, { family: 'RedRock' });
@@ -25,24 +24,24 @@ async function getCap(id): Promise<keycap> {
     return resp.data;
   });
 }
-async function getImage(url): Promise<Buffer> {
-  return await axios
-    .request({
-      url: url,
-      responseType: 'arraybuffer'
-    })
-    .then(response => {
-      return Buffer.from(response.data);
-    });
-}
+
 async function drawTheCap(context, capId, x, y) {
   const cap = await getCap(capId);
-  let imgBuffer = await getImage(cap.image);
-  imgBuffer = await sharp(imgBuffer)
-    .resize(250, 250)
-    .toBuffer();
-  const base64shishi = Buffer.from(imgBuffer).toString('base64');
-  const imgShishi = await loadImage(`data:image/jpeg;base64,${base64shishi}`);
+  const img = await loadImage(cap.image);
+  let h, w, sx, sy;
+  if (img.width > img.height) {
+    h = img.height;
+    w = h;
+    sy = 0;
+    sx = Math.ceil((img.width - img.height) / 2);
+  } else {
+    sx = 0;
+    sy = Math.ceil((img.height - img.width) / 2);
+    w = img.width;
+    h = w;
+  }
+  await context.drawImage(img, sx, sy, w, h, x, y, IMG_WIDTH, IMG_HEIGTH);
+
   context.font = '20px Roboto';
   context.fillStyle = 'white';
   context.textAlign = 'center';
@@ -66,8 +65,6 @@ async function drawTheCap(context, capId, x, y) {
       y + IMG_HEIGTH + LINE_HEIGHT
     );
   }
-
-  context.drawImage(imgShishi, x, y, IMG_WIDTH, IMG_HEIGTH);
 }
 // async function getSculpt(name) {}
 // async function getMaker(id) {
