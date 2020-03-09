@@ -1,5 +1,4 @@
 import { join, resolve } from 'path';
-import * as fs from 'fs';
 import axios from 'axios';
 import { createCanvas, loadImage, registerFont } from 'canvas';
 import * as sharp from 'sharp';
@@ -8,16 +7,23 @@ let font = resolve(join(__dirname, '..', '..', 'fonts', 'RedRock.ttf'));
 registerFont(font, { family: 'RedRock' });
 font = resolve(join(__dirname, '..', '..', 'fonts', 'Roboto-Regular.ttf'));
 registerFont(font, { family: 'Roboto' });
+
 const BASE_URL = 'https://a.mrkeebs.com/api/';
-const MARGIN_side = 10;
-const MARGIN_bottom = 40;
+const MARGIN_SIDE = 10;
+const MARGIN_BOTTOM = 40;
 const nbCapsPerLine = 3;
 const IMG_WIDTH = 250;
 const IMG_HEIGTH = 250;
 const HEADER_HEIGTH = 90;
 const canvasWidth =
-  nbCapsPerLine * IMG_WIDTH + nbCapsPerLine * MARGIN_side + MARGIN_side;
-const rowHeight = IMG_HEIGTH + MARGIN_bottom;
+  nbCapsPerLine * IMG_WIDTH + nbCapsPerLine * MARGIN_SIDE + MARGIN_SIDE;
+const rowHeight = IMG_HEIGTH + MARGIN_BOTTOM;
+
+async function getCap(id): Promise<keycap> {
+  return await axios.get(`${BASE_URL}artisans/${id}`).then(resp => {
+    return resp.data;
+  });
+}
 async function getImage(url): Promise<Buffer> {
   return await axios
     .request({
@@ -58,25 +64,7 @@ type keycap = {
   colorway: string;
   image: string;
 };
-// const f = {
-//   artisan_id: 3210,
-//   maker_id: 40,
-//   maker: 'Golden Star Keycaps',
-//   sculpt: 'Hogzilla',
-//   colorway: 'Commando',
-//   image:
-//     'https://mkbot-submissions.s3.amazonaws.com/Golden%20Star%20Keycaps-Hogzilla-Commando.png',
-//   submitted_by: 'Hail',
-//   submitted_at: '2020-02-20T03:21:27.145Z',
-//   images: [],
-//   makerLink: '/catalogs/40-Golden%20Star%20Keycaps'
-// };
-async function getCap(id): Promise<keycap> {
-  return await axios.get(`${BASE_URL}artisans/${id}`).then(resp => {
-    return resp.data;
-  });
-}
-// http://localhost:3000/api/v1?ids=3210,3114,3202,3204,2921,2640
+// http://localhost:3000/api/v1?ids=3210,3114,3202,3204,2921,2640S
 const hello = async (req, resp) => {
   let canvas, ctx;
   const p = [];
@@ -96,7 +84,7 @@ const hello = async (req, resp) => {
         y += rowHeight;
       }
       p.push(
-        drawTheCap(ctx, capId, idx * (IMG_WIDTH + MARGIN_side) + MARGIN_side, y)
+        drawTheCap(ctx, capId, idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y)
       );
       idx++;
     }
