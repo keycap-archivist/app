@@ -24,16 +24,7 @@ async function getCap(id): Promise<keycap> {
     return resp.data;
   });
 }
-async function getImage(url): Promise<Buffer> {
-  return await axios
-    .request({
-      url: url,
-      responseType: 'arraybuffer'
-    })
-    .then(response => {
-      return Buffer.from(response.data);
-    });
-}
+
 async function drawTheCap(canvas, context, capId, x, y) {
   const cap = await getCap(capId);
   const img = await loadImage(cap.image);
