@@ -10,11 +10,12 @@ registerFont(font, { family: 'Roboto' });
 
 const BASE_URL = 'https://a.mrkeebs.com/api/';
 const MARGIN_SIDE = 10;
-const MARGIN_BOTTOM = 40;
+const MARGIN_BOTTOM = 60;
 const nbCapsPerLine = 3;
 const IMG_WIDTH = 250;
 const IMG_HEIGTH = 250;
-const HEADER_HEIGTH = 90;
+const HEADER_HEIGHT = 90;
+const LINE_HEIGHT = 22;
 const canvasWidth =
   nbCapsPerLine * IMG_WIDTH + nbCapsPerLine * MARGIN_SIDE + MARGIN_SIDE;
 const rowHeight = IMG_HEIGTH + MARGIN_BOTTOM;
@@ -45,11 +46,27 @@ async function drawTheCap(context, capId, x, y) {
   context.font = '20px Roboto';
   context.fillStyle = 'white';
   context.textAlign = 'center';
-  context.fillText(
-    `${cap.sculpt} ${cap.colorway}`,
-    x + IMG_WIDTH / 2,
-    y + IMG_HEIGTH + 25
-  );
+  const legend = `${cap.sculpt} ${cap.colorway}`;
+  const measurement = context.measureText(legend);
+  if (measurement.width > IMG_WIDTH + 10) {
+    context.fillText(
+      `${cap.sculpt}`,
+      x + IMG_WIDTH / 2,
+      y + IMG_HEIGTH + LINE_HEIGHT
+    );
+    context.fillText(
+      `${cap.colorway}`,
+      x + IMG_WIDTH / 2,
+      y + IMG_HEIGTH + LINE_HEIGHT + LINE_HEIGHT
+    );
+  } else {
+    context.fillText(
+      `${cap.sculpt} ${cap.colorway}`,
+      x + IMG_WIDTH / 2,
+      y + IMG_HEIGTH + LINE_HEIGHT
+    );
+  }
+
   context.drawImage(imgShishi, x, y, IMG_WIDTH, IMG_HEIGTH);
 }
 // async function getSculpt(name) {}
@@ -64,7 +81,7 @@ type keycap = {
   colorway: string;
   image: string;
 };
-// http://localhost:3000/api/v1?ids=3210,3114,3202,3204,2921,2640S
+// http://localhost:3000/api/v1?ids=3210,3114,3202,3204,1959,2640S
 const hello = async (req, resp) => {
   let canvas, ctx;
   const p = [];
@@ -72,11 +89,11 @@ const hello = async (req, resp) => {
     const ids: string[] = req.query.ids.split(',');
     const nbCaps = ids.length;
     const nbRows = Math.ceil(nbCaps / nbCapsPerLine);
-    canvas = createCanvas(canvasWidth, HEADER_HEIGTH + rowHeight * nbRows);
+    canvas = createCanvas(canvasWidth, HEADER_HEIGHT + rowHeight * nbRows);
     ctx = canvas.getContext('2d');
     ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, canvasWidth, HEADER_HEIGTH + rowHeight * nbRows);
-    let y = HEADER_HEIGTH;
+    ctx.fillRect(0, 0, canvasWidth, HEADER_HEIGHT + rowHeight * nbRows);
+    let y = HEADER_HEIGHT;
     let idx = 0;
     for (const capId of ids) {
       if (idx === nbCapsPerLine) {
@@ -89,7 +106,7 @@ const hello = async (req, resp) => {
       idx++;
     }
   } else {
-    canvas = createCanvas(canvasWidth, HEADER_HEIGTH + rowHeight);
+    canvas = createCanvas(canvasWidth, HEADER_HEIGHT + rowHeight);
     ctx = canvas.getContext('2d');
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, canvasWidth, 370);
