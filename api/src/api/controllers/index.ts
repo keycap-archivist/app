@@ -25,7 +25,7 @@ async function getCap(id): Promise<keycap> {
   });
 }
 
-async function drawTheCap(canvas, context, capId, x, y) {
+async function drawTheCap(context, capId, x, y) {
   const cap = await getCap(capId);
   const img = await loadImage(cap.image);
   let h, w, sx, sy;
@@ -98,13 +98,7 @@ const hello = async (req, resp) => {
         y += rowHeight;
       }
       p.push(
-        drawTheCap(
-          canvas,
-          ctx,
-          capId,
-          idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE,
-          y
-        )
+        drawTheCap(ctx, capId, idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y)
       );
       idx++;
     }
@@ -113,9 +107,9 @@ const hello = async (req, resp) => {
     ctx = canvas.getContext('2d');
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, canvasWidth, 370);
-    p.push(drawTheCap(canvas, ctx, 3210, 5, 90));
-    p.push(drawTheCap(canvas, ctx, 3114, 260, 90));
-    p.push(drawTheCap(canvas, ctx, 3202, 520, 90));
+    p.push(drawTheCap(ctx, 3210, 5, 90));
+    p.push(drawTheCap(ctx, 3114, 260, 90));
+    p.push(drawTheCap(ctx, 3202, 520, 90));
   }
   await Promise.all(p);
 
