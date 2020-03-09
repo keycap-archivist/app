@@ -5,6 +5,7 @@ import { Model, DataTypes, Association } from 'sequelize';
 import { Sculpt } from 'db/models/sculpts';
 import { Colorway } from './models/colorways';
 import { Wantlist } from './models/wantlists';
+import { Collection } from './models/collections';
 
 export async function dbInit() {
   await sequelize.authenticate();
@@ -46,7 +47,17 @@ export async function buildRelationship() {
     },
     { sequelize, tableName: 'sculpts' }
   );
-
+  Collection.init(
+    {
+      userId: {
+        type: DataTypes.INTEGER.UNSIGNED
+      },
+      colorwayId: {
+        type: DataTypes.INTEGER.UNSIGNED
+      }
+    },
+    { sequelize, tableName: 'collections' }
+  );
   Colorway.init(
     {
       name: DataTypes.STRING
@@ -60,11 +71,14 @@ export async function buildRelationship() {
     },
     { sequelize, tableName: 'wantlists' }
   );
-
+  Collection.hasOne(User, { foreignKey: 'userId' });
+  Collection.hasOne(Colorway, { foreignKey: 'colorwayId' });
   Colorway.belongsTo(Sculpt, { targetKey: 'id' });
   Sculpt.belongsTo(Artist, { targetKey: 'id' });
   Artist.hasMany(Sculpt);
   Sculpt.hasMany(Colorway);
+  // Collection.hasMany(User);
+  // User.hasMany(Collection);
 }
 
 export async function devProvisionning() {
