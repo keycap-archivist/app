@@ -17,6 +17,11 @@ externalDocs:
 paths:
   /:
     get:
+      parameters:
+        - in: query
+          name: ids
+          schema:
+            type: string
       operationId: hello
       responses:
         200:
