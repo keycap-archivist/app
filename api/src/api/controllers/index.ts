@@ -90,13 +90,13 @@ const hello = async (req, resp) => {
     ctx.fillRect(0, 0, canvasWidth, HEADER_HEIGTH + rowHeight * nbRows);
     let y = HEADER_HEIGTH;
     let idx = 0;
-    for (const id of ids) {
-      if (idx === 3) {
+    for (const capId of ids) {
+      if (idx === nbCapsPerLine) {
         idx = 0;
         y += rowHeight;
       }
       p.push(
-        drawTheCap(ctx, id, idx * (IMG_WIDTH + MARGIN_side) + MARGIN_side, y)
+        drawTheCap(ctx, capId, idx * (IMG_WIDTH + MARGIN_side) + MARGIN_side, y)
       );
       idx++;
     }
