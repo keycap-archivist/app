@@ -3,19 +3,31 @@
     <div class="container" :key="a.artisan_id" v-for="a in artisans">
       <img :alt="`${a.maker} ${a.sculpt}`" v-lazy="a.image" />
     </div>
+    <div id="canvas-container"></div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import { generateWishlist } from "../utils/wishlist.js";
 export default {
   name: "Main",
   mounted() {
+    const page = Math.ceil(Math.random() * 200) + 1;
     axios
-      .get("https://a.mrkeebs.com/api/artisans?perPage=5&order=artisan_id+DESC")
+      .get(
+        `https://a.mrkeebs.com/api/artisans?page=${page}&perPage=6&order=artisan_id+DESC`
+      )
       .then(resp => {
         if (resp.status === 200) {
           this.artisans = resp.data;
+          generateWishlist(
+            "canvas-container",
+            "Zekth",
+            this.artisans.map(x => {
+              return x.artisan_id;
+            })
+          );
         }
       });
   },
