@@ -29,9 +29,9 @@ export async function createServer() {
   };
   server.register(openApiGlue, openApiOptions);
 
-  await buildRelationship();
-  await dbInit();
-  await devProvisionning();
+  // await buildRelationship();
+  // await dbInit();
+  // await devProvisionning();
 
   return server;
 }
