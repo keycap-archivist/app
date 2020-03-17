@@ -49,3 +49,16 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
           tags: "latest"
+      - name: Azure login
+        if: github.ref == 'refs/heads/master'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Azure Deploy
+        if: github.ref == 'refs/heads/master'
+        run: |
+          az container restart --name too-much-artisans -g too-much-artisans
+      - name: Azure logout
+        if: github.ref == 'refs/heads/master'
+        run: |
+          az logout
