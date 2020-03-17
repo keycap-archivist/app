@@ -1,6 +1,10 @@
 import { join, resolve } from 'path';
 import axios from 'axios';
-import { createCanvas, loadImage, registerFont, Image } from 'canvas';
+import { createCanvas, loadImage, registerFont } from 'canvas';
+import { appLogger } from 'logger';
+
+const apiCache = new Map();
+const imageMap = new Map();
 
 const fontPath = resolve(join(__dirname, '..', '..', 'public', 'fonts'));
 registerFont(join(fontPath, 'RedRock.ttf'), { family: 'RedRock' });
@@ -19,9 +23,16 @@ const canvasWidth =
 const rowHeight = IMG_HEIGTH + MARGIN_BOTTOM;
 
 async function getCap(id): Promise<keycap> {
-  return await axios.get(`${BASE_URL}artisans/${id}`).then(resp => {
-    return resp.data;
-  });
+  if (!apiCache.has(id)) {
+    const data = await axios.get(`${BASE_URL}artisans/${id}`).then(resp => {
+      return resp.data;
+    });
+    appLogger.info(`Set cache : ${id}`);
+    apiCache.set(id, data);
+  } else {
+    appLogger.info(`Get from cache : ${id}`);
+  }
+  return apiCache.get(id);
 }
 
 async function drawTheCap(context, capId, x, y) {
@@ -65,10 +76,8 @@ async function drawTheCap(context, capId, x, y) {
     );
   }
 }
-// async function getSculpt(name) {}
-// async function getMaker(id) {
-//   return await axios.get(`${BASE_URL}maker/${id}`);
-// }
+
+
 type keycap = {
   artisan_id: number;
   maker_id: number;
@@ -77,17 +86,36 @@ type keycap = {
   colorway: string;
   image: string;
 };
-// http://localhost:3000/api/v1?ids=3210,3114,3202,3204,1959,2640S
+// http://localhost:3000/api/v1?ids=3210,3114,3202,3204,1959,2640
+
+const defaultValues = {
+  ids: '',
+  bg: '',
+  textcolor: '',
+  title: 'Wishlist',
+  titleColor: ''
+};
+
+function parseParams(queryValues): any {
+  let params = Object.assign({}, defaultValues, queryValues);
+  params.ids = params.ids.split(',');
+  params.bg = params.bg ? `#${params.bg}` : 'black';
+  params.titleColor = params.titleColor ? `#${params.titleColor}` : 'red';
+  params.textcolor = params.textcolor ? `#${params.textcolor}` : 'white';
+  return params;
+}
+
 const hello = async (req, resp) => {
   let canvas, ctx;
+  const params = parseParams(req.query);
   const p = [];
   if (req.query.ids) {
-    const ids: string[] = req.query.ids.split(',');
+    const ids: string[] = params.ids;
     const nbCaps = ids.length;
     const nbRows = Math.ceil(nbCaps / nbCapsPerLine);
     canvas = createCanvas(canvasWidth, HEADER_HEIGHT + rowHeight * nbRows);
     ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'black';
+    ctx.fillStyle = params.bg;
     ctx.fillRect(0, 0, canvasWidth, HEADER_HEIGHT + rowHeight * nbRows);
     let y = HEADER_HEIGHT;
     let idx = 0;
@@ -114,9 +142,9 @@ const hello = async (req, resp) => {
 
   // Title
   ctx.font = '60px RedRock';
-  ctx.fillStyle = 'red';
+  ctx.fillStyle = params.titleColor;
   ctx.textAlign = 'center';
-  ctx.fillText('Zekth wishlist', canvasWidth / 2, 60);
+  ctx.fillText(params.title, canvasWidth / 2, 60);
   return (
     resp
       // .header('content-disposition', `attachment; filename="wishlist.jpg"`)
