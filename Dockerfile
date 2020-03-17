@@ -1,5 +1,5 @@
 FROM node:12.16.1 as builder
-COPY ./ /project
+COPY ./api /project
 WORKDIR /project
 RUN yarn
 RUN yarn build

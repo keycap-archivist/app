@@ -44,7 +44,7 @@ jobs:
         if: github.ref == 'refs/heads/master'
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          dockerfile: api/Dockerfile
+          dockerfile: Dockerfile
           name: zekth/too-much-artisans/api
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
