@@ -1,4 +1,4 @@
-import 'app-module-path/register'
+import 'app-module-path/register';
 
 import { createServer } from 'app';
 const port = Number(process.env.LISTEN_PORT) || 3000;
