@@ -38,13 +38,12 @@ jobs:
           yarn build
       - name: docker build
         run: |
-          cd api
           docker build .
       - name: Push to registry
         if: github.ref == 'refs/heads/master'
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          dockerfile: api/Dockerfile
+          dockerfile: Dockerfile
           name: zekth/too-much-artisans/api
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
