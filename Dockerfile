@@ -10,7 +10,5 @@ COPY --from=builder /project/package*.json /server/
 WORKDIR /server/
 RUN yarn install --production
 EXPOSE 8080
-ENV LISTEN_PORT=8080
 
 CMD [ "node", "server.js" ]
-
