@@ -36,9 +36,9 @@ jobs:
         run: |
           cd ui
           yarn build
-      - name: GitHub Pages Deploy
-        if: github.ref == 'refs/heads/master'
-        uses: zekth/gh-deploy-action@1.0.0
-        with:
-          dir: ui/dist
-          gh_token: ${{ secrets.GH_TOKEN }}
+      # - name: GitHub Pages Deploy
+      #   if: github.ref == 'refs/heads/master'
+      #   uses: zekth/gh-deploy-action@1.0.0
+      #   with:
+      #     dir: ui/dist
+      #     gh_token: ${{ secrets.GH_TOKEN }}

@@ -1,3 +1,3 @@
 # Too much artisans
 
-accesible here : [https://zekth.github.io/too-much-artisans/](https://zekth.github.io/too-much-artisans/)
+accesible here : [http://too-much-artisans.westeurope.azurecontainer.io](http://too-much-artisans.westeurope.azurecontainer.io)
