@@ -4,7 +4,7 @@ import { createCanvas, loadImage, registerFont } from 'canvas';
 import { appLogger } from 'logger';
 
 const apiCache = new Map();
-const imageMap = new Map();
+// const imageMap = new Map(); # FIXME : study if interesting of keeping base64 image strings (resized)
 
 const fontPath = resolve(join(__dirname, '..', '..', 'public', 'fonts'));
 registerFont(join(fontPath, 'RedRock.ttf'), { family: 'RedRock' });
@@ -35,7 +35,7 @@ async function getCap(id): Promise<keycap> {
   return apiCache.get(id);
 }
 
-async function drawTheCap(context, capId, x, y) {
+async function drawTheCap(context, color, capId, x, y) {
   const cap = await getCap(capId);
   const img = await loadImage(cap.image);
   let h, w, sx, sy;
@@ -53,7 +53,7 @@ async function drawTheCap(context, capId, x, y) {
   await context.drawImage(img, sx, sy, w, h, x, y, IMG_WIDTH, IMG_HEIGTH);
 
   context.font = '20px Roboto';
-  context.fillStyle = 'white';
+  context.fillStyle = color;
   context.textAlign = 'center';
   const legend = `${cap.sculpt} ${cap.colorway}`;
   const measurement = context.measureText(legend);
@@ -77,7 +77,6 @@ async function drawTheCap(context, capId, x, y) {
   }
 }
 
-
 type keycap = {
   artisan_id: number;
   maker_id: number;
@@ -97,7 +96,7 @@ const defaultValues = {
 };
 
 function parseParams(queryValues): any {
-  let params = Object.assign({}, defaultValues, queryValues);
+  const params = Object.assign({}, defaultValues, queryValues);
   params.ids = params.ids.split(',');
   params.bg = params.bg ? `#${params.bg}` : 'black';
   params.titleColor = params.titleColor ? `#${params.titleColor}` : 'red';
@@ -125,7 +124,13 @@ const hello = async (req, resp) => {
         y += rowHeight;
       }
       p.push(
-        drawTheCap(ctx, capId, idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y)
+        drawTheCap(
+          ctx,
+          params.textcolor,
+          capId,
+          idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE,
+          y
+        )
       );
       idx++;
     }
@@ -134,9 +139,9 @@ const hello = async (req, resp) => {
     ctx = canvas.getContext('2d');
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, canvasWidth, 370);
-    p.push(drawTheCap(ctx, 3210, 5, 90));
-    p.push(drawTheCap(ctx, 3114, 260, 90));
-    p.push(drawTheCap(ctx, 3202, 520, 90));
+    p.push(drawTheCap(ctx, params.textcolor, 3210, 5, 90));
+    p.push(drawTheCap(ctx, params.textcolor, 3114, 260, 90));
+    p.push(drawTheCap(ctx, params.textcolor, 3202, 520, 90));
   }
   await Promise.all(p);
 
