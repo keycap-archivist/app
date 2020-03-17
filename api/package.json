@@ -7,12 +7,13 @@
     "prettier": "prettier -c \"./src/**/*.ts\"",
     "lint": "yarn eslint && yarn prettier",
     "watch": "nodemon -e yaml,ts -w ./src -x yarn watch:serve",
-    "watch:serve": "ts-node -r tsconfig-paths/register src/server.ts",
-    "build": "rm -rf dist && tsc && cp src/api/specs.yaml dist/api/specs.yaml"
+    "watch:serve": "ts-node src/server.ts",
+    "build": "rm -rf dist && tsc && cp src/api/specs.yaml dist/api/specs.yaml && cp -R src/public/ dist/public/"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "app-module-path": "^2.2.0",
     "axios": "^0.19.2",
     "canvas": "^2.6.1",
     "fastify": "^2.12.1",

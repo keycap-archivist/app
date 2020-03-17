@@ -2,10 +2,9 @@ import { join, resolve } from 'path';
 import axios from 'axios';
 import { createCanvas, loadImage, registerFont, Image } from 'canvas';
 
-let font = resolve(join(__dirname, '..', '..', 'fonts', 'RedRock.ttf'));
-registerFont(font, { family: 'RedRock' });
-font = resolve(join(__dirname, '..', '..', 'fonts', 'Roboto-Regular.ttf'));
-registerFont(font, { family: 'Roboto' });
+const fontPath = resolve(join(__dirname, '..', '..', 'public', 'fonts'));
+registerFont(join(fontPath, 'RedRock.ttf'), { family: 'RedRock' });
+registerFont(join(fontPath, 'Roboto-Regular.ttf'), { family: 'Roboto' });
 
 const BASE_URL = 'https://a.mrkeebs.com/api/';
 const MARGIN_SIDE = 10;
