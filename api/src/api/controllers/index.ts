@@ -2,7 +2,7 @@ import { join, resolve } from 'path';
 import axios from 'axios';
 import { createCanvas, loadImage, registerFont, Image } from 'canvas';
 import { appLogger } from 'logger';
-import {LRUMap} from './lru'
+import { LRUMap } from './lru';
 
 const apiCache = new LRUMap(400);
 const imageMap = new LRUMap(400);
