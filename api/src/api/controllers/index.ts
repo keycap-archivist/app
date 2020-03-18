@@ -2,7 +2,7 @@ import { join, resolve } from 'path';
 import axios from 'axios';
 import { createCanvas, loadImage, registerFont, Image } from 'canvas';
 import { appLogger } from 'logger';
-import { LRUMap } from './lru';
+import { LRUMap } from 'lru_map';
 
 const apiCache = new LRUMap(400);
 const imageMap = new LRUMap(400);
@@ -33,7 +33,7 @@ async function getCap(id): Promise<keycap> {
   } else {
     appLogger.info(`Get from cache : ${id}`);
   }
-  return apiCache.get(id);
+  return apiCache.get(id) as keycap;
 }
 
 async function drawTheCap(context, color, capId, x, y) {
@@ -42,7 +42,7 @@ async function drawTheCap(context, color, capId, x, y) {
   const img = new Image();
   if (imageMap.has(cap.image)) {
     appLogger.info('has img cache');
-    img.src = imageMap.get(cap.image);
+    img.src = imageMap.get(cap.image) as string;
   } else {
     appLogger.info('!has img cache');
 
