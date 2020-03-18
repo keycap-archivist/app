@@ -1,10 +1,11 @@
 import { join, resolve } from 'path';
 import axios from 'axios';
-import { createCanvas, loadImage, registerFont } from 'canvas';
+import { createCanvas, loadImage, registerFont, Image } from 'canvas';
 import { appLogger } from 'logger';
+import { LRUMap } from 'lru_map';
 
-const apiCache = new Map();
-// const imageMap = new Map(); # FIXME : study if interesting of keeping base64 image strings (resized)
+const apiCache = new LRUMap(400);
+const imageMap = new LRUMap(400);
 
 const fontPath = resolve(join(__dirname, '..', '..', 'public', 'fonts'));
 registerFont(join(fontPath, 'RedRock.ttf'), { family: 'RedRock' });
@@ -32,25 +33,42 @@ async function getCap(id): Promise<keycap> {
   } else {
     appLogger.info(`Get from cache : ${id}`);
   }
-  return apiCache.get(id);
+  return apiCache.get(id) as keycap;
 }
 
 async function drawTheCap(context, color, capId, x, y) {
+  appLogger.info(`Draw ${capId} ${x} ${y}`);
   const cap = await getCap(capId);
-  const img = await loadImage(cap.image);
-  let h, w, sx, sy;
-  if (img.width > img.height) {
-    h = img.height;
-    w = h;
-    sy = 0;
-    sx = Math.ceil((img.width - img.height) / 2);
+  const img = new Image();
+  if (imageMap.has(cap.image)) {
+    appLogger.info('has img cache');
+    img.src = imageMap.get(cap.image) as string;
   } else {
-    sx = 0;
-    sy = Math.ceil((img.height - img.width) / 2);
-    w = img.width;
-    h = w;
+    appLogger.info('!has img cache');
+
+    const _img = await loadImage(cap.image);
+    let h, w, sx, sy;
+    if (_img.width > _img.height) {
+      h = _img.height;
+      w = h;
+      sy = 0;
+      sx = Math.ceil((_img.width - _img.height) / 2);
+    } else {
+      sx = 0;
+      sy = Math.ceil((_img.height - _img.width) / 2);
+      w = _img.width;
+      h = w;
+    }
+    const Tcanvas = createCanvas(IMG_WIDTH, IMG_HEIGTH);
+    const Tctx = Tcanvas.getContext('2d');
+    await Tctx.drawImage(_img, sx, sy, w, h, 0, 0, IMG_WIDTH, IMG_HEIGTH);
+
+    img.src = Tcanvas.toDataURL();
+    imageMap.set(cap.image, img.src);
+    // appLogger.info(Tcanvas.toDataURL())
+    // await context.drawImage(img, sx, sy, w, h, x, y, IMG_WIDTH, IMG_HEIGTH);
   }
-  await context.drawImage(img, sx, sy, w, h, x, y, IMG_WIDTH, IMG_HEIGTH);
+  await context.drawImage(img, x, y);
 
   context.font = '20px Roboto';
   context.fillStyle = color;
@@ -149,7 +167,7 @@ const hello = async (req, resp) => {
   ctx.font = '60px RedRock';
   ctx.fillStyle = params.titleColor;
   ctx.textAlign = 'center';
-  ctx.fillText(params.title, canvasWidth / 2, 60);
+  ctx.fillText(params.title ? params.title : 'Wishlist', canvasWidth / 2, 60);
   return (
     resp
       // .header('content-disposition', `attachment; filename="wishlist.jpg"`)
