@@ -2,9 +2,10 @@ import { join, resolve } from 'path';
 import axios from 'axios';
 import { createCanvas, loadImage, registerFont, Image } from 'canvas';
 import { appLogger } from 'logger';
+import {LRUMap} from './lru'
 
-const apiCache = new Map();
-const imageMap = new Map(); // FIXME : study if interesting of keeping base64 image strings (resized)
+const apiCache = new LRUMap(400);
+const imageMap = new LRUMap(400);
 
 const fontPath = resolve(join(__dirname, '..', '..', 'public', 'fonts'));
 registerFont(join(fontPath, 'RedRock.ttf'), { family: 'RedRock' });
