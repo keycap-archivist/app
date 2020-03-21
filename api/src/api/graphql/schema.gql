@@ -1,0 +1,31 @@
+schema {
+  query: Query
+}
+
+type Query {
+  allArtists: [Artist]
+  artist(name: String!): Artist
+
+  allSculpts: [Sculpt]
+  sculpt(name: String!): Sculpt
+
+  allColorways: [Colorway]
+  colorway(name: String!): Colorway
+}
+
+type Artist {
+  name: String
+  instagram: String!
+  discord: String!
+  website: String!
+}
+
+type Sculpt {
+  name: String
+}
+
+type Colorway {
+  name: String
+  number: Int!
+  img: String!
+}

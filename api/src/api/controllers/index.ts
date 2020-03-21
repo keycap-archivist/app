@@ -122,7 +122,7 @@ function parseParams(queryValues): any {
   return params;
 }
 
-const hello = async (req, resp) => {
+const genWishlist = async (req, resp) => {
   let canvas, ctx;
   const params = parseParams(req.query);
   const p = [];
@@ -177,4 +177,4 @@ const hello = async (req, resp) => {
   );
 };
 
-export const controllers = { hello };
+export const controllers = { genWishlist };
