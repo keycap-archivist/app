@@ -1,35 +1,63 @@
 import * as fastify from 'fastify';
-import * as pino from 'pino';
-import * as openApiGlue from 'fastify-openapi-glue';
+import * as URL from 'url';
 import * as fastifyStatic from 'fastify-static';
 import * as fastifyCORS from 'fastify-cors';
 import { controllers } from 'api/controllers';
-import * as fs from 'fs';
-import * as yaml from 'js-yaml';
 import { join } from 'path';
-import { initDb } from 'db/instance';
+import { instance } from 'db/instance';
 import { apiLogger } from 'logger';
+import { ApolloServer } from 'apollo-server-fastify';
+import { typeDefs, resolvers } from 'api/graphql';
+import {
+  GraphiQLData,
+  resolveGraphiQLString
+} from 'apollo-server-module-graphiql';
 
 export async function createServer() {
   const server = fastify({
     logger: apiLogger
   });
+
   server.register(fastifyStatic, {
     root: join(__dirname, 'public')
   });
+
   server.register(fastifyCORS, { origin: true });
-  const specs = yaml.safeLoad(
-    fs.readFileSync(join(__dirname, 'api', 'specs.yaml'), 'utf8')
-  );
 
-  const openApiOptions = {
-    specification: specs,
-    service: controllers,
-    prefix: 'api/v1'
+  await instance.init();
+
+  const graphQlServer = new ApolloServer({
+    typeDefs,
+    resolvers
+  });
+
+  const graphiqlHandler = async (request, reply) => {
+    try {
+      const query = request.req.url && URL.parse(request.req.url, true).query;
+      const graphiqlString = await resolveGraphiQLString(
+        query,
+        {
+          endpointURL: '/graphql'
+        },
+        [request, reply]
+      );
+      reply.type('text/html').send(graphiqlString);
+    } catch (error) {
+      reply.code(500);
+      reply.send(error.message);
+    }
   };
-  server.register(openApiGlue, openApiOptions);
-
-  await initDb();
+  server.register(graphQlServer.createHandler({ path: '/graphql' }));
+  server.route({
+    method: 'GET',
+    url: '/graphiql',
+    handler: graphiqlHandler
+  });
+  server.route({
+    method: 'GET',
+    url: '/api/v1',
+    handler: controllers.genWishlist
+  });
 
   return server;
 }

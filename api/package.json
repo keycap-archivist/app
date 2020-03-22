@@ -6,27 +6,27 @@
     "eslint": "eslint --ext .ts src",
     "prettier": "prettier -c \"./src/**/*.ts\"",
     "lint": "yarn eslint && yarn prettier",
-    "watch": "nodemon -e yaml,ts -w ./src -x yarn watch:serve",
+    "watch": "nodemon -e yaml,ts,gql -w ./src -x yarn watch:serve",
     "watch:serve": "ts-node src/server.ts",
-    "build": "rm -rf dist && tsc && cp src/api/specs.yaml dist/api/specs.yaml && cp -R src/public/ dist/public/"
+    "build": "rm -rf dist && tsc && cp src/api/graphql/schema.gql dist/api/graphql/schema.gql && cp -R src/public/ dist/public/"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "apollo-server-fastify": "^2.11.0",
+    "apollo-server-module-graphiql": "^1.4.0",
     "app-module-path": "^2.2.0",
     "axios": "^0.19.2",
     "canvas": "^2.6.1",
     "fastify": "^2.12.1",
     "fastify-cors": "^3.0.2",
-    "fastify-oauth2": "^3.0.0",
     "fastify-openapi-glue": "^1.5.0",
     "fastify-static": "^2.6.0",
     "js-yaml": "^3.13.1",
     "lru_map": "^0.3.3",
     "pino": "^5.17.0",
     "pino-pretty": "^3.6.1",
-    "sequelize": "^5.21.5",
-    "sqlite3": "^4.1.1"
+    "url": "^0.11.0"
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
@@ -38,6 +38,8 @@
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
+    "gqlint": "^1.8.0",
+    "node-html-parser": "^1.2.13",
     "nodemon": "^2.0.2",
     "prettier": "^1.19.1",
     "sass-loader": "^8.0.2",
