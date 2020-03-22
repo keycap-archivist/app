@@ -7,8 +7,8 @@ import { controllers } from 'api/controllers';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import { join } from 'path';
-import { dbInit, devProvisionning, buildRelationship } from 'db/utils';
-import { apiLogger, appLogger, dbLogger } from 'logger';
+import { initDb } from 'db/instance';
+import { apiLogger } from 'logger';
 
 export async function createServer() {
   const server = fastify({
@@ -29,9 +29,7 @@ export async function createServer() {
   };
   server.register(openApiGlue, openApiOptions);
 
-  // await buildRelationship();
-  // await dbInit();
-  // await devProvisionning();
+  await initDb();
 
   return server;
 }
