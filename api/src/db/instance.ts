@@ -1,20 +1,48 @@
 import axios from 'axios';
 import { appLogger } from 'logger';
 
-let db;
+export type Artist = {
+  id: string;
+  name: string;
+  instagram?: String;
+  discord?: String;
+  website?: String;
+  sculpts: Sculpt[];
+};
 
-export async function initDb() {
-  appLogger.info(
-    "Loading the JSON Catalog. This may take a moment because It's huge!"
-  );
-  db = await axios
-    .get(
-      'https://raw.githubusercontent.com/zekth/too-much-artisans-db/master/db/catalog.json'
-    )
-    .then(res => {
-      return res.data;
-    });
-  appLogger.info('Woaw finally loaded. Ready to go');
+export type Sculpt = {
+  id: string;
+  name: string;
+  colorways: Colorway[];
+};
+
+export type Colorway = {
+  id: string;
+  name: string;
+  number?: Number;
+  img?: string;
+};
+
+class catalogDB {
+  db: Artist[] = [];
+  async init() {
+    appLogger.info(
+      "Loading the JSON Catalog. This may take a moment because It's huge!"
+    );
+    const _db = await axios
+      .get(
+        'https://raw.githubusercontent.com/zekth/too-much-artisans-db/master/db/catalog.json'
+      )
+      .then(res => {
+        return res.data;
+      });
+    appLogger.info('Woaw finally loaded. Ready to go');
+
+    this.db = this.format(_db);
+  }
+  format(_db) {
+    return _db;
+  }
 }
 
-export const instance = db;
+export const instance = new catalogDB();

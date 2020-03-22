@@ -4,28 +4,31 @@ schema {
 
 type Query {
   allArtists: [Artist]
-  artist(name: String!): Artist
+  artist(id: String): Artist
 
-  allSculpts: [Sculpt]
-  sculpt(name: String!): Sculpt
+  allSculpts(artistId: String): [Sculpt]
+  sculpt(id: String): Sculpt
 
-  allColorways: [Colorway]
-  colorway(name: String!): Colorway
+  allColorways(sculptId: String): [Colorway]
+  colorway(id: String): Colorway
 }
 
 type Artist {
+  id: String
   name: String
-  instagram: String!
-  discord: String!
-  website: String!
+  instagram: String
+  website: String
+  sculpts: [Sculpt]!
 }
 
 type Sculpt {
+  id: String
   name: String
+  colorways: [Colorway]
 }
 
 type Colorway {
+  id: String
   name: String
-  number: Int!
-  img: String!
+  img: String
 }
