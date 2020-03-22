@@ -23,7 +23,7 @@ export type Colorway = {
   img?: string;
 };
 
-class catalogDB {
+class CatalogDB {
   db: Artist[] = [];
   async init() {
     appLogger.info(
@@ -45,4 +45,4 @@ class catalogDB {
   }
 }
 
-export const instance = new catalogDB();
+export const instance = new CatalogDB();
