@@ -4,9 +4,9 @@ import { appLogger } from 'logger';
 export type Artist = {
   id: string;
   name: string;
-  instagram?: String;
-  discord?: String;
-  website?: String;
+  instagram?: string;
+  discord?: string;
+  website?: string;
   sculpts: Sculpt[];
 };
 
@@ -19,7 +19,7 @@ export type Sculpt = {
 export type Colorway = {
   id: string;
   name: string;
-  number?: Number;
+  number?: number;
   img?: string;
 };
 
