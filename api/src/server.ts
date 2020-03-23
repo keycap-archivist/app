@@ -2,7 +2,7 @@ import 'app-module-path/register';
 
 import { createServer } from 'app';
 const port = Number(process.env.LISTEN_PORT) || 3000;
-const start = async server => {
+const start = async (server) => {
   try {
     await server.listen(port, '0.0.0.0');
   } catch (err) {
@@ -12,13 +12,13 @@ const start = async server => {
   }
 };
 
-process.on('uncaughtException', error => {
+process.on('uncaughtException', (error) => {
   console.error(error);
 });
-process.on('unhandledRejection', error => {
+process.on('unhandledRejection', (error) => {
   console.error(error);
 });
 
-createServer().then(s => {
+createServer().then((s) => {
   start(s);
 });

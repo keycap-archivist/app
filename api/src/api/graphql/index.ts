@@ -1,4 +1,4 @@
-import { gql, concatenateTypeDefs } from 'apollo-server-fastify';
+import { gql } from 'apollo-server-fastify';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { instance } from 'db/instance';
@@ -9,6 +9,7 @@ const gqlStr = readFileSync(join(__dirname, 'schema.gql'), 'utf-8');
 export const typeDefs = gql`
   ${gqlStr}
 `;
+
 export const resolvers = {
   Query: {
     allArtists: (): Artist[] => {
