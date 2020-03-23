@@ -15,52 +15,19 @@ export const resolvers = {
       return instance.db;
     },
     allSculpts: (obj, args, context, info): Sculpt[] => {
-      const sculpts = instance.db.find(x => x.id === args.artistId);
-      if (!sculpts) {
-        return [];
-      }
-      return sculpts.sculpts;
+      return instance.getSculpts(args.artistId);
     },
     allColorways: (obj, args, context, info): Colorway[] => {
-      let match: Sculpt;
-      for (const a of instance.db) {
-        match = a.sculpts.find(x => {
-          return x && x.id === args.sculptId;
-        });
-        if (match) {
-          return match.colorways;
-        }
-      }
-      return [];
+      return instance.getColorways(args.sculptId);
     },
     artist: (obj, args, context, info): Artist => {
-      return instance.db.find(x => x.id === args.id);
+      return instance.getArtist(args.id);
     },
     sculpt: (obj, args, context, info): Sculpt => {
-      let match: Sculpt;
-      for (const a of instance.db) {
-        match = a.sculpts.find(x => {
-          return x && x.id === args.id;
-        });
-        if (match) {
-          return match;
-        }
-      }
-      return match;
+      return instance.getSculpt(args.id);
     },
     colorway: (obj, args, context, info): Colorway => {
-      let match: Colorway;
-      for (const a of instance.db) {
-        for (const s of a.sculpts) {
-          match = s.colorways.find(x => {
-            return x && x.id === args.id;
-          });
-          if (match) {
-            return match;
-          }
-        }
-      }
-      return match;
+      return instance.getColorway(args.id);
     }
   }
 };
