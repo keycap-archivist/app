@@ -37,7 +37,7 @@ class CatalogDB {
     appLogger.info("Loading the JSON Catalog. This may take a moment because It's huge!");
     const _db = await axios
       .get('https://raw.githubusercontent.com/zekth/too-much-artisans-db/master/db/catalog.json')
-      .then(res => {
+      .then((res) => {
         return res.data;
       });
     appLogger.info('Woaw finally loaded. Ready to go');
@@ -48,12 +48,12 @@ class CatalogDB {
     return _db;
   }
   getArtist(artistId: string): Artist {
-    return this.db.find(x => x.id === artistId);
+    return this.db.find((x) => x.id === artistId);
   }
   getSculpt(sculptId: string): SculptDetailed {
     let match: Sculpt;
     for (const a of this.db) {
-      match = a.sculpts.find(x => {
+      match = a.sculpts.find((x) => {
         return x && x.id === sculptId;
       });
       if (match) {
@@ -68,7 +68,7 @@ class CatalogDB {
     let match: Colorway;
     for (const a of this.db) {
       for (const s of a.sculpts) {
-        match = s.colorways.find(x => {
+        match = s.colorways.find((x) => {
           return x && x.id === colorwayId;
         });
         if (match) {
@@ -81,7 +81,7 @@ class CatalogDB {
     return null;
   }
   getSculpts(artistId: string): Sculpt[] {
-    const sculpts = this.db.find(x => x.id === artistId);
+    const sculpts = this.db.find((x) => x.id === artistId);
     if (!sculpts) {
       return [];
     }
@@ -90,7 +90,7 @@ class CatalogDB {
   getColorways(sculptId: string): Colorway[] {
     let match: Sculpt;
     for (const a of this.db) {
-      match = a.sculpts.find(x => {
+      match = a.sculpts.find((x) => {
         return x && x.id === sculptId;
       });
       if (match) {
