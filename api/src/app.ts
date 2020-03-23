@@ -8,10 +8,7 @@ import { instance } from 'db/instance';
 import { apiLogger } from 'logger';
 import { ApolloServer } from 'apollo-server-fastify';
 import { typeDefs, resolvers } from 'api/graphql';
-import {
-  GraphiQLData,
-  resolveGraphiQLString
-} from 'apollo-server-module-graphiql';
+import { GraphiQLData, resolveGraphiQLString } from 'apollo-server-module-graphiql';
 
 export async function createServer() {
   const server = fastify({

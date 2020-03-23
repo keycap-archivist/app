@@ -1,17 +1,15 @@
 import { join, resolve } from 'path';
-import axios from 'axios';
 import { createCanvas, loadImage, registerFont, Image } from 'canvas';
 import { appLogger } from 'logger';
 import { LRUMap } from 'lru_map';
+import { instance } from 'db/instance';
 
-const apiCache = new LRUMap(400);
 const imageMap = new LRUMap(400);
 
 const fontPath = resolve(join(__dirname, '..', '..', 'public', 'fonts'));
 registerFont(join(fontPath, 'RedRock.ttf'), { family: 'RedRock' });
 registerFont(join(fontPath, 'Roboto-Regular.ttf'), { family: 'Roboto' });
 
-const BASE_URL = 'https://a.mrkeebs.com/api/';
 const MARGIN_SIDE = 10;
 const MARGIN_BOTTOM = 60;
 const nbCapsPerLine = 3;
@@ -19,34 +17,19 @@ const IMG_WIDTH = 250;
 const IMG_HEIGTH = 250;
 const HEADER_HEIGHT = 90;
 const LINE_HEIGHT = 22;
-const canvasWidth =
-  nbCapsPerLine * IMG_WIDTH + nbCapsPerLine * MARGIN_SIDE + MARGIN_SIDE;
+const canvasWidth = nbCapsPerLine * IMG_WIDTH + nbCapsPerLine * MARGIN_SIDE + MARGIN_SIDE;
 const rowHeight = IMG_HEIGTH + MARGIN_BOTTOM;
 
-async function getCap(id): Promise<keycap> {
-  if (!apiCache.has(id)) {
-    const data = await axios.get(`${BASE_URL}artisans/${id}`).then(resp => {
-      return resp.data;
-    });
-    appLogger.info(`Set cache : ${id}`);
-    apiCache.set(id, data);
-  } else {
-    appLogger.info(`Get from cache : ${id}`);
-  }
-  return apiCache.get(id) as keycap;
-}
-
 async function drawTheCap(context, color, capId, x, y) {
-  appLogger.info(`Draw ${capId} ${x} ${y}`);
-  const cap = await getCap(capId);
+  const cap = await instance.getColorway(capId);
   const img = new Image();
-  if (imageMap.has(cap.image)) {
+  if (imageMap.has(cap.img)) {
     appLogger.info('has img cache');
-    img.src = imageMap.get(cap.image) as string;
+    img.src = imageMap.get(cap.img) as string;
   } else {
     appLogger.info('!has img cache');
 
-    const _img = await loadImage(cap.image);
+    const _img = await loadImage(cap.img);
     let h, w, sx, sy;
     if (_img.width > _img.height) {
       h = _img.height;
@@ -64,7 +47,7 @@ async function drawTheCap(context, color, capId, x, y) {
     await Tctx.drawImage(_img, sx, sy, w, h, 0, 0, IMG_WIDTH, IMG_HEIGTH);
 
     img.src = Tcanvas.toDataURL();
-    imageMap.set(cap.image, img.src);
+    imageMap.set(cap.img, img.src);
     // appLogger.info(Tcanvas.toDataURL())
     // await context.drawImage(img, sx, sy, w, h, x, y, IMG_WIDTH, IMG_HEIGTH);
   }
@@ -73,37 +56,17 @@ async function drawTheCap(context, color, capId, x, y) {
   context.font = '20px Roboto';
   context.fillStyle = color;
   context.textAlign = 'center';
-  const legend = `${cap.sculpt} ${cap.colorway}`;
+  const legend = `${cap.sculpt.name} ${cap.name}`;
   const measurement = context.measureText(legend);
   if (measurement.width > IMG_WIDTH + 10) {
-    context.fillText(
-      `${cap.sculpt}`,
-      x + IMG_WIDTH / 2,
-      y + IMG_HEIGTH + LINE_HEIGHT
-    );
-    context.fillText(
-      `${cap.colorway}`,
-      x + IMG_WIDTH / 2,
-      y + IMG_HEIGTH + LINE_HEIGHT + LINE_HEIGHT
-    );
+    context.fillText(`${cap.sculpt.name}`, x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
+    context.fillText(`${cap.name}`, x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT + LINE_HEIGHT);
   } else {
-    context.fillText(
-      `${cap.sculpt} ${cap.colorway}`,
-      x + IMG_WIDTH / 2,
-      y + IMG_HEIGTH + LINE_HEIGHT
-    );
+    context.fillText(`${cap.sculpt.name} ${cap.name}`, x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
   }
 }
 
-type keycap = {
-  artisan_id: number;
-  maker_id: number;
-  maker: string;
-  sculpt: string;
-  colorway: string;
-  image: string;
-};
-// http://localhost:3000/api/v1?ids=3210,3114,3202,3204,1959,2640
+// http://localhost:3000/api/v1?ids=15559f6e,eabbe6a8
 
 const defaultValues = {
   ids: '',
@@ -141,15 +104,7 @@ const genWishlist = async (req, resp) => {
         idx = 0;
         y += rowHeight;
       }
-      p.push(
-        drawTheCap(
-          ctx,
-          params.textcolor,
-          capId,
-          idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE,
-          y
-        )
-      );
+      p.push(drawTheCap(ctx, params.textcolor, capId, idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y));
       idx++;
     }
   } else {
