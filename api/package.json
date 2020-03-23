@@ -8,7 +8,7 @@
     "lint": "yarn eslint && yarn prettier",
     "watch": "nodemon -e yaml,ts,gql -w ./src -x yarn watch:serve",
     "watch:serve": "ts-node src/server.ts",
-    "build": "rm -rf dist && tsc && cp src/api/graphql/schema.gql dist/api/graphql/schema.gql && cp -R src/public/ dist/public/"
+    "build": "rm -rf dist && tsc && cp src/api/graphql/schema.gql dist/api/graphql/schema.gql && cp -R src/public/ dist/public/ && cp -R src/internal/fonts/ dist/internal/fonts/"
   },
   "author": "",
   "license": "ISC",
