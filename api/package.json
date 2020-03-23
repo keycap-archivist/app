@@ -14,7 +14,6 @@
   "license": "ISC",
   "dependencies": {
     "apollo-server-fastify": "2.11.0",
-    "apollo-server-module-graphiql": "1.4.0",
     "app-module-path": "2.2.0",
     "axios": "0.19.2",
     "canvas": "2.6.1",
@@ -26,8 +25,7 @@
     "lru_map": "0.3.3",
     "marked": "^0.8.2",
     "pino": "5.17.0",
-    "pino-pretty": "3.6.1",
-    "url": "0.11.0"
+    "pino-pretty": "3.6.1"
   },
   "devDependencies": {
     "@ava/typescript": "1.1.1",

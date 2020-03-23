@@ -1,5 +1,4 @@
 import * as fastify from 'fastify';
-import * as URL from 'url';
 import * as fastifyStatic from 'fastify-static';
 import * as fastifyCORS from 'fastify-cors';
 import { controllers } from 'api/controllers';
@@ -8,7 +7,6 @@ import { instance } from 'db/instance';
 import { apiLogger, appLogger } from 'logger';
 import { ApolloServer } from 'apollo-server-fastify';
 import { typeDefs, resolvers } from 'api/graphql';
-import { GraphiQLData, resolveGraphiQLString } from 'apollo-server-module-graphiql';
 import * as marked from 'marked';
 import { readFileSync } from 'fs';
 
@@ -26,22 +24,6 @@ export async function createServer() {
     resolvers
   });
 
-  const graphiqlHandler = async (request, reply) => {
-    try {
-      const query = request.req.url && URL.parse(request.req.url, true).query;
-      const graphiqlString = await resolveGraphiQLString(
-        query,
-        {
-          endpointURL: '/graphql'
-        },
-        [request, reply]
-      );
-      reply.type('text/html').send(graphiqlString);
-    } catch (error) {
-      reply.code(500);
-      reply.send(error.message);
-    }
-  };
   server.register(graphQlServer.createHandler({ path: '/graphql' }));
   const gqlStr = readFileSync(join(__dirname, 'api', 'graphql', 'schema.gql'), 'utf-8');
   const indexFile = readFileSync(join(__dirname, 'public', 'index.md'), 'utf-8').replace('{gql-content}', gqlStr);
@@ -72,11 +54,7 @@ padding: 15px;
       resp.type('text/html').send(compiledIndex);
     }
   });
-  server.route({
-    method: 'GET',
-    url: '/graphiql',
-    handler: graphiqlHandler
-  });
+
   server.route({
     method: 'GET',
     url: '/api/v1',

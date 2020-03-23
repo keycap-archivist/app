@@ -9,7 +9,6 @@ This API is based on the data exposed in : [https://github.com/zekth/too-much-ar
 ### GraphQl
 
 - graphQl endpoint : [http://too-much-artisans.westeurope.azurecontainer.io/graphql](http://too-much-artisans.westeurope.azurecontainer.io/graphql)
-- graphiQl editor endpoint : [http://too-much-artisans.westeurope.azurecontainer.io/graphiql](http://too-much-artisans.westeurope.azurecontainer.io/graphiql)
 
 ```graphql
 {gql-content}
