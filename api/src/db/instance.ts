@@ -34,6 +34,10 @@ export interface ColorwayDetailed extends Colorway {
 class CatalogDB {
   db: Artist[] = [];
   async init() {
+    await this.loadDb();
+    setInterval(this.loadDb.bind(this), 1000 * 3600);
+  }
+  async loadDb() {
     appLogger.info("Loading the JSON Catalog. This may take a moment because It's huge!");
     const _db = await axios
       .get('https://raw.githubusercontent.com/zekth/too-much-artisans-db/master/db/catalog.json')
