@@ -51,7 +51,7 @@ padding: 15px;
     method: 'GET',
     url: '/',
     handler: (_, resp) => {
-      resp.type('text/html').send(compiledIndex);
+      resp.type('text/html').send(compiledIndex.replace('{SHA_API_VERSION}', instance.getDbVersion()));
     }
   });
 

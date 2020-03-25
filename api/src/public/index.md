@@ -4,7 +4,7 @@ This API is based on the data exposed in : [https://github.com/zekth/too-much-ar
 
 ## API
 
-
+Database version of the API: {SHA_API_VERSION}
 
 ### GraphQl
 
@@ -28,9 +28,10 @@ titlecolor: HexColor without #
 textcolor : HexColor without #
 ```
 
-example:  http://too-much-artisans.westeurope.azurecontainer.io/api/v1?ids=702c4f18,f733ff0b,486a0062,f77bfea4,e951b800,df6cb5ab&title=Zekth-Wishlist
+example: http://too-much-artisans.westeurope.azurecontainer.io/api/v1?ids=702c4f18,f733ff0b,486a0062,f77bfea4,e951b800,df6cb5ab&title=Zekth-Wishlist
 
 Generates:
+
 <center>
 <img src="http://too-much-artisans.westeurope.azurecontainer.io/api/v1?ids=702c4f18,f733ff0b,486a0062,f77bfea4,e951b800,df6cb5ab&title=Zekth-Wishlist">
 </center>

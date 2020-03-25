@@ -13,7 +13,7 @@ export const typeDefs = gql`
 export const resolvers = {
   Query: {
     allArtists: (): Artist[] => {
-      return instance.db;
+      return instance.db.data;
     },
     allSculpts: (obj, args, context, info): Sculpt[] => {
       return instance.getSculpts(args.artistId);

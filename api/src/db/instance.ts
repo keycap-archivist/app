@@ -32,7 +32,7 @@ export interface ColorwayDetailed extends Colorway {
 }
 
 class CatalogDB {
-  db: Artist[] = [];
+  db: { version: string; data: Artist[] };
   async init() {
     await this.loadDb();
     setInterval(this.loadDb.bind(this), 1000 * 3600);
@@ -45,18 +45,29 @@ class CatalogDB {
         return res.data;
       });
     appLogger.info('Woaw finally loaded. Ready to go');
-
-    this.db = this.format(_db);
+    const version = await axios
+      .get('https://api.github.com/repos/zekth/too-much-artisans-db/git/ref/heads/master')
+      .then((res) => {
+        return res.data.object.sha;
+      });
+    this.db = this.format(_db, version);
   }
-  format(_db) {
-    return _db;
+  getDbVersion() {
+    return this.db.version;
+  }
+  format(_db, version) {
+    const out = {
+      version: version,
+      data: _db
+    };
+    return out;
   }
   getArtist(artistId: string): Artist {
-    return this.db.find((x) => x.id === artistId);
+    return this.db.data.find((x) => x.id === artistId);
   }
   getSculpt(sculptId: string): SculptDetailed {
     let match: Sculpt;
-    for (const a of this.db) {
+    for (const a of this.db.data) {
       match = a.sculpts.find((x) => {
         return x && x.id === sculptId;
       });
@@ -70,7 +81,7 @@ class CatalogDB {
   }
   getColorway(colorwayId: string): ColorwayDetailed {
     let match: Colorway;
-    for (const a of this.db) {
+    for (const a of this.db.data) {
       for (const s of a.sculpts) {
         match = s.colorways.find((x) => {
           return x && x.id === colorwayId;
@@ -85,7 +96,7 @@ class CatalogDB {
     return null;
   }
   getSculpts(artistId: string): Sculpt[] {
-    const sculpts = this.db.find((x) => x.id === artistId);
+    const sculpts = this.db.data.find((x) => x.id === artistId);
     if (!sculpts) {
       return [];
     }
@@ -93,7 +104,7 @@ class CatalogDB {
   }
   getColorways(sculptId: string): Colorway[] {
     let match: Sculpt;
-    for (const a of this.db) {
+    for (const a of this.db.data) {
       match = a.sculpts.find((x) => {
         return x && x.id === sculptId;
       });
