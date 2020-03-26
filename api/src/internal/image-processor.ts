@@ -20,6 +20,25 @@ const LINE_HEIGHT = 22;
 const canvasWidth = nbCapsPerLine * IMG_WIDTH + nbCapsPerLine * MARGIN_SIDE + MARGIN_SIDE;
 const rowHeight = IMG_HEIGTH + MARGIN_BOTTOM;
 
+function isTextFittingSpace(ctx, legend, maxWidth): boolean {
+  const measurement = ctx.measureText(legend);
+  if (measurement.width > maxWidth - 10) {
+    return false;
+  }
+  return true;
+}
+
+function fitText(ctx, legend, maxWidth): string {
+  let outLegend = legend.trim();
+  if (isTextFittingSpace(ctx, outLegend, maxWidth)) {
+    return outLegend;
+  }
+  while (!isTextFittingSpace(ctx, `${outLegend}...`, maxWidth)) {
+    outLegend = outLegend.trim().slice(0, -1);
+  }
+  return `${outLegend.trim()}...`;
+}
+
 async function drawTheCap(context, color, capId, x, y) {
   const cap = await instance.getColorway(capId);
   const img = new Image();
@@ -55,12 +74,15 @@ async function drawTheCap(context, color, capId, x, y) {
   context.fillStyle = color;
   context.textAlign = 'center';
   const legend = `${cap.sculpt.name} ${cap.name}`;
-  const measurement = context.measureText(legend);
-  if (measurement.width > IMG_WIDTH + 10) {
-    context.fillText(`${cap.sculpt.name}`, x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
-    context.fillText(`${cap.name}`, x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT + LINE_HEIGHT);
+  if (!isTextFittingSpace(context, legend, IMG_WIDTH)) {
+    context.fillText(fitText(context, cap.sculpt.name, IMG_WIDTH), x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
+    context.fillText(
+      fitText(context, cap.name, IMG_WIDTH),
+      x + IMG_WIDTH / 2,
+      y + IMG_HEIGTH + LINE_HEIGHT + LINE_HEIGHT
+    );
   } else {
-    context.fillText(`${cap.sculpt.name} ${cap.name}`, x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
+    context.fillText(legend, x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
   }
 }
 
@@ -88,7 +110,6 @@ export async function generateWishlist(options): Promise<Buffer> {
   const opt = parseOptions(options);
   const p = [];
   if (opt.ids.length) {
-    console.log('in');
     const nbCaps = opt.ids.length;
     const nbRows = Math.ceil(nbCaps / nbCapsPerLine);
     canvas = createCanvas(canvasWidth, HEADER_HEIGHT + rowHeight * nbRows);
