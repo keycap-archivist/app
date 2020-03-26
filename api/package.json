@@ -25,7 +25,8 @@
     "lru_map": "0.3.3",
     "marked": "^0.8.2",
     "pino": "5.17.0",
-    "pino-pretty": "3.6.1"
+    "pino-pretty": "3.6.1",
+    "tablemark": "2.0.0"
   },
   "devDependencies": {
     "@ava/typescript": "1.1.1",

@@ -39,7 +39,7 @@ function fitText(ctx, legend, maxWidth): string {
   return `${outLegend.trim()}...`;
 }
 
-async function drawTheCap(context, color, capId, x, y) {
+async function drawTheCap(context, color, capId, x, y): Promise<void> {
   const cap = await instance.getColorway(capId);
   const img = new Image();
   if (imageMap.has(cap.img)) {

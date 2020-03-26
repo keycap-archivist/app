@@ -57,6 +57,12 @@ padding: 15px;
 
   server.route({
     method: 'GET',
+    url: '/api/v1/table',
+    handler: controllers.genTable
+  });
+
+  server.route({
+    method: 'GET',
     url: '/api/v1',
     handler: controllers.genWishlist
   });

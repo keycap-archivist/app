@@ -1,6 +1,6 @@
 import * as pino from 'pino';
 const mainLogger: pino = pino({
-  prettyPrint: { colorize: true }
+  prettyPrint: { colorize: false }
 });
 const apiLogger: pino = mainLogger.child({
   name: 'API_LOGGER'
