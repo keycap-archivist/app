@@ -127,6 +127,7 @@ export async function generateWishlist(options): Promise<Buffer> {
       idx++;
     }
   } else {
+    // Example
     canvas = createCanvas(canvasWidth, HEADER_HEIGHT + rowHeight);
     ctx = canvas.getContext('2d');
     ctx.fillStyle = 'black';

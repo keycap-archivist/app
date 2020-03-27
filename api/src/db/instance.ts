@@ -30,32 +30,43 @@ export interface Colorway {
 export interface ColorwayDetailed extends Colorway {
   sculpt: SculptDetailed;
 }
-
+interface apiDb {
+  version: string;
+  data: Artist[];
+}
 class CatalogDB {
-  db: { version: string; data: Artist[] };
-  async init() {
+  db: apiDb;
+  async init(): Promise<void> {
     await this.loadDb();
     setInterval(this.loadDb.bind(this), 1000 * 3600);
   }
-  async loadDb() {
-    appLogger.info("Loading the JSON Catalog. This may take a moment because It's huge!");
-    const _db = await axios
-      .get('https://raw.githubusercontent.com/zekth/too-much-artisans-db/master/db/catalog.json')
-      .then((res) => {
-        return res.data;
-      });
-    appLogger.info('Woaw finally loaded. Ready to go');
+  async downloadDbVersion(): Promise<string> {
     const version = await axios
       .get('https://api.github.com/repos/zekth/too-much-artisans-db/git/ref/heads/master')
       .then((res) => {
         return res.data.object.sha;
       });
-    this.db = this.format(_db, version);
+    return version;
   }
-  getDbVersion() {
-    return this.db.version;
+  async loadDb(): Promise<void> {
+    const distantVersion = await this.downloadDbVersion();
+    if (distantVersion === this.getDbVersion()) {
+      appLogger.info('No Need to update db');
+    } else {
+      appLogger.info('Loading the JSON Catalog');
+      const _db = await axios
+        .get('https://raw.githubusercontent.com/zekth/too-much-artisans-db/master/db/catalog.json')
+        .then((res) => {
+          return res.data;
+        });
+      appLogger.info('Database updated');
+      this.db = this.format(_db, distantVersion);
+    }
   }
-  format(_db, version) {
+  getDbVersion(): string {
+    return this.db ? this.db.version : '';
+  }
+  format(_db, version): apiDb {
     const out = {
       version: version,
       data: _db
