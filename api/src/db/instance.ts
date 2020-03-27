@@ -30,12 +30,12 @@ export interface Colorway {
 export interface ColorwayDetailed extends Colorway {
   sculpt: SculptDetailed;
 }
-interface apiDb {
+interface ApiDb {
   version: string;
   data: Artist[];
 }
 class CatalogDB {
-  db: apiDb;
+  db: ApiDb;
   async init(): Promise<void> {
     await this.loadDb();
     setInterval(this.loadDb.bind(this), 1000 * 3600);
@@ -66,7 +66,7 @@ class CatalogDB {
   getDbVersion(): string {
     return this.db ? this.db.version : '';
   }
-  format(_db, version): apiDb {
+  format(_db, version): ApiDb {
     const out = {
       version: version,
       data: _db
