@@ -63,7 +63,7 @@ jobs:
           host: ${{ secrets.SRV_HOST }}
           username: ${{ secrets.SRV_USERNAME }}
           password: ${{ secrets.SRV_PASSWORD }}
-          port: ${{ secrets.PORT }}
+          port: ${{ secrets.SRV_PORT }}
           script: |
             cd artisans
             docker-compose down
