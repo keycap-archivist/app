@@ -8,7 +8,7 @@ Database version of the API: {SHA_API_VERSION}
 
 ### GraphQl
 
-- graphQl endpoint : [https://artisans.mechanical-keyboards.fr/graphql](https://artisans.mechanical-keyboards.fr/graphql)
+- graphQl endpoint : [https://artisans.mechanical-keyboards.fr/api/graphql](https://artisans.mechanical-keyboards.fr/api/graphql)
 
 ```graphql
 {gql-content}

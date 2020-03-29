@@ -16,7 +16,9 @@ export async function createServer() {
   });
 
   server.register(fastifyCORS, { origin: true });
-
+  server.register(fastifyStatic, {
+    root: join(__dirname, 'public')
+  });
   await instance.init();
 
   const graphQlServer = new ApolloServer({
@@ -24,9 +26,12 @@ export async function createServer() {
     resolvers
   });
 
-  server.register(graphQlServer.createHandler({ path: '/graphql' }));
+  server.register(graphQlServer.createHandler({ path: '/api/graphql' }));
   const gqlStr = readFileSync(join(__dirname, 'api', 'graphql', 'schema.gql'), 'utf-8');
-  const indexFile = readFileSync(join(__dirname, 'public', 'index.md'), 'utf-8').replace('{gql-content}', gqlStr);
+  const indexFile = readFileSync(join(__dirname, 'internal', 'doc', 'index.md'), 'utf-8').replace(
+    '{gql-content}',
+    gqlStr
+  );
   const compiledIndex = `<html><head><title>Too much Artisans API</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
@@ -49,7 +54,7 @@ padding: 15px;
   )}</body></html>`;
   server.route({
     method: 'GET',
-    url: '/',
+    url: '/api',
     handler: (_, resp) => {
       resp.type('text/html').send(compiledIndex.replace('{SHA_API_VERSION}', instance.getDbVersion()));
     }
