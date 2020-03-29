@@ -8,7 +8,7 @@ Database version of the API: {SHA_API_VERSION}
 
 ### GraphQl
 
-- graphQl endpoint : [http://too-much-artisans.westeurope.azurecontainer.io/graphql](http://too-much-artisans.westeurope.azurecontainer.io/graphql)
+- graphQl endpoint : [https://artisans.mechanical-keyboards.fr/graphql](https://artisans.mechanical-keyboards.fr/graphql)
 
 ```graphql
 {gql-content}
@@ -16,7 +16,7 @@ Database version of the API: {SHA_API_VERSION}
 
 ### Wishlist Generator
 
-[http://too-much-artisans.westeurope.azurecontainer.io/api/v1](http://too-much-artisans.westeurope.azurecontainer.io/api/v1)
+[https://artisans.mechanical-keyboards.fr/api/v1](https://artisans.mechanical-keyboards.fr/api/v1)
 
 Available through querystring
 
@@ -28,10 +28,10 @@ titlecolor: HexColor without #
 textcolor : HexColor without #
 ```
 
-example: http://too-much-artisans.westeurope.azurecontainer.io/api/v1?ids=702c4f18,f733ff0b,486a0062,f77bfea4,e951b800,df6cb5ab&title=Zekth-Wishlist
+example: https://artisans.mechanical-keyboards.fr/api/v1?ids=702c4f18,f733ff0b,486a0062,f77bfea4,e951b800,df6cb5ab&title=Zekth-Wishlist
 
 Generates:
 
 <center>
-<img src="http://too-much-artisans.westeurope.azurecontainer.io/api/v1?ids=702c4f18,f733ff0b,486a0062,f77bfea4,e951b800,df6cb5ab&title=Zekth-Wishlist">
+<img src="https://artisans.mechanical-keyboards.fr/api/v1?ids=702c4f18,f733ff0b,486a0062,f77bfea4,e951b800,df6cb5ab&title=Zekth-Wishlist">
 </center>

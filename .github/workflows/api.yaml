@@ -43,16 +43,30 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
           tags: "latest"
-      - name: Azure login
+      # - name: Azure login
+      #   if: github.ref == 'refs/heads/master'
+      #   uses: azure/login@v1
+      #   with:
+      #     creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # - name: Azure Deploy
+      #   if: github.ref == 'refs/heads/master'
+      #   run: |
+      #     az container restart --name too-much-artisans -g too-much-artisans
+      # - name: Azure logout
+      #   if: github.ref == 'refs/heads/master'
+      #   run: |
+      #     az logout
+      - name: Push to server
         if: github.ref == 'refs/heads/master'
-        uses: azure/login@v1
+        uses: appleboy/ssh-action@master
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Azure Deploy
-        if: github.ref == 'refs/heads/master'
-        run: |
-          az container restart --name too-much-artisans -g too-much-artisans
-      - name: Azure logout
-        if: github.ref == 'refs/heads/master'
-        run: |
-          az logout
+          host: ${{ secrets.SRV_HOST }}
+          username: ${{ secrets.SRV_USERNAME }}
+          password: ${{ secrets.SRV_PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd artisans
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d
+            docker rmi -f $(docker images -f "dangling=true" -q)

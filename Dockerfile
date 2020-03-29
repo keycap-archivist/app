@@ -16,6 +16,5 @@ COPY --from=apibuilder /project/package*.json /server/
 WORKDIR /server/
 RUN yarn install --production
 COPY --from=uibuilder /project/dist/ /server/public/
-EXPOSE 8080
 
 CMD [ "node", "server.js" ]

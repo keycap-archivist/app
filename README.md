@@ -1,6 +1,6 @@
 # Too much artisans
 
-accessible here : [http://too-much-artisans.westeurope.azurecontainer.io](http://too-much-artisans.westeurope.azurecontainer.io).
+accessible here : [https://artisans.mechanical-keyboards.fr/](https://artisans.mechanical-keyboards.fr/).
 It uses https://github.com/zekth/too-much-artisans-db artifacts
 
-Documentation available here : [http://too-much-artisans.westeurope.azurecontainer.io](http://too-much-artisans.westeurope.azurecontainer.io)
+Documentation available here : [https://artisans.mechanical-keyboards.fr/](https://artisans.mechanical-keyboards.fr/)
