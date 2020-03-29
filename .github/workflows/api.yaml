@@ -69,4 +69,4 @@ jobs:
             docker-compose down
             docker-compose pull
             docker-compose up -d
-            docker rmi -f $(docker images -f "dangling=true" -q)
+            docker rmi -f $(docker images -f "dangling=true" -q) || true
