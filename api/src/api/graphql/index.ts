@@ -12,7 +12,7 @@ export const typeDefs = gql`
 
 export const resolvers = {
   Query: {
-    dbVersion: (): String => {
+    dbVersion: (): string => {
       return instance.db.version;
     },
     allArtists: (): Artist[] => {
