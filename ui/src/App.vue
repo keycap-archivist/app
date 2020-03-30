@@ -12,13 +12,32 @@
 <script>
 import Main from "./components/Main.vue";
 import Sidebar from "./components/Sidebar.vue";
-
+import { mapActions, mapState } from "vuex";
 export default {
   name: "App",
   components: {
     Main,
     Sidebar
-  }
+  },
+  computed: {
+    ...mapState(["db", "dbVersion"])
+  },
+  async mounted() {
+    if (!this.db) {
+      console.log("No local db. Loading");
+      this.loadDb();
+    } else {
+      const distantVersion = await this.loadDbVersion();
+      if (distantVersion !== this.dbVersion) {
+        console.log("Distant version different. Updating db");
+        this.loadDb();
+      }
+    }
+  },
+  methods: {
+    ...mapActions(["loadDb", "loadDbVersion"])
+  },
+  data: () => ({})
 };
 </script>
 

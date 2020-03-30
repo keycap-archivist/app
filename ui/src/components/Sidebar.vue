@@ -11,7 +11,7 @@
           >
             <i class="fas fa-link pr-0 md:pr-3 text-yellow-500"></i
             ><span class="pb-1 md:pb-0 text-xs md:text-base text-white md:font-bold block md:inline-block"
-              >Current page</span
+              >Catalog</span
             >
           </a>
         </li>
@@ -22,7 +22,7 @@
           >
             <i class="fas fa-link pr-0 md:pr-3"></i
             ><span class="pb-1 md:pb-0 text-xs md:text-base text-gray-600 md:text-gray-400 block md:inline-block"
-              >Non active page</span
+              >WishList</span
             >
           </a>
         </li>
