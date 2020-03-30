@@ -24,12 +24,10 @@ export default {
   },
   async mounted() {
     if (!this.db) {
-      console.log("No local db. Loading");
       this.loadDb();
     } else {
       const distantVersion = await this.loadDbVersion();
       if (distantVersion !== this.dbVersion) {
-        console.log("Distant version different. Updating db");
         this.loadDb();
       }
     }
