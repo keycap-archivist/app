@@ -3,6 +3,8 @@ schema {
 }
 
 type Query {
+  dbVersion: String
+
   allArtists: [Artist]
   artist(id: String): Artist
 
