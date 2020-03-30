@@ -30,6 +30,19 @@ function loadLocalDbVersion() {
   }
 }
 
+function loadLocalWishlist() {
+  const localWishlist = localStorageLoad(CONSTS.wishlist);
+  if (localWishlist) {
+    try {
+      return JSON.parse(localWishlist);
+    } catch (e) {
+      return [];
+    }
+  } else {
+    return [];
+  }
+}
+
 export default new Vuex.Store({
   modules: {
     app
@@ -37,7 +50,7 @@ export default new Vuex.Store({
   state: {
     db: loadLocalDb(),
     dbVersion: loadLocalDbVersion(),
-    wishlistItems: [],
+    wishlistItems: loadLocalWishlist(),
     wishlistName: "",
     wishlistParams: {}
   },
@@ -47,9 +60,31 @@ export default new Vuex.Store({
     },
     setDbVersion(state, _version) {
       state.dbVersion = _version;
+    },
+    rmWishlist(state, _id) {
+      const index = state.wishlistItems.indexOf(_id);
+      if (index > -1) {
+        state.wishlistItems.splice(index, 1);
+      }
+      Vue.set(state.wishlistItems, state.wishlistItems);
+      localStorageSet(CONSTS.wishlist, JSON.stringify(state.wishlistItems));
+    },
+    addWishlist(state, _id) {
+      Vue.set(state.wishlistItems, state.wishlistItems.length, _id);
+      localStorageSet(CONSTS.wishlist, JSON.stringify(state.wishlistItems));
     }
   },
   actions: {
+    rmWishlist({ state, commit }, _id) {
+      if (state.wishlistItems.indexOf(_id) > -1) {
+        commit("rmWishlist", _id);
+      }
+    },
+    addWishlist({ state, commit }, _id) {
+      if (state.wishlistItems.indexOf(_id) === -1) {
+        commit("addWishlist", _id);
+      }
+    },
     async loadDb({ commit }) {
       const db = await axios({
         url: `${backend_baseurl}/graphql`,

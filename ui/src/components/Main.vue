@@ -5,35 +5,53 @@
     <div class="mb-5">
       Search: <input v-on:input="search" v-model="researchInput" type="text" placeholder="research" />
     </div>
-    <div class="mx-auto w-1/2 sm:w-auto lg:w-1/2 rounded-lg overflow-hidden" v-show="previewImgSrc !== ''">
-      <img class="w-full object-cover" :src="previewImgSrc" />
+    <div class=" h-64 mx-auto w-1/2 sm:w-auto lg:w-1/2 overflow-hidden mb-5" v-show="previewImgSrc !== ''">
+      <img class="h-full object-cover mx-auto rounded-lg" :src="previewImgSrc" />
     </div>
-    <ul>
-      <li v-for="item in this.results" :key="item.idx">
-        <template v-if="item.type === 'artist'"> Artist : {{ item.name }} </template>
-        <template v-else-if="item.type === 'sculpt'"> Sculpt : {{ item.name }} </template>
-        <template v-else>
-          <button
-            @click="showCap(item.img)"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 border border-blue-700 rounded"
+    <div class="overflow-y-scroll h-64">
+      <ul>
+        <li
+          v-for="item in this.results"
+          :key="item.idx"
+          class="cursor-pointer"
+          v-bind:class="{ 'bg-blue-500': isActive(item.img) }"
+        >
+          <!-- <button
+            v-show="!inWishlist(item.id)"
+            @click="addWishlist(item.id)"
+            class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 border border-green-700 rounded"
           >
-            Show
+            Add
           </button>
-          color : {{ item.name }}
-        </template>
-      </li>
-    </ul>
+          <button
+            v-show="inWishlist(item.id)"
+            @click="rmWishlist(item.id)"
+            class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-700 rounded"
+          >
+            Remove
+          </button> -->
+          <span @click="showCap(item.img)"> {{ item.name }}</span>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 export default {
   name: "maincontent",
   computed: {
-    ...mapState(["db"])
+    ...mapState(["db", "wishlistItems"])
   },
   methods: {
+    ...mapActions(["addWishlist", "rmWishlist"]),
+    isActive(img) {
+      return this.previewImgSrc === img;
+    },
+    inWishlist(id) {
+      return this.wishlistItems.indexOf(id) > -1;
+    },
     showCap(img) {
       this.previewImgSrc = img;
     },
@@ -45,32 +63,22 @@ export default {
       const sanitizedSearch = this.researchInput.toLowerCase().trim();
       let i = 0;
       for (const a of this.db) {
-        i++;
+        let addAllScupts = false;
         if (this.isMatch(a.name, sanitizedSearch)) {
-          this.results.push({
-            idx: i,
-            id: a.id,
-            name: a.name,
-            type: "artist"
-          });
+          addAllScupts = true;
         }
         for (const s of a.sculpts) {
-          i++;
-          if (this.isMatch(s.name, sanitizedSearch)) {
-            this.results.push({
-              idx: i,
-              id: s.id,
-              name: s.name,
-              type: "sculpt"
-            });
+          let addAllcolorways = false;
+          if (this.isMatch(s.name, sanitizedSearch) || addAllScupts) {
+            addAllcolorways = true;
           }
           for (const c of s.colorways) {
             i++;
-            if (this.isMatch(c.name, sanitizedSearch)) {
+            if (this.isMatch(c.name, sanitizedSearch) || addAllcolorways) {
               this.results.push({
                 idx: i,
                 id: c.id,
-                name: c.name,
+                name: `${a.name} ${s.name} ${c.name}`,
                 img: c.img,
                 type: "colorway"
               });
@@ -90,5 +98,3 @@ export default {
   })
 };
 </script>
-
-<style></style>
