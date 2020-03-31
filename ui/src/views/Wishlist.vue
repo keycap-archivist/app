@@ -30,6 +30,9 @@
           </button>
         </td>
       </tr>
+      <tr v-show="!this.myWishlist.length">
+        <td>Nothing in wishlist yet.</td>
+      </tr>
     </table>
   </div>
 </template>
