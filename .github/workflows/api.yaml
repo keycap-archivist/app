@@ -1,4 +1,4 @@
-name: Api testing
+name: Image Build
 
 on:
   pull_request:
@@ -14,21 +14,47 @@ jobs:
       - uses: actions/checkout@v1
       - uses: actions/cache@v1
         with:
-          path: ui/node_modules
+          path: api/node_modules
           key: ${{ runner.os }}-node_modules-${{ hashFiles('api/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node_modules-
-      - name: install
+      - uses: actions/cache@v1
+        with:
+          path: ui/node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('ui/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node_modules-
+      - name: Use Node.js 12.16.1
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.16.1
+      - name: install API
         run: |
           cd api
           yarn
-      - name: lint
+      - name: API lint
         run: |
           cd api
           yarn lint
-      - name: build
+      - name: API build
         run: |
           cd api
+          yarn build
+          cp package.json dist/package.json
+          cp yarn.lock dist/yarn.lock
+          cd dist
+          yarn
+      - name: install UI
+        run: |
+          cd ui
+          yarn
+      - name: UI lint
+        run: |
+          cd ui
+          yarn lint
+      - name: UI build
+        run: |
+          cd ui
           yarn build
       - name: docker build
         run: |
