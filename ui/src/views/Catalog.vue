@@ -1,7 +1,20 @@
 <template>
   <div>
     <div class="mb-5">
-      Search some artisans: <input v-on:input="search" v-model="researchInput" type="text" placeholder="research" />
+      <form class="px-8 pt-6 pb-8 mb-4">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+            Search something
+          </label>
+          <input
+            v-on:input="search"
+            v-model="researchInput"
+            type="text"
+            placeholder="research"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          />
+        </div>
+      </form>
     </div>
     <div class=" h-64 mx-auto w-1/2 sm:w-auto lg:w-1/2 overflow-hidden mb-5" v-show="previewImgSrc !== ''">
       <img class="h-full object-cover mx-auto rounded-lg" :src="previewImgSrc" />

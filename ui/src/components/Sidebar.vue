@@ -5,9 +5,9 @@
     <div class="md:relative mx-auto lg:float-right lg:px-6">
       <ul class="list-reset flex flex-row md:flex-col text-center md:text-left">
         <li class="mr-3 flex-1">
-          <router-link tag="a" to="/" class="block py-1 md:py-3 pl-1 align-middle" :class="isActive('catalog')">
+          <router-link tag="a" to="/" class="block py-1 md:py-3 pl-1 align-middle" :class="isActive('catalog', 'link')">
             <i class="fas fa-link pr-0 md:pr-3 text-yellow-500"></i
-            ><span class="pb-1 md:pb-0 text-xs md:text-base text-white md:font-bold block md:inline-block"
+            ><span class="pb-1 md:pb-0 text-xs md:text-base block md:inline-block" :class="isActive('catalog', 'span')"
               >Catalog</span
             >
           </router-link>
@@ -17,10 +17,10 @@
             tag="a"
             to="/wishlist"
             class="block py-1 md:py-3 pl-1 align-middle"
-            :class="isActive('wishlist')"
+            :class="isActive('wishlist', 'link')"
           >
             <i class="fas fa-link pr-0 md:pr-3"></i>
-            <span class="pb-1 md:pb-0 text-xs md:text-base text-gray-600 md:text-gray-400 block md:inline-block"
+            <span class="pb-1 md:pb-0 text-xs md:text-base block md:inline-block" :class="isActive('wishlist', 'span')"
               >WishList</span
             >
           </router-link>
@@ -32,7 +32,7 @@
           >
             <i class="fas fa-link pr-0 md:pr-3"></i>
             <span class="pb-1 md:pb-0 text-xs md:text-base text-gray-600 md:text-gray-400 block md:inline-block"
-              >API Documentation</span
+              >API Doc</span
             >
           </a>
         </li>
@@ -45,19 +45,27 @@
 export default {
   mounted() {},
   methods: {
-    isActive(name) {
+    isActive(name, type) {
       if (this.$route.name === name) {
-        return ["text-white", "no-underline", "hover:text-white", "border-b-2", "border-yellow-600"].join(" ");
+        if (type === "link") {
+          return ["text-white", "no-underline", "hover:text-white", "border-b-2", "border-yellow-600"].join(" ");
+        } else {
+          return ["text-white", "md:font-bold"].join(" ");
+        }
       } else {
-        return [
-          "text-gray-800",
-          "no-underline",
-          "hover:text-yellow-500",
-          "border-b-2",
-          "border-gray-800",
-          "md:border-gray-900",
-          "hover:border-yellow-500"
-        ].join(" ");
+        if (type === "link") {
+          return [
+            "text-gray-800",
+            "no-underline",
+            "hover:text-yellow-500",
+            "border-b-2",
+            "border-gray-800",
+            "md:border-gray-900",
+            "hover:border-yellow-500"
+          ].join(" ");
+        } else {
+          return ["text-gray-600", "md:text-gray-400"].join(" ");
+        }
       }
     }
   }
