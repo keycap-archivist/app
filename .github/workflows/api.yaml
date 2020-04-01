@@ -58,7 +58,6 @@ jobs:
           yarn build
       - name: docker build
         run: |
-          cd ci
           docker build .
       - name: Push to registry
         if: github.ref == 'refs/heads/master'
