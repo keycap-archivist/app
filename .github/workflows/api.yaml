@@ -36,6 +36,14 @@ jobs:
         run: |
           cd api
           yarn lint
+      - name: API build
+        run: |
+          cd api
+          yarn build
+          cp package.json dist/package.json
+          cp yarn.lock dist/yarn.lock
+          cd dist
+          yarn
       - name: install UI
         run: |
           cd ui
@@ -44,8 +52,13 @@ jobs:
         run: |
           cd ui
           yarn lint
+      - name: UI build
+        run: |
+          cd ui
+          yarn build
       - name: docker build
         run: |
+          cd ci
           docker build .
       - name: Push to registry
         if: github.ref == 'refs/heads/master'
