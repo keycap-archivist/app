@@ -1,7 +1,7 @@
 <template>
   <div class="flex md:flex-row-reverse flex-wrap">
-    <div class="w-full md:w-10/12 bg-gray-100">
-      <div class="container bg-gray-100 pt-16 px-6">
+    <div class="w-full md:w-11/12 bg-gray-100">
+      <div class="container bg-gray-100 pt-4 px-6">
         <Main />
       </div>
     </div>

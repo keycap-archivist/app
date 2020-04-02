@@ -1,15 +1,15 @@
 <template>
   <div>
-    <div v-if="wishlistImg !== ''">
+    <div v-if="wishlistImg !== ''" class="my-2">
       <a :href="wishlistImg" download>
         <img :src="wishlistImg" alt="image" class="img-thumbnail" />
       </a>
     </div>
     <table class="table-auto">
       <tr>
-        <td class="text-center">
+        <td class="text-center" colspan="3">
           <button
-            class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 border border-green-700 rounded"
+            class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-1 px-2 border border-yellow-700 rounded"
             @click="generateWishlist"
           >
             Generate wishlist
@@ -19,8 +19,8 @@
       </tr>
 
       <tr v-for="a in this.myWishlist" v-bind:key="a.id">
-        <td class="w-1/2 px-2 py-2"><img class="h-32  object-cover mx-auto rounded-lg" :src="a.img" /></td>
-        <td class="px-4 py-2">{{ a.artist }} {{ a.sculpt }} {{ a.colorway }}</td>
+        <td class="w-2/5 py-2 text-left"><img class="h-32  object-cover rounded-lg" :src="a.img" /></td>
+        <td class="px-1 ">{{ a.artist }} {{ a.sculpt }} {{ a.colorway }}</td>
         <td>
           <button
             @click="rmWishlist(a.id)"

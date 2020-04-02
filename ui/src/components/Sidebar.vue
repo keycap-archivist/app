@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-full md:w-2/12 bg-gray-900 md:bg-gray-900 px-2 text-center fixed bottom-0 md:pt-8 md:top-0 md:left-0 h-12 md:h-screen md:border-r-4 md:border-gray-600"
+    class="w-full md:w-1/12 bg-gray-900 md:bg-gray-900 px-2 text-center fixed bottom-0 md:pt-0 md:top-0 md:left-0 h-12 md:h-screen md:border-r-4 md:border-gray-600"
   >
     <div class="md:relative mx-auto lg:float-right lg:px-6">
       <ul class="list-reset flex flex-row md:flex-col text-center md:text-left">
