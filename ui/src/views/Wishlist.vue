@@ -1,8 +1,12 @@
 <template>
   <div>
     <div v-if="wishlistImg !== ''" class="my-2">
-      <a :href="wishlistImg" download>
-        <img :src="wishlistImg" alt="image" class="img-thumbnail" />
+      <div v-show="!imgLoaded" class="text-center">
+        <span>Generating the wishlist</span>
+        <ScaleLoader />
+      </div>
+      <a :href="wishlistImg" download v-show="imgLoaded">
+        <img :src="wishlistImg" alt="image" class="img-thumbnail" v-on:load="loadedEvent" />
       </a>
     </div>
     <table class="table-auto">
@@ -38,14 +42,21 @@
 </template>
 
 <script>
+import { ScaleLoader } from "@saeris/vue-spinners";
 import { stringify } from "qs";
 import { mapState, mapActions } from "vuex";
 export default {
   name: "catalog",
+  components: { ScaleLoader },
   methods: {
     ...mapActions(["rmWishlist"]),
     generateWishlist() {
+      this.imgLoaded = false;
       this.wishlistImg = `${process.env.VUE_APP_API_URL}/v1?${stringify({ ids: this.wishlistItems.join(",") })}`;
+    },
+    // FIXME: Load event fired once. DOM element may need to be recreated
+    loadedEvent() {
+      this.imgLoaded = true;
     }
   },
   computed: {
@@ -71,6 +82,7 @@ export default {
     }
   },
   data: () => ({
+    imgLoaded: false,
     wishlistImg: ""
   })
 };

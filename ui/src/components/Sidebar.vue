@@ -1,13 +1,13 @@
 <template>
   <div
-    class="w-full md:w-1/12 bg-gray-900 md:bg-gray-900 px-2 text-center fixed bottom-0 md:pt-0 md:top-0 md:left-0 h-12 md:h-screen md:border-r-4 md:border-gray-600"
+    class="w-full md:w-1/12 bg-gray-900 md:bg-gray-900 px-2 text-center fixed bottom-0 md:pt-0 md:top-0 md:left-0 h-16 md:h-screen md:border-r-4 md:border-gray-600"
   >
-    <div class="md:relative mx-auto lg:float-right lg:px-6">
+    <div class="md:relative pt-1 mx-auto lg:float-right lg:px-6">
       <ul class="list-reset flex flex-row md:flex-col text-center md:text-left">
         <li class="mr-3 flex-1">
           <router-link tag="a" to="/" class="block py-1 md:py-3 pl-1 align-middle" :class="isActive('catalog', 'link')">
             <i class="fas fa-link pr-0 md:pr-3 text-yellow-500"></i
-            ><span class="pb-1 md:pb-0 text-base block md:inline-block" :class="isActive('catalog', 'span')"
+            ><span class="pb-1 md:pb-0 text-lg md:text-base block md:inline-block" :class="isActive('catalog', 'span')"
               >Catalog</span
             >
           </router-link>
@@ -20,7 +20,7 @@
             :class="isActive('wishlist', 'link')"
           >
             <i class="fas fa-link pr-0 md:pr-3"></i>
-            <span class="pb-1 md:pb-0 text-base block md:inline-block" :class="isActive('wishlist', 'span')"
+            <span class="pb-1 md:pb-0 text-lg md:text-base block md:inline-block" :class="isActive('wishlist', 'span')"
               >WishList</span
             >
           </router-link>
@@ -31,7 +31,9 @@
             class="block py-1 md:py-3 pl-1 align-middle text-gray-800 no-underline hover:text-yellow-500 border-b-2 border-gray-800 md:border-gray-900 hover:border-yellow-500"
           >
             <i class="fas fa-link pr-0 md:pr-3"></i>
-            <span class="pb-1 md:pb-0 text-base text-gray-600 md:text-gray-400 block md:inline-block">API Doc</span>
+            <span class="pb-1 md:pb-0 text-lg md:text-base text-gray-600 md:text-gray-400 block md:inline-block"
+              >API Doc</span
+            >
           </a>
         </li>
       </ul>
@@ -69,5 +71,3 @@ export default {
   }
 };
 </script>
-
-<style></style>
