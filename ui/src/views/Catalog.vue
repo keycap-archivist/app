@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mb-5">
+    <div class="" style="height:10vh">
       <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
         Search something
       </label>
@@ -12,43 +12,51 @@
         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       />
     </div>
-    <div class=" h-64 mx-auto sm:w-auto lg:w-1/2 overflow-hidden mb-5" v-show="previewImgSrc !== ''">
-      <img class="h-full object-cover mx-auto rounded-lg" :src="previewImgSrc" />
+    <div class="mx-auto w-auto  overflow-hidden mb-5" style="height:30vh" v-show="previewImgSrc !== ''">
+      <lazyloadImg v-if="previewImgSrc !== ''" v-bind:src="previewImgSrc" />
     </div>
-    <div class="overflow-y-scroll h-64">
-      <ul>
-        <li
-          v-for="item in this.results"
-          :key="item.idx"
-          class="cursor-pointer"
-          @click="showCap(item.img)"
-          v-bind:class="{ 'bg-blue-500': isActive(item.img) }"
-        >
-          <button
-            v-show="!inWishlist(item.id)"
-            @click="addWishlist(item.id)"
-            class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 border border-green-700 rounded"
+    <perfect-scrollbar>
+      <div class="" style="height:40vh">
+        <ul>
+          <li
+            v-for="item in this.results"
+            :key="item.idx"
+            class="cursor-pointer"
+            @click="showCap(item.img)"
+            v-bind:class="{ 'bg-blue-500': isActive(item.img) }"
           >
-            Add
-          </button>
-          <button
-            v-show="inWishlist(item.id)"
-            @click="rmWishlist(item.id)"
-            class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-700 rounded"
-          >
-            Remove
-          </button>
-          <span> {{ item.name }}</span>
-        </li>
-      </ul>
-    </div>
+            <button
+              v-show="!inWishlist(item.id)"
+              @click="addWishlist(item.id)"
+              class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 border border-green-700 rounded"
+            >
+              Add
+            </button>
+            <button
+              v-show="inWishlist(item.id)"
+              @click="rmWishlist(item.id)"
+              class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-700 rounded"
+            >
+              Remove
+            </button>
+            <span> {{ item.name }}</span>
+          </li>
+        </ul>
+      </div>
+    </perfect-scrollbar>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from "vuex";
+import { PerfectScrollbar } from "vue2-perfect-scrollbar";
+import lazyloadImg from "../components/lazyloadImg.vue";
 export default {
   name: "catalog",
+  components: {
+    PerfectScrollbar,
+    lazyloadImg
+  },
   computed: {
     ...mapState(["db", "wishlistItems"])
   },
@@ -61,7 +69,10 @@ export default {
       return this.wishlistItems.indexOf(id) > -1;
     },
     showCap(img) {
-      this.previewImgSrc = img;
+      this.previewImgSrc = "";
+      this.$nextTick().then(() => {
+        this.previewImgSrc = img;
+      });
     },
     search() {
       // FIXME: add pagination
