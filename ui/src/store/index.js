@@ -1,8 +1,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import axios from "axios";
 import app from "./modules/app.js";
 import { localStorageLoad, localStorageSet, CONSTS } from "../utils/localstorage.js";
-import axios from "axios";
 
 Vue.use(Vuex);
 
@@ -14,10 +14,10 @@ function loadLocalDb() {
     try {
       return JSON.parse(localDb);
     } catch (e) {
-      return null;
+      return {};
     }
   } else {
-    return null;
+    return {};
   }
 }
 
@@ -56,7 +56,9 @@ export default new Vuex.Store({
   },
   mutations: {
     setDb(state, _db) {
-      Vue.set(state.db, _db);
+      Vue.nextTick(() => {
+        state.db = _db;
+      });
     },
     setDbVersion(state, _version) {
       state.dbVersion = _version;

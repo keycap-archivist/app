@@ -2,7 +2,11 @@
   <div class="flex md:flex-row-reverse flex-wrap">
     <div class="w-full md:w-11/12 bg-gray-100">
       <div class="container bg-gray-100 pt-4 px-6">
-        <Main />
+        <div v-if="!rdy" class="text-center">
+          <span>Application is currently loading</span>
+          <ScaleLoader />
+        </div>
+        <Main v-if="rdy" />
       </div>
     </div>
     <Sidebar />
@@ -11,31 +15,40 @@
 
 <script>
 import Main from "./components/Main.vue";
+import Vue from "vue";
 import Sidebar from "./components/Sidebar.vue";
+import { ScaleLoader } from "@saeris/vue-spinners";
 import { mapActions, mapState } from "vuex";
+import { isEmpty } from "lodash";
 export default {
   name: "App",
   components: {
     Main,
-    Sidebar
+    Sidebar,
+    ScaleLoader
   },
   computed: {
     ...mapState(["db", "dbVersion"])
   },
-  async mounted() {
-    if (!this.db) {
-      this.loadDb();
+  async created() {
+    const distantVersion = await this.loadDbVersion();
+    if (isEmpty(this.db)) {
+      await this.loadDb();
     } else {
-      const distantVersion = await this.loadDbVersion();
       if (distantVersion !== this.dbVersion) {
-        this.loadDb();
+        await this.loadDb();
       }
     }
+    Vue.nextTick(() => {
+      this.rdy = true;
+    });
   },
   methods: {
     ...mapActions(["loadDb", "loadDbVersion"])
   },
-  data: () => ({})
+  data: () => ({
+    rdy: false
+  })
 };
 </script>
 
