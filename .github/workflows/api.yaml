@@ -55,6 +55,7 @@ jobs:
       - name: UI build
         run: |
           cd ui
+          echo VUE_APP_REVISION=$GITHUB_SHA >> .env.production
           yarn build
       - name: docker build
         run: |
