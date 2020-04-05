@@ -56,7 +56,7 @@ export default new Vuex.Store({
   },
   mutations: {
     setDb(state, _db) {
-      state.db = _db;
+      Vue.set(state.db, _db);
     },
     setDbVersion(state, _version) {
       state.dbVersion = _version;
