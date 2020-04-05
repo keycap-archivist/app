@@ -87,6 +87,10 @@ export default new Vuex.Store({
         commit("addWishlist", _id);
       }
     },
+    setDbVersion({ commit }, _version) {
+      commit("setDbVersion", _version);
+      localStorageSet(CONSTS.dbVersion, _version);
+    },
     async loadDb({ commit }) {
       const db = await axios({
         url: `${backend_baseurl}/graphql`,
@@ -116,7 +120,7 @@ export default new Vuex.Store({
       commit("setDb", db);
       localStorageSet(CONSTS.db, JSON.stringify(db));
     },
-    async loadDbVersion({ commit }) {
+    async loadDbVersion() {
       const version = await axios({
         url: `${backend_baseurl}/graphql`,
         method: "POST",
@@ -130,8 +134,6 @@ export default new Vuex.Store({
       }).then(result => {
         return result.data.data.dbVersion;
       });
-      commit("setDbVersion", version);
-      localStorageSet(CONSTS.dbVersion, version);
       return version;
     }
   }

@@ -34,9 +34,11 @@ export default {
     const distantVersion = await this.loadDbVersion();
     if (isEmpty(this.db)) {
       await this.loadDb();
+      this.setDbVersion(distantVersion);
     } else {
       if (distantVersion !== this.dbVersion) {
         await this.loadDb();
+        this.setDbVersion(distantVersion);
       }
     }
     Vue.nextTick(() => {
@@ -44,7 +46,7 @@ export default {
     });
   },
   methods: {
-    ...mapActions(["loadDb", "loadDbVersion"])
+    ...mapActions(["loadDb", "loadDbVersion", "setDbVersion"])
   },
   data: () => ({
     rdy: false
