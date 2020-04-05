@@ -6,7 +6,7 @@
           <span>Application is currently loading</span>
           <ScaleLoader />
         </div>
-        <Main v-if="rdy" />
+        <router-view v-if="rdy" />
       </div>
     </div>
     <Sidebar />
@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import Main from "./components/Main.vue";
 import Vue from "vue";
 import Sidebar from "./components/Sidebar.vue";
 import { ScaleLoader } from "@saeris/vue-spinners";
@@ -23,7 +22,6 @@ import { isEmpty } from "lodash";
 export default {
   name: "App",
   components: {
-    Main,
     Sidebar,
     ScaleLoader
   },

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="" style="height:10vh">
+    <div class="h-20">
       <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
         Search something
       </label>
@@ -12,38 +12,40 @@
         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       />
     </div>
-    <div class="mx-auto w-auto  overflow-hidden mb-5" style="height:30vh" v-show="previewImgSrc !== ''">
+    <div class="mx-auto w-auto overflow-hidden mb-5 h-64" v-show="previewImgSrc !== ''">
       <lazyloadImg v-if="previewImgSrc !== ''" v-bind:src="previewImgSrc" />
     </div>
-    <perfect-scrollbar>
-      <div class="" style="height:40vh">
-        <ul>
-          <li
-            v-for="item in this.results"
-            :key="item.idx"
-            class="cursor-pointer"
-            @click="showCap(item.img)"
-            v-bind:class="{ 'bg-blue-500': isActive(item.img) }"
-          >
-            <button
-              v-show="!inWishlist(item.id)"
-              @click="addWishlist(item.id)"
-              class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 border border-green-700 rounded"
+    <div style="margin-bottom:70px">
+      <perfect-scrollbar v-on:ps-y-reach-end="endOfScroll">
+        <div class="h-64">
+          <ul>
+            <li
+              v-for="item in this.displayResults"
+              :key="item.idx"
+              class="cursor-pointer"
+              @click="showCap(item.img)"
+              v-bind:class="{ 'bg-blue-500': isActive(item.img) }"
             >
-              Add
-            </button>
-            <button
-              v-show="inWishlist(item.id)"
-              @click="rmWishlist(item.id)"
-              class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-700 rounded"
-            >
-              Remove
-            </button>
-            <span> {{ item.name }}</span>
-          </li>
-        </ul>
-      </div>
-    </perfect-scrollbar>
+              <button
+                v-show="!inWishlist(item.id)"
+                @click="addWishlist(item.id)"
+                class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 border border-green-700 rounded"
+              >
+                Add
+              </button>
+              <button
+                v-show="inWishlist(item.id)"
+                @click="rmWishlist(item.id)"
+                class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-700 rounded"
+              >
+                Remove
+              </button>
+              <span> {{ item.name }}</span>
+            </li>
+          </ul>
+        </div>
+      </perfect-scrollbar>
+    </div>
   </div>
 </template>
 
@@ -62,6 +64,18 @@ export default {
   },
   methods: {
     ...mapActions(["addWishlist", "rmWishlist"]),
+    // Infinite Scroll
+    endOfScroll() {
+      if (this.results.length) {
+        const start = this.displayResults.length;
+        const max = this.results.length;
+        for (let i = start; i < start + 20; i++) {
+          if (i < max) {
+            this.displayResults.push(this.results[i]);
+          }
+        }
+      }
+    },
     isActive(img) {
       return this.previewImgSrc === img;
     },
@@ -75,8 +89,8 @@ export default {
       });
     },
     search() {
-      // FIXME: add pagination
       this.results.length = 0;
+      this.displayResults.length = 0;
       if (this.researchInput.length < 3) {
         return;
       }
@@ -106,6 +120,7 @@ export default {
           }
         }
       }
+      this.displayResults = this.results.slice(0, 20);
     },
     isMatch(input, search) {
       return input.toLowerCase().indexOf(search) > -1;
@@ -114,7 +129,8 @@ export default {
   data: () => ({
     previewImgSrc: "",
     researchInput: "",
-    results: []
+    results: [],
+    displayResults: []
   })
 };
 </script>

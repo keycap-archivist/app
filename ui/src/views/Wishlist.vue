@@ -13,7 +13,9 @@
         </td>
         <td></td>
       </tr>
-
+      <tr>
+        <td class="text-center" colspan="3">{{ myWishlist.length }} caps in wishlist</td>
+      </tr>
       <tr v-for="a in this.myWishlist" v-bind:key="a.id">
         <td class="w-2/5 py-2 text-left"><img class="h-32  object-cover rounded-lg" :src="a.img" /></td>
         <td class="px-1 ">{{ a.artist }} {{ a.sculpt }} {{ a.colorway }}</td>
