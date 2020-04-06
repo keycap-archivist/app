@@ -12,12 +12,11 @@ registerFont(join(fontPath, 'Roboto-Regular.ttf'), { family: 'Roboto' });
 
 const MARGIN_SIDE = 10;
 const MARGIN_BOTTOM = 60;
-const nbCapsPerLine = 3;
-const IMG_WIDTH = 250;
-const IMG_HEIGTH = 250;
-const HEADER_HEIGHT = 90;
 const LINE_HEIGHT = 22;
-const canvasWidth = nbCapsPerLine * IMG_WIDTH + nbCapsPerLine * MARGIN_SIDE + MARGIN_SIDE;
+const HEADER_HEIGHT = 90;
+
+const IMG_WIDTH = 250;
+const IMG_HEIGTH = IMG_WIDTH;
 const rowHeight = IMG_HEIGTH + MARGIN_BOTTOM;
 
 function isTextFittingSpace(ctx, legend, maxWidth): boolean {
@@ -76,24 +75,19 @@ async function drawTheCap(context, color, capId, x, y): Promise<void> {
   const legend = `${cap.sculpt.name} ${cap.name}`;
   if (!isTextFittingSpace(context, legend, IMG_WIDTH)) {
     context.fillText(fitText(context, cap.sculpt.name, IMG_WIDTH), x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
-    context.fillText(
-      fitText(context, cap.name, IMG_WIDTH),
-      x + IMG_WIDTH / 2,
-      y + IMG_HEIGTH + LINE_HEIGHT + LINE_HEIGHT
-    );
+    context.fillText(fitText(context, cap.name, IMG_WIDTH), x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT * 2);
   } else {
     context.fillText(legend, x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
   }
 }
-
-// http://localhost:3000/api/v1?ids=15559f6e,eabbe6a8
 
 const defaultOptions = {
   ids: '',
   bg: '',
   textcolor: '',
   title: 'Wishlist',
-  titleColor: ''
+  titleColor: '',
+  capsPerLine: 3
 };
 
 function parseOptions(options): any {
@@ -102,16 +96,23 @@ function parseOptions(options): any {
   opt.bg = opt.bg ? `#${opt.bg}` : 'black';
   opt.titleColor = opt.titleColor ? `#${opt.titleColor}` : 'red';
   opt.textcolor = opt.textcolor ? `#${opt.textcolor}` : 'white';
+  opt.capsPerLine = parseInt(opt.capsPerLine);
   return opt;
 }
 
 export async function generateWishlist(options): Promise<Buffer> {
-  let canvas, ctx;
+  let canvas, ctx, canvasWidth;
   const opt = parseOptions(options);
   const p = [];
   if (opt.ids.length) {
     const nbCaps = opt.ids.length;
-    const nbRows = Math.ceil(nbCaps / nbCapsPerLine);
+    if (opt.capsPerLine > nbCaps) {
+      opt.capsPerLine = nbCaps;
+    } else if (opt.capsPerLine < 1) {
+      opt.capsPerLine = 1;
+    }
+    const nbRows = Math.ceil(nbCaps / opt.capsPerLine);
+    canvasWidth = opt.capsPerLine * IMG_WIDTH + opt.capsPerLine * MARGIN_SIDE + MARGIN_SIDE;
     canvas = createCanvas(canvasWidth, HEADER_HEIGHT + rowHeight * nbRows);
     ctx = canvas.getContext('2d');
     ctx.fillStyle = opt.bg;
@@ -119,7 +120,7 @@ export async function generateWishlist(options): Promise<Buffer> {
     let y = HEADER_HEIGHT;
     let idx = 0;
     for (const capId of opt.ids) {
-      if (idx === nbCapsPerLine) {
+      if (idx === opt.capsPerLine) {
         idx = 0;
         y += rowHeight;
       }
@@ -128,6 +129,7 @@ export async function generateWishlist(options): Promise<Buffer> {
     }
   } else {
     // Example
+    canvasWidth = opt.capsPerLine * IMG_WIDTH + opt.capsPerLine * MARGIN_SIDE + MARGIN_SIDE;
     canvas = createCanvas(canvasWidth, HEADER_HEIGHT + rowHeight);
     ctx = canvas.getContext('2d');
     ctx.fillStyle = 'black';

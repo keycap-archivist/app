@@ -1,6 +1,31 @@
 <template>
   <div>
     <wishlistImgComponent v-if="wishlistImg != ''" v-bind:src="wishlistImg" />
+    <div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="wishlistname">
+          Wishlist Name
+        </label>
+        <input
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="wishlistname"
+          v-model="wishlistName"
+          type="text"
+          placeholder="Wishlist"
+        />
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="capsPerLine">
+          Number Caps per line
+        </label>
+        <input
+          id="capsPerLine"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          type="number"
+          v-model="capsPerLine"
+        />
+      </div>
+    </div>
     <table class="table-auto mb-16">
       <tr>
         <td class="text-center" colspan="3">
@@ -47,7 +72,11 @@ export default {
     generateWishlist() {
       this.wishlistImg = "";
       this.$nextTick().then(() => {
-        this.wishlistImg = `${process.env.VUE_APP_API_URL}/v1?${stringify({ ids: this.wishlistItems.join(",") })}`;
+        this.wishlistImg = `${process.env.VUE_APP_API_URL}/v1?${stringify({
+          ids: this.wishlistItems.join(","),
+          title: this.wishlistName,
+          capsPerLine: this.capsPerLine
+        })}`;
       });
     }
   },
@@ -75,7 +104,9 @@ export default {
   },
   data: () => ({
     imgLoaded: false,
-    wishlistImg: ""
+    wishlistImg: "",
+    wishlistName: "",
+    capsPerLine: 3
   })
 };
 </script>

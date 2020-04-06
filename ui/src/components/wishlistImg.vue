@@ -5,7 +5,7 @@
       <ScaleLoader />
     </div>
     <a :href="src" download v-show="imgLoaded">
-      <img :src="src" alt="image" class="img-thumbnail" v-on:load="loadedEvent" />
+      <img :src="src" alt="image" class="mx-auto" v-on:load="loadedEvent" />
     </a>
   </div>
 </template>
