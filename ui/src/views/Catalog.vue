@@ -2,7 +2,7 @@
   <div>
     <div class="mb-5">
       <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
-        Search something
+        Search: Artist, Sculpt, Colorway...
       </label>
       <v-select
         :filterable="false"
