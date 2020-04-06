@@ -26,7 +26,7 @@
         />
       </div>
     </div>
-    <table class="table-auto mb-16">
+    <table class="table-auto mb-16 w-full">
       <tr>
         <td class="text-center" colspan="3">
           <button
