@@ -10599,7 +10599,7 @@ vue-eslint-parser@^7.0.0:
     esquery "^1.0.1"
     lodash "^4.17.15"
 
-vue-fragment@^1.5.1:
+vue-fragment@1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/vue-fragment/-/vue-fragment-1.5.1.tgz#44c070d55ed1e9a6c698ef57a5c83f64bb06feeb"
   integrity sha512-ig6eES6TcMBbANW71ylB+AJgRN+Zksb3f50AxjGpAk6hMzqmeuD80qeh4LJP0jVw2dMBMjgRUfIkrvxygoRgtQ==
@@ -10641,6 +10641,11 @@ vue-router@3.1.6:
   resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-3.1.6.tgz#45f5a3a3843e31702c061dd829393554e4328f89"
   integrity sha512-GYhn2ynaZlysZMkFE5oCHRUTqE8BWs/a9YbKpNLi0i7xD6KG1EzDqpHQmv1F5gXjr8kL5iIVS8EOtRaVUEXTqA==
 
+vue-select@^3.9.5:
+  version "3.9.5"
+  resolved "https://registry.yarnpkg.com/vue-select/-/vue-select-3.9.5.tgz#d70a3815c2cd9ad3eae75adf47dab6f787b30f98"
+  integrity sha512-r392oaLYepNxY+uY1EN7r05VPOqSWGEfZ3LtJ3NqhrRbWCpWQ5EPSMN3QL80HdN3H+o1ueQA9P58K1vgGZ5P3Q==
+
 vue-style-loader@^4.1.0, vue-style-loader@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/vue-style-loader/-/vue-style-loader-4.1.2.tgz#dedf349806f25ceb4e64f3ad7c0a44fba735fcf8"
@@ -10662,7 +10667,7 @@ vue-template-es2015-compiler@^1.6.0, vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
 
-vue2-perfect-scrollbar@^1.4.0:
+vue2-perfect-scrollbar@1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/vue2-perfect-scrollbar/-/vue2-perfect-scrollbar-1.4.0.tgz#976b3965ddfd3e84257660c362429c8d12b3c6a8"
   integrity sha512-kluthjiZOOhAZ/18RTZJr2Y9lpjgkuOuxkH8MMMq1dYrSUdvlEv8V1UPtW7UDVcTAUo048AUE/W4hSPTfluejw==

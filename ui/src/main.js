@@ -6,7 +6,9 @@ import { VueSpinners } from "@saeris/vue-spinners";
 import PerfectScrollbar from "vue2-perfect-scrollbar";
 import "vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css";
 import { Plugin } from "vue-fragment";
+import vSelect from "vue-select";
 
+Vue.component("v-select", vSelect);
 Vue.use(Plugin);
 Vue.use(PerfectScrollbar);
 Vue.use(VueSpinners);

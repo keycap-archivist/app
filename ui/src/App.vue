@@ -55,4 +55,5 @@ export default {
 <style lang="scss">
 @import "./assets/scss/style.scss";
 @import "./assets/css/tailwind.css";
+@import "vue-select/src/scss/vue-select.scss";
 </style>
