@@ -241,7 +241,12 @@ export default {
       this.searchResult = [...artistResult, ...sculptResult, ...cwResult];
     },
     isMatch(input, search) {
-      return input.toLowerCase().indexOf(search) > -1;
+      return (
+        input
+          .replace(/\./g, "") // filter dots in input
+          .toLowerCase()
+          .indexOf(search) > -1
+      );
     }
   },
   data: () => ({
