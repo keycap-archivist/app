@@ -8,5 +8,16 @@ module.exports = {
         maxSize: 250000
       }
     }
+  },
+  pwa: {
+    name: "Artisans Catalog",
+    manifestOptions: {
+      start_url: "index.html"
+    },
+    themeColor: "#b6d23d",
+    msTileColor: "#000000",
+    appleMobileWebAppCapable: "yes",
+    appleMobileWebAppStatusBarStyle: "black",
+    workboxPluginMode: "GenerateSW"
   }
 };
