@@ -12,7 +12,7 @@ module.exports = {
   pwa: {
     name: "Artisans Catalog",
     manifestOptions: {
-      start_url: "index.html"
+      start_url: "."
     },
     themeColor: "#b6d23d",
     msTileColor: "#000000",
