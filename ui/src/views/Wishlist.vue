@@ -4,7 +4,7 @@
     <div>
       <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="wishlistname">
-          Wishlist Name
+          Wishlist Title
         </label>
         <input
           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -12,6 +12,18 @@
           v-model="wishlistName"
           type="text"
           placeholder="Wishlist"
+        />
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="extraText">
+          Extra text
+        </label>
+        <input
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="extraText"
+          v-model="extraText"
+          type="text"
+          placeholder="FKU NAV"
         />
       </div>
       <div class="mb-4">
@@ -75,7 +87,8 @@ export default {
         this.wishlistImg = `${process.env.VUE_APP_API_URL}/v1?${stringify({
           ids: this.wishlistItems.join(","),
           title: this.wishlistName,
-          capsPerLine: this.capsPerLine
+          capsPerLine: this.capsPerLine,
+          extraText: this.extraText
         })}`;
       });
     }
@@ -106,6 +119,7 @@ export default {
     imgLoaded: false,
     wishlistImg: "",
     wishlistName: "",
+    extraText: "",
     capsPerLine: 3
   })
 };
