@@ -23,6 +23,56 @@ const IMG_WIDTH = 250;
 const IMG_HEIGTH = IMG_WIDTH;
 const rowHeight = IMG_HEIGTH + MARGIN_BOTTOM;
 
+const cachePath = resolve(join(__dirname, '..', '..', 'img-cache'));
+if (!existsSync(cachePath)) {
+  mkdirSync(cachePath);
+}
+
+export async function resizeImg(imgBuffer) {
+  const IMG_HEIGTH = 500;
+  const IMG_WIDTH = 500;
+  const _img = await loadImage(imgBuffer);
+
+  let h: number, w: number, sx: number, sy: number;
+  if (_img.width > _img.height) {
+    h = _img.height;
+    w = h;
+    sy = 0;
+    sx = Math.ceil((_img.width - _img.height) / 2);
+  } else {
+    sx = 0;
+    sy = Math.ceil((_img.height - _img.width) / 2);
+    w = _img.width;
+    h = w;
+  }
+  const Tcanvas = createCanvas(IMG_WIDTH, IMG_HEIGTH);
+  const Tctx = Tcanvas.getContext('2d');
+
+  Tctx.drawImage(_img, sx, sy, w, h, 0, 0, IMG_WIDTH, IMG_HEIGTH);
+
+  return Tcanvas.toBuffer('image/jpeg', { quality: 1, progressive: true, chromaSubsampling: false });
+}
+
+export async function getImgBuffer(colorway) {
+  const filePath = join(cachePath, `${colorway.id}.jpg`);
+  let output;
+  if (!existsSync(filePath)) {
+    await axios
+      .request({
+        method: 'GET',
+        responseType: 'arraybuffer',
+        url: colorway.img
+      })
+      .then(async (response) => {
+        output = await resizeImg(response.data);
+        writeFileSync(filePath, output);
+      });
+  } else {
+    output = readFileSync(filePath);
+  }
+  return output;
+}
+
 function isTextFittingSpace(ctx, legend, maxWidth): boolean {
   const measurement = ctx.measureText(legend);
   if (measurement.width > maxWidth - 10) {
@@ -136,56 +186,6 @@ function calcHeight(opt) {
     out += EXTRA_TEXT_MARGIN;
   }
   return out;
-}
-
-const cachePath = resolve(join(__dirname, '..', '..', 'img-cache'));
-if (!existsSync(cachePath)) {
-  mkdirSync(cachePath);
-}
-
-export async function getImgBuffer(colorway) {
-  const filePath = join(cachePath, `${colorway.id}.jpg`);
-  let output;
-  if (!existsSync(filePath)) {
-    await axios
-      .request({
-        method: 'GET',
-        responseType: 'arraybuffer',
-        url: colorway.img
-      })
-      .then(async (response) => {
-        output = await resizeImg(response.data);
-        writeFileSync(filePath, output);
-      });
-  } else {
-    output = readFileSync(filePath);
-  }
-  return output;
-}
-
-export async function resizeImg(imgBuffer) {
-  const IMG_HEIGTH = 500;
-  const IMG_WIDTH = 500;
-  const _img = await loadImage(imgBuffer);
-
-  let h: number, w: number, sx: number, sy: number;
-  if (_img.width > _img.height) {
-    h = _img.height;
-    w = h;
-    sy = 0;
-    sx = Math.ceil((_img.width - _img.height) / 2);
-  } else {
-    sx = 0;
-    sy = Math.ceil((_img.height - _img.width) / 2);
-    w = _img.width;
-    h = w;
-  }
-  const Tcanvas = createCanvas(IMG_WIDTH, IMG_HEIGTH);
-  const Tctx = Tcanvas.getContext('2d');
-
-  Tctx.drawImage(_img, sx, sy, w, h, 0, 0, IMG_WIDTH, IMG_HEIGTH);
-
-  return Tcanvas.toBuffer('image/jpeg', { quality: 1, progressive: true, chromaSubsampling: false });
 }
 
 export async function generateWishlist(options): Promise<Buffer> {

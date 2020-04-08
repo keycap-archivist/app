@@ -1,5 +1,4 @@
 import 'app-module-path/register';
-
 import { createServer } from 'app';
 const port = Number(process.env.LISTEN_PORT) || 3000;
 const start = async (server) => {
@@ -11,14 +10,12 @@ const start = async (server) => {
     process.exit(1);
   }
 };
-
 process.on('uncaughtException', (error) => {
   console.error(error);
 });
 process.on('unhandledRejection', (error) => {
   console.error(error);
 });
-
 createServer().then((s) => {
   start(s);
 });
