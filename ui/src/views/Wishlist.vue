@@ -23,7 +23,7 @@
           id="extraText"
           v-model="extraText"
           type="text"
-          placeholder="FKU NAV"
+          placeholder="Contact me u/foobar"
         />
       </div>
       <div class="mb-4">
