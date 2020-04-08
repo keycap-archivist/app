@@ -1,3 +1,4 @@
+import { register } from "register-service-worker";
 import Vue from "vue";
 import App from "./App.vue";
 import store from "./store";
@@ -21,15 +22,29 @@ new Vue({
   render: h => h(App)
 }).$mount("#app");
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/service-worker.js")
-      .then(reg => {
-        console.log("Registration succeeded. Scope is " + reg.scope);
-      })
-      .catch(registrationError => {
-        console.log("SW registration failed: ", registrationError);
-      });
+// Service Worker
+if (process.env.NODE_ENV === "production") {
+  register(`${process.env.BASE_URL}service-worker.js`, {
+    ready() {
+      console.log("Site is ready");
+    },
+    cached() {
+      console.log("Content has been cached for offline use.");
+    },
+    updatefound() {
+      console.log("New content is downloading.");
+    },
+    updated() {
+      console.log("New content is available; Refresh...");
+      setTimeout(() => {
+        window.location.reload(true);
+      }, 1000);
+    },
+    offline() {
+      console.log("No internet connection found. App is running in offline mode.");
+    },
+    error(error) {
+      console.error("Error during service worker registration:", error);
+    }
   });
 }
