@@ -20,6 +20,9 @@
           for(let registration of registrations) {
             registration.unregister();
           }
+          if(registrations.length){
+            setTimeout(window.location.reload.bind(window.location),1000)
+          }
         });
       }
   </script>
