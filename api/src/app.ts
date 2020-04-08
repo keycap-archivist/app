@@ -19,8 +19,8 @@ export async function createServer() {
   server.register(fastifyStatic, {
     root: join(__dirname, 'public'),
     setHeaders: (res, path, _) => {
-      // ignore cache for service worker
-      if (path.indexOf('service-worker.js') !== -1 || path.indexOf('manifest.json') !== -1) {
+      // ignore cache for index
+      if (path.indexOf('index.html') !== -1) {
         res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
         res.setHeader('Expires', '-1');
         res.setHeader('Pragma', 'no-cache');
