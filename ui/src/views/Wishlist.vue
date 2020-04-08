@@ -54,7 +54,9 @@
         <td class="text-center" colspan="3">{{ myWishlist.length }} caps in wishlist</td>
       </tr>
       <tr v-for="a in this.myWishlist" v-bind:key="a.id">
-        <td class="w-2/5 py-2 text-left"><img class="h-32  object-cover rounded-lg" :src="a.img" /></td>
+        <td class="w-2/5 py-2 text-left">
+          <img class="h-32  object-cover rounded-lg" :src="getCapImg(a)" />
+        </td>
         <td class="px-1 ">{{ a.artist }} {{ a.sculpt }} {{ a.colorway }}</td>
         <td>
           <button
@@ -81,6 +83,9 @@ export default {
   components: { wishlistImgComponent },
   methods: {
     ...mapActions(["rmWishlist"]),
+    getCapImg(cap) {
+      return `${process.env.VUE_APP_API_URL}/v1/img/${cap.id}`;
+    },
     generateWishlist() {
       this.wishlistImg = "";
       this.$nextTick().then(() => {

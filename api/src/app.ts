@@ -80,5 +80,11 @@ padding: 15px;
     handler: controllers.genWishlist
   });
 
+  server.route({
+    method: 'GET',
+    url: '/api/v1/img/:id',
+    handler: controllers.getKeycapImage
+  });
+
   return server;
 }

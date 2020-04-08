@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mb-5">
+    <div class="mb-5" style="height:12vh;    max-height: 60px;">
       <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
         Search: Artist, Sculpt, Colorway...
       </label>
@@ -18,18 +18,18 @@
         </template>
       </v-select>
     </div>
-    <div class="mx-auto w-auto overflow-hidden mb-5 h-64" v-show="previewImgSrc !== ''">
+    <div class="mx-auto w-auto overflow-hidden mb-5" style="height:32vh" v-show="previewImgSrc !== ''">
       <lazyloadImg v-if="previewImgSrc !== ''" v-bind:src="previewImgSrc" />
     </div>
-    <div style="margin-bottom:70px">
+    <div style="margin-bottom:70px;">
       <perfect-scrollbar v-on:ps-y-reach-end="endOfScroll">
-        <div class="h-64">
+        <div style="height:42vh">
           <ul>
             <li
               v-for="item in this.displayResults"
               :key="item.idx"
               class="cursor-pointer"
-              @click="showCap(item.img)"
+              @click="showCap(item.id)"
               v-bind:class="{ 'bg-blue-500': isActive(item.img) }"
             >
               <button
@@ -82,6 +82,9 @@ export default {
     }
   },
   methods: {
+    getCapImg(cap) {
+      return `${process.env.VUE_APP_API_URL}/v1/img/${cap.id}`;
+    },
     async onOpen() {
       await this.$nextTick();
       this.observer.observe(this.$refs.load);
@@ -108,10 +111,10 @@ export default {
     inWishlist(id) {
       return this.wishlistItems.indexOf(id) > -1;
     },
-    showCap(img) {
+    showCap(id) {
       this.previewImgSrc = "";
       this.$nextTick().then(() => {
-        this.previewImgSrc = img;
+        this.previewImgSrc = `${process.env.VUE_APP_API_URL}/v1/img/${id}`;
       });
     },
     setSelected(value) {
@@ -124,7 +127,7 @@ export default {
       if (value.type === "colorway") {
         // In case of colorway we directly show it
         this.displayResults = [value];
-        this.showCap(value.img);
+        this.showCap(value.id);
       } else if (value.type === "sculpt") {
         // In case of sculpt Selection we show all the colorways
         vue.nextTick(() => {
@@ -145,7 +148,7 @@ export default {
             })
             .filter(x => x)[0];
           this.endOfScroll();
-          this.showCap(this.displayResults[0].img);
+          this.showCap(this.displayResults[0].id);
         });
       } else {
         // In case of Artist Selection we show all the sculpts and colorways
@@ -174,7 +177,7 @@ export default {
             });
           });
           this.endOfScroll();
-          this.showCap(this.displayResults[0].img);
+          this.showCap(this.displayResults[0].id);
         });
       }
     },
@@ -188,6 +191,11 @@ export default {
       }
     },
     async search(q) {
+      // in case of 1 char too much results
+      // laggy on bad phones (like mine)
+      if (q.length == 1) {
+        return;
+      }
       this.searchResultFiltered.length = 0;
       this.searchLimit = 20;
       const artistResult = [];

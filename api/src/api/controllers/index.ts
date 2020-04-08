@@ -1,7 +1,6 @@
-import { generateWishlist } from 'internal/image-processor';
+import { generateWishlist, getImgBuffer } from 'internal/image-processor';
 import { instance, ColorwayDetailed } from 'db/instance';
 import * as tablemark from 'tablemark';
-import { appLogger } from 'logger';
 
 const genWishlist = async (req, resp) => {
   const imgBuffer = await generateWishlist(req.query);
@@ -20,7 +19,6 @@ const genTable = async (req, resp) => {
   for (const i of req.query.ids.split(',').filter((x) => x)) {
     caps.push(instance.getColorway(i));
   }
-  appLogger.info(caps);
   out = tablemark(
     caps.map((c) => {
       return {
@@ -35,4 +33,20 @@ const genTable = async (req, resp) => {
   return resp.status(200).send(out);
 };
 
-export const controllers = { genWishlist, genTable };
+const getKeycapImage = async (req, resp) => {
+  const colorway = instance.getColorway(req.params.id);
+
+  if (!colorway) {
+    return resp.status(404).send('Not found');
+  }
+
+  const output = await getImgBuffer(colorway);
+
+  return resp
+    .header('content-disposition', `filename="${req.params.id}.jpg"`)
+    .type('image/jpeg')
+    .status(200)
+    .send(output);
+};
+
+export const controllers = { getKeycapImage, genWishlist, genTable };

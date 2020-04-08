@@ -3,6 +3,8 @@ import { createCanvas, loadImage, registerFont, Image } from 'canvas';
 import { appLogger } from 'logger';
 import { LRUMap } from 'lru_map';
 import { instance } from 'db/instance';
+import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
+import axios from 'axios';
 
 const imageMap = new LRUMap(400);
 
@@ -41,51 +43,42 @@ function fitText(ctx, legend, maxWidth): string {
 }
 
 async function drawTheCap(context, color, capId, x, y): Promise<void> {
-  const cap = await instance.getColorway(capId);
+  const cap = instance.getColorway(capId);
+  const imgBuffer = await getImgBuffer(cap);
   const img = new Image();
-  if (imageMap.has(cap.img)) {
-    appLogger.info('has img cache');
-    img.src = imageMap.get(cap.img) as string;
+
+  const _img = await loadImage(imgBuffer);
+  let h: number, w: number, sx: number, sy: number;
+  if (_img.width > _img.height) {
+    h = _img.height;
+    w = h;
+    sy = 0;
+    sx = Math.ceil((_img.width - _img.height) / 2);
   } else {
-    appLogger.info('!has img cache');
-
-    const _img = await loadImage(cap.img);
-    let h, w, sx, sy;
-    if (_img.width > _img.height) {
-      h = _img.height;
-      w = h;
-      sy = 0;
-      sx = Math.ceil((_img.width - _img.height) / 2);
-    } else {
-      sx = 0;
-      sy = Math.ceil((_img.height - _img.width) / 2);
-      w = _img.width;
-      h = w;
-    }
-    const Tcanvas = createCanvas(IMG_WIDTH, IMG_HEIGTH);
-    const Tctx = Tcanvas.getContext('2d');
-
-    // Adding curves to thumbnail
-    // Con of this approach it's the image is stored with
-    // the curves in memory.
-    // FIXME: add this feature on the fly
-    Tctx.beginPath();
-    Tctx.moveTo(THUMB_RADIUS, 0);
-    Tctx.lineTo(IMG_WIDTH - THUMB_RADIUS, 0);
-    Tctx.quadraticCurveTo(IMG_WIDTH, 0, IMG_WIDTH, THUMB_RADIUS);
-    Tctx.lineTo(IMG_WIDTH, IMG_HEIGTH - THUMB_RADIUS);
-    Tctx.quadraticCurveTo(IMG_WIDTH, IMG_HEIGTH, IMG_WIDTH - THUMB_RADIUS, IMG_HEIGTH);
-    Tctx.lineTo(THUMB_RADIUS, IMG_HEIGTH);
-    Tctx.quadraticCurveTo(0, IMG_HEIGTH, 0, IMG_HEIGTH - THUMB_RADIUS);
-    Tctx.lineTo(0, THUMB_RADIUS);
-    Tctx.quadraticCurveTo(0, 0, THUMB_RADIUS, 0);
-    Tctx.closePath();
-    Tctx.clip();
-    await Tctx.drawImage(_img, sx, sy, w, h, 0, 0, IMG_WIDTH, IMG_HEIGTH);
-
-    img.src = Tcanvas.toDataURL();
-    imageMap.set(cap.img, img.src);
+    sx = 0;
+    sy = Math.ceil((_img.height - _img.width) / 2);
+    w = _img.width;
+    h = w;
   }
+  const Tcanvas = createCanvas(IMG_WIDTH, IMG_HEIGTH);
+  const Tctx = Tcanvas.getContext('2d');
+
+  Tctx.beginPath();
+  Tctx.moveTo(THUMB_RADIUS, 0);
+  Tctx.lineTo(IMG_WIDTH - THUMB_RADIUS, 0);
+  Tctx.quadraticCurveTo(IMG_WIDTH, 0, IMG_WIDTH, THUMB_RADIUS);
+  Tctx.lineTo(IMG_WIDTH, IMG_HEIGTH - THUMB_RADIUS);
+  Tctx.quadraticCurveTo(IMG_WIDTH, IMG_HEIGTH, IMG_WIDTH - THUMB_RADIUS, IMG_HEIGTH);
+  Tctx.lineTo(THUMB_RADIUS, IMG_HEIGTH);
+  Tctx.quadraticCurveTo(0, IMG_HEIGTH, 0, IMG_HEIGTH - THUMB_RADIUS);
+  Tctx.lineTo(0, THUMB_RADIUS);
+  Tctx.quadraticCurveTo(0, 0, THUMB_RADIUS, 0);
+  Tctx.closePath();
+  Tctx.clip();
+  Tctx.drawImage(_img, sx, sy, w, h, 0, 0, IMG_WIDTH, IMG_HEIGTH);
+
+  img.src = Tcanvas.toDataURL();
+  imageMap.set(cap.img, img.src);
 
   await context.drawImage(img, x, y);
 
@@ -143,6 +136,56 @@ function calcHeight(opt) {
     out += EXTRA_TEXT_MARGIN;
   }
   return out;
+}
+
+const cachePath = resolve(join(__dirname, '..', '..', 'img-cache'));
+if (!existsSync(cachePath)) {
+  mkdirSync(cachePath);
+}
+
+export async function getImgBuffer(colorway) {
+  const filePath = join(cachePath, `${colorway.id}.jpg`);
+  let output;
+  if (!existsSync(filePath)) {
+    await axios
+      .request({
+        method: 'GET',
+        responseType: 'arraybuffer',
+        url: colorway.img
+      })
+      .then(async (response) => {
+        output = await resizeImg(response.data);
+        writeFileSync(filePath, output);
+      });
+  } else {
+    output = readFileSync(filePath);
+  }
+  return output;
+}
+
+export async function resizeImg(imgBuffer) {
+  const IMG_HEIGTH = 500;
+  const IMG_WIDTH = 500;
+  const _img = await loadImage(imgBuffer);
+
+  let h: number, w: number, sx: number, sy: number;
+  if (_img.width > _img.height) {
+    h = _img.height;
+    w = h;
+    sy = 0;
+    sx = Math.ceil((_img.width - _img.height) / 2);
+  } else {
+    sx = 0;
+    sy = Math.ceil((_img.height - _img.width) / 2);
+    w = _img.width;
+    h = w;
+  }
+  const Tcanvas = createCanvas(IMG_WIDTH, IMG_HEIGTH);
+  const Tctx = Tcanvas.getContext('2d');
+
+  Tctx.drawImage(_img, sx, sy, w, h, 0, 0, IMG_WIDTH, IMG_HEIGTH);
+
+  return Tcanvas.toBuffer('image/jpeg', { quality: 1, progressive: true, chromaSubsampling: false });
 }
 
 export async function generateWishlist(options): Promise<Buffer> {
