@@ -17,7 +17,15 @@ export async function createServer() {
 
   server.register(fastifyCORS, { origin: true });
   server.register(fastifyStatic, {
-    root: join(__dirname, 'public')
+    root: join(__dirname, 'public'),
+    setHeaders: (res, path, _) => {
+      // ignore cache for service worker
+      if (path.indexOf('service-worker.js') !== -1 || path.indexOf('manifest.json') !== -1) {
+        res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        res.setHeader('Expires', '-1');
+        res.setHeader('Pragma', 'no-cache');
+      }
+    }
   });
   await instance.init();
 
