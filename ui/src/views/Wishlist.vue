@@ -28,7 +28,7 @@
       </div>
       <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="capsPerLine">
-          Number Caps per line
+          Number keycap per line
         </label>
         <input
           id="capsPerLine"
