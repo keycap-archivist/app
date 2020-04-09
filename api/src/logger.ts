@@ -1,14 +1,15 @@
 import * as pino from 'pino';
-const mainLogger: pino = pino({
-  prettyPrint: { colorize: false }
-});
-const apiLogger: pino = mainLogger.child({
+
+const apiLogger: pino = pino({
+  prettyPrint: { colorize: false },
+  level: 'warn'
+}).child({
   name: 'API_LOGGER'
 });
-const appLogger: pino = mainLogger.child({
+const appLogger: pino = pino({
+  prettyPrint: { colorize: false }
+}).child({
   name: 'APP_LOGGER'
 });
-const dbLogger: pino = mainLogger.child({
-  name: 'DB_LOGGER'
-});
-export { apiLogger, appLogger, dbLogger };
+
+export { apiLogger, appLogger };

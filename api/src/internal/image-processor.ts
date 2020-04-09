@@ -1,12 +1,10 @@
 import { join, resolve } from 'path';
 import { createCanvas, loadImage, registerFont, Image } from 'canvas';
-import { appLogger } from 'logger';
-import { LRUMap } from 'lru_map';
+// import { appLogger } from 'logger';
+// import { LRUMap } from 'lru_map';
 import { instance } from 'db/instance';
 import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
 import axios from 'axios';
-
-const imageMap = new LRUMap(400);
 
 const fontPath = resolve(join(__dirname, 'fonts'));
 registerFont(join(fontPath, 'RedRock.ttf'), { family: 'RedRock' });
@@ -92,8 +90,7 @@ function fitText(ctx, legend, maxWidth): string {
   return `${outLegend.trim()}...`;
 }
 
-async function drawTheCap(context, color, capId, x, y): Promise<void> {
-  const cap = instance.getColorway(capId);
+async function drawTheCap(context, color, cap, x, y): Promise<void> {
   const imgBuffer = await getImgBuffer(cap);
   const img = new Image();
 
@@ -128,8 +125,6 @@ async function drawTheCap(context, color, capId, x, y): Promise<void> {
   Tctx.drawImage(_img, sx, sy, w, h, 0, 0, IMG_WIDTH, IMG_HEIGTH);
 
   img.src = Tcanvas.toDataURL();
-  imageMap.set(cap.img, img.src);
-
   await context.drawImage(img, x, y);
 
   context.font = '20px Roboto';
@@ -144,8 +139,12 @@ async function drawTheCap(context, color, capId, x, y): Promise<void> {
   }
 }
 
+function getCaps(ids: string[]) {
+  return ids.map((x) => instance.getColorway(x)).filter((x) => !!x);
+}
+
 const defaultOptions = {
-  ids: '',
+  ids: '15559f6e,e951b800,486a0062',
   bg: '',
   textcolor: '',
   title: 'Wishlist',
@@ -164,6 +163,7 @@ function parseOptions(options): any {
   opt.extraTextColor = opt.extraTextColor ? `#${opt.extraTextColor}` : 'white';
   opt.capsPerLine = parseInt(opt.capsPerLine);
   opt.extraText = opt.extraText.trim();
+  opt.caps = getCaps(opt.ids);
   return opt;
 }
 
@@ -172,7 +172,7 @@ function calcWidth(opt) {
 }
 
 function calcHeight(opt) {
-  const nbCaps = opt.ids.length;
+  const nbCaps = opt.caps.length;
   if (opt.capsPerLine > nbCaps) {
     opt.capsPerLine = nbCaps;
   } else if (opt.capsPerLine < 1) {
@@ -187,40 +187,29 @@ function calcHeight(opt) {
   }
   return out;
 }
-
 export async function generateWishlist(options): Promise<Buffer> {
-  let canvas, ctx, canvasWidth, canvasHeight;
   const opt = parseOptions(options);
-  const p = [];
-  if (opt.ids.length) {
-    canvasWidth = calcWidth(opt);
-    canvasHeight = calcHeight(opt);
-    canvas = createCanvas(canvasWidth, canvasHeight);
-    ctx = canvas.getContext('2d');
-    ctx.fillStyle = opt.bg;
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-    let y = HEADER_HEIGHT;
-    let idx = 0;
-    for (const capId of opt.ids) {
-      if (idx === opt.capsPerLine) {
-        idx = 0;
-        y += rowHeight;
-      }
-      p.push(drawTheCap(ctx, opt.textcolor, capId, idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y));
-      idx++;
-    }
-  } else {
-    // Example
-    canvasWidth = calcWidth(opt);
-    canvasHeight = HEADER_HEIGHT + rowHeight;
-    canvas = createCanvas(canvasWidth, canvasHeight);
-    ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, canvasWidth, 370);
-    p.push(drawTheCap(ctx, opt.textcolor, '15559f6e', 5, 90));
-    p.push(drawTheCap(ctx, opt.textcolor, 'e951b800', 260, 90));
-    p.push(drawTheCap(ctx, opt.textcolor, '486a0062', 520, 90));
+  if (!opt.ids.length) {
+    return null;
   }
+  const p = [];
+  const canvasWidth = calcWidth(opt);
+  const canvasHeight = calcHeight(opt);
+  const canvas = createCanvas(canvasWidth, canvasHeight);
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = opt.bg;
+  ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+  let y = HEADER_HEIGHT;
+  let idx = 0;
+  for (const cap of opt.caps) {
+    if (idx === opt.capsPerLine) {
+      idx = 0;
+      y += rowHeight;
+    }
+    p.push(drawTheCap(ctx, opt.textcolor, cap, idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y));
+    idx++;
+  }
+
   await Promise.all(p);
 
   // Title
@@ -238,5 +227,6 @@ export async function generateWishlist(options): Promise<Buffer> {
     ctx.fillStyle = 'white';
     ctx.fillRect(MARGIN_SIDE, canvasHeight - EXTRA_TEXT_MARGIN, canvasWidth - MARGIN_SIDE * 2, 2);
   }
+
   return canvas.toBuffer('image/jpeg', { quality: 1, progressive: true });
 }

@@ -43,7 +43,7 @@ const getKeycapImage = async (req, resp) => {
   const output = await getImgBuffer(colorway);
 
   return resp
-    .header('content-disposition', `filename="${req.params.id}.jpg"`)
+    .header('content-disposition', `filename="${colorway.id}.jpg"`)
     .type('image/jpeg')
     .status(200)
     .send(output);
