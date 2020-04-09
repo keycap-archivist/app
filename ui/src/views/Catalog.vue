@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mb-5 px-6" style="height:12vh; max-height: 60px;">
+    <div class="mb-5 px-6" style="height:13vh; max-height: 70px;">
       <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
         Search: Artist, Sculpt, Colorway...
       </label>
@@ -17,6 +17,7 @@
           <li ref="load" class="loader"></li>
         </template>
       </v-select>
+      <span v-if="selectedCap" class="text-xs">(double tap on cap to add to wishlist)</span>
     </div>
     <div
       class="mx-auto w-auto overflow-hidden mb-5 px-6 cursor-pointer noSelect"
