@@ -34,7 +34,7 @@ function loadLocalWishlist() {
   const localWishlist = localStorageLoad(CONSTS.wishlist);
   if (localWishlist) {
     try {
-      return JSON.parse(localWishlist);
+      return JSON.parse(localWishlist).filter(x => !!x);
     } catch (e) {
       return [];
     }
@@ -66,6 +66,7 @@ export default new Vuex.Store({
       if (index > -1) {
         state.wishlistItems.splice(index, 1);
       }
+      state.wishlistItems = state.wishlistItems.filter(x => !!x);
       Vue.set(state.wishlistItems, state.wishlistItems);
       localStorageSet(CONSTS.wishlist, JSON.stringify(state.wishlistItems));
     },

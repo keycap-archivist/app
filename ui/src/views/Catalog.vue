@@ -29,19 +29,19 @@
               v-for="item in this.displayResults"
               :key="item.idx"
               class="cursor-pointer"
-              @click="showCap(item.id)"
-              v-bind:class="{ 'bg-blue-500': isActive(item.img) }"
+              @click="showCap(item.ident)"
+              v-bind:class="{ 'bg-blue-500': isActive(item.ident) }"
             >
               <button
-                v-show="!inWishlist(item.id)"
-                @click="addWishlist(item.id)"
+                v-show="!inWishlist(item.ident)"
+                @click="addWishlist(item.ident)"
                 class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 border border-green-700 rounded"
               >
                 Add
               </button>
               <button
-                v-show="inWishlist(item.id)"
-                @click="rmWishlist(item.id)"
+                v-show="inWishlist(item.ident)"
+                @click="rmWishlist(item.ident)"
                 class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-700 rounded"
               >
                 Remove
@@ -82,9 +82,6 @@ export default {
     }
   },
   methods: {
-    getCapImg(cap) {
-      return `${process.env.VUE_APP_API_URL}/v1/img/${cap.id}`;
-    },
     async onOpen() {
       await this.$nextTick();
       this.observer.observe(this.$refs.load);
@@ -105,8 +102,8 @@ export default {
         }
       }
     },
-    isActive(img) {
-      return this.previewImgSrc === img;
+    isActive(ident) {
+      return this.previewImgSrc === `${process.env.VUE_APP_API_URL}/v1/img/${ident}`;
     },
     inWishlist(id) {
       return this.wishlistItems.indexOf(id) > -1;
@@ -127,7 +124,7 @@ export default {
       if (value.type === "colorway") {
         // In case of colorway we directly show it
         this.displayResults = [value];
-        this.showCap(value.id);
+        this.showCap(value.ident);
       } else if (value.type === "sculpt") {
         // In case of sculpt Selection we show all the colorways
         vue.nextTick(() => {
@@ -142,13 +139,14 @@ export default {
                   if (!c.name.trim()) {
                     out.name = "No Name";
                   }
+                  out.ident = out.id;
                   return out;
                 });
               }
             })
             .filter(x => x)[0];
           this.endOfScroll();
-          this.showCap(this.displayResults[0].id);
+          this.showCap(this.displayResults[0].ident);
         });
       } else {
         // In case of Artist Selection we show all the sculpts and colorways
@@ -164,6 +162,7 @@ export default {
               .map(r =>
                 r.colorways.map(c => {
                   const out = { ...c };
+                  out.ident = out.id;
                   out.name = `${r.name} ${c.name}`;
                   return out;
                 })
@@ -177,7 +176,7 @@ export default {
             });
           });
           this.endOfScroll();
-          this.showCap(this.displayResults[0].id);
+          this.showCap(this.displayResults[0].ident);
         });
       }
     },
