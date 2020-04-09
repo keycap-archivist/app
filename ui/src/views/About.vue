@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class=" px-4">
     <h1 class="text-2xl mb-4">
       Too many artisans
       <a class="inline-block hover:text-yellow-700 mr-5" href="https://github.com/zekth/too-much-artisans">

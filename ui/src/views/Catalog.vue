@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mb-5" style="height:12vh;    max-height: 60px;">
+    <div class="mb-5 px-6" style="height:12vh; max-height: 60px;">
       <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
         Search: Artist, Sculpt, Colorway...
       </label>
@@ -18,35 +18,32 @@
         </template>
       </v-select>
     </div>
-    <div class="mx-auto w-auto overflow-hidden mb-5" style="height:32vh" v-show="previewImgSrc !== ''">
-      <lazyloadImg v-if="previewImgSrc !== ''" v-bind:src="previewImgSrc" />
+    <div
+      class="mx-auto w-auto overflow-hidden mb-5 px-6 cursor-pointer noSelect"
+      style="height:32vh"
+      v-show="selectedCap"
+      @click="clickCap"
+    >
+      <font-awesome-icon
+        icon="check"
+        style="color:green;position:absolute"
+        v-if="selectedCap"
+        v-show="inWishlist(selectedCap.ident)"
+      />
+      <lazyloadImg v-if="selectedCap !== null" v-bind:src="previewImgSrc" />
     </div>
-    <div style="margin-bottom:70px;">
+    <div style="margin-bottom:70px;" class="md:px-6">
       <perfect-scrollbar v-on:ps-y-reach-end="endOfScroll">
         <div style="height:42vh">
           <ul>
             <li
               v-for="item in this.displayResults"
               :key="item.idx"
-              class="cursor-pointer"
-              @click="showCap(item.ident)"
-              v-bind:class="{ 'bg-blue-500': isActive(item.ident) }"
+              class="cursor-pointer result pl-2"
+              @click="showCap(item)"
+              v-bind:class="{ selected: isActive(item.ident) }"
             >
-              <button
-                v-show="!inWishlist(item.ident)"
-                @click="addWishlist(item.ident)"
-                class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 border border-green-700 rounded"
-              >
-                Add
-              </button>
-              <button
-                v-show="inWishlist(item.ident)"
-                @click="rmWishlist(item.ident)"
-                class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-700 rounded"
-              >
-                Remove
-              </button>
-              <span> {{ item.name }}</span>
+              {{ item.name }}
             </li>
           </ul>
         </div>
@@ -57,9 +54,11 @@
 
 <script>
 import vue from "vue";
+import { Toast } from "mint-ui";
 import { mapState, mapActions } from "vuex";
 import { PerfectScrollbar } from "vue2-perfect-scrollbar";
 import lazyloadImg from "../components/lazyloadImg.vue";
+
 export default {
   name: "catalog",
   components: {
@@ -79,9 +78,27 @@ export default {
     },
     hasNextPage() {
       return this.searchResultPaginated.length < this.searchResultFiltered.length;
+    },
+    previewImgSrc() {
+      return this.selectedCap !== null ? `${process.env.VUE_APP_API_URL}/v1/img/${this.selectedCap.ident}` : null;
     }
   },
   methods: {
+    clickCap() {
+      const currentTap = Date.now();
+      if (currentTap - this.lastTap < 500) {
+        if (this.inWishlist(this.selectedCap.ident)) {
+          Toast({ message: "Removed from wishlist", position: "bottom", duration: 900 });
+          this.rmWishlist(this.selectedCap.ident);
+        } else {
+          Toast({ message: "Added to wishlist", position: "bottom", duration: 900 });
+          this.addWishlist(this.selectedCap.ident);
+        }
+        this.lastTap = 0;
+      } else {
+        this.lastTap = currentTap;
+      }
+    },
     async onOpen() {
       await this.$nextTick();
       this.observer.observe(this.$refs.load);
@@ -103,16 +120,23 @@ export default {
       }
     },
     isActive(ident) {
-      return this.previewImgSrc === `${process.env.VUE_APP_API_URL}/v1/img/${ident}`;
+      return this.selectedCap && ident === this.selectedCap.ident;
     },
     inWishlist(id) {
       return this.wishlistItems.indexOf(id) > -1;
     },
-    showCap(id) {
-      this.previewImgSrc = "";
+    showCap(cap) {
+      this.selectedCap = null;
       this.$nextTick().then(() => {
-        this.previewImgSrc = `${process.env.VUE_APP_API_URL}/v1/img/${id}`;
+        this.selectedCap = cap;
+        // this.previewImgSrc = "";
+        //   this.previewImgSrc = `${process.env.VUE_APP_API_URL}/v1/img/${cap.ident}`;
       });
+    },
+    sortResults(a, b) {
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
     },
     setSelected(value) {
       this.displayResults.length = 0;
@@ -124,7 +148,7 @@ export default {
       if (value.type === "colorway") {
         // In case of colorway we directly show it
         this.displayResults = [value];
-        this.showCap(value.ident);
+        this.showCap(value);
       } else if (value.type === "sculpt") {
         // In case of sculpt Selection we show all the colorways
         vue.nextTick(() => {
@@ -144,9 +168,10 @@ export default {
                 });
               }
             })
-            .filter(x => x)[0];
+            .filter(x => x)[0]
+            .sort(this.sortResults);
           this.endOfScroll();
-          this.showCap(this.displayResults[0].ident);
+          this.showCap(this.displayResults[0]);
         });
       } else {
         // In case of Artist Selection we show all the sculpts and colorways
@@ -170,13 +195,15 @@ export default {
           ];
           let idx = 0;
           o.forEach(i => {
-            this.results = [...this.results, ...i].map(e => {
-              e.idx = idx++;
-              return e;
-            });
+            this.results = [...this.results, ...i]
+              .map(e => {
+                e.idx = idx++;
+                return e;
+              })
+              .sort(this.sortResults);
           });
           this.endOfScroll();
-          this.showCap(this.displayResults[0].ident);
+          this.showCap(this.displayResults[0]);
         });
       }
     },
@@ -257,14 +284,36 @@ export default {
     }
   },
   data: () => ({
+    lastTap: 0,
     searchLimit: 20,
     observer: null,
-    previewImgSrc: "",
     researchInput: "",
     selectedSearch: "",
+    selectedCap: null,
     results: [],
     displayResults: [],
     searchResult: []
   })
 };
 </script>
+
+<style type="text/css">
+li.result {
+  height: 50px;
+  border-bottom: 1px solid #e9ebf5;
+  line-height: 50px;
+  overflow: hidden;
+}
+li.selected {
+  background: #a1a4b9;
+}
+.noSelect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+</style>

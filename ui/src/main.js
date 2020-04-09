@@ -9,14 +9,19 @@ import { Plugin } from "vue-fragment";
 import vSelect from "vue-select";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faSkullCrossbones } from "@fortawesome/free-solid-svg-icons";
+import { faSkullCrossbones, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
+import Mint from "mint-ui";
+import "mint-ui/lib/style.css";
+
 library.add(faSkullCrossbones);
+library.add(faCheck);
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 Vue.component("v-select", vSelect);
 
+Vue.use(Mint);
 Vue.use(Plugin);
 Vue.use(PerfectScrollbar);
 Vue.use(VueSpinners);

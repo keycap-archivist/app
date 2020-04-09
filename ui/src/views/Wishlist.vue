@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="px-4">
     <wishlistImgComponent v-if="wishlistImg != ''" v-bind:src="wishlistImg" />
     <div>
       <div class="mb-4">
