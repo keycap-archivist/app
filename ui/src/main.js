@@ -8,6 +8,13 @@ import "vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css";
 import { Plugin } from "vue-fragment";
 import vSelect from "vue-select";
 
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faSkullCrossbones } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+library.add(faSkullCrossbones);
+
+Vue.component("font-awesome-icon", FontAwesomeIcon);
 Vue.component("v-select", vSelect);
 
 Vue.use(Plugin);

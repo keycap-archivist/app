@@ -1,7 +1,13 @@
 <template>
   <Fragment>
-    <div v-show="!imgLoaded" class="h-full text-center mt-12">
+    <div v-show="!imgLoaded && !imgError" class="h-full text-center mt-12">
       <ScaleLoader />
+    </div>
+    <div v-show="imgError" class="h-full text-center">
+      <p>Hey! I can't find the image.</p>
+      <p style="font-size:100px">
+        <font-awesome-icon icon="skull-crossbones" />
+      </p>
     </div>
     <img
       v-show="imgLoaded"
@@ -9,6 +15,7 @@
       alt="image"
       class="h-full object-cover mx-auto rounded-lg"
       v-on:load="loadedEvent"
+      v-on:error="errorEvent"
     />
   </Fragment>
 </template>
@@ -20,12 +27,16 @@ export default {
   components: { ScaleLoader, Fragment },
   props: ["src"],
   methods: {
+    errorEvent() {
+      this.imgError = true;
+    },
     loadedEvent() {
       this.imgLoaded = true;
     }
   },
   data: () => ({
-    imgLoaded: false
+    imgLoaded: false,
+    imgError: false
   })
 };
 </script>
