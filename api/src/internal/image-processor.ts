@@ -156,7 +156,7 @@ const defaultOptions = {
 
 function parseOptions(options): any {
   const opt = Object.assign({}, defaultOptions, options);
-  opt.ids = opt.ids.split(',').filter((x) => x !== '');
+  opt.ids = [...new Set(opt.ids.split(','))];
   opt.bg = opt.bg ? `#${opt.bg}` : 'black';
   opt.titleColor = opt.titleColor ? `#${opt.titleColor}` : 'red';
   opt.textcolor = opt.textcolor ? `#${opt.textcolor}` : 'white';
