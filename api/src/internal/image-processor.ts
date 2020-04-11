@@ -1,10 +1,9 @@
 import { join, resolve } from 'path';
 import { createCanvas, loadImage, registerFont, Image } from 'canvas';
-// import { appLogger } from 'logger';
-// import { LRUMap } from 'lru_map';
 import { instance } from 'db/instance';
-import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, promises as FSpromises, constants } from 'fs';
 import axios from 'axios';
+import { appLogger } from 'logger';
 
 const fontPath = resolve(join(__dirname, 'fonts'));
 registerFont(join(fontPath, 'RedRock.ttf'), { family: 'RedRock' });
@@ -20,6 +19,7 @@ const THUMB_RADIUS = 10;
 const IMG_WIDTH = 250;
 const IMG_HEIGTH = IMG_WIDTH;
 const rowHeight = IMG_HEIGTH + MARGIN_BOTTOM;
+const NS_PER_SEC = 1e9;
 
 const cachePath = resolve(join(__dirname, '..', '..', 'img-cache'));
 if (!existsSync(cachePath)) {
@@ -54,7 +54,11 @@ export async function resizeImg(imgBuffer) {
 export async function getImgBuffer(colorway) {
   const filePath = join(cachePath, `${colorway.id}.jpg`);
   let output;
-  if (!existsSync(filePath)) {
+  if (
+    !(await FSpromises.access(filePath, constants.R_OK)
+      .then(() => true)
+      .catch(() => false))
+  ) {
     await axios
       .request({
         method: 'GET',
@@ -63,10 +67,10 @@ export async function getImgBuffer(colorway) {
       })
       .then(async (response) => {
         output = await resizeImg(response.data);
-        writeFileSync(filePath, output);
+        FSpromises.writeFile(filePath, output);
       });
   } else {
-    output = readFileSync(filePath);
+    output = await FSpromises.readFile(filePath);
   }
   return output;
 }
@@ -92,7 +96,6 @@ function fitText(ctx, legend, maxWidth): string {
 
 async function drawTheCap(context, color, cap, x, y): Promise<void> {
   const imgBuffer = await getImgBuffer(cap);
-  const img = new Image();
 
   const _img = await loadImage(imgBuffer);
   let h: number, w: number, sx: number, sy: number;
@@ -124,8 +127,8 @@ async function drawTheCap(context, color, cap, x, y): Promise<void> {
   Tctx.clip();
   Tctx.drawImage(_img, sx, sy, w, h, 0, 0, IMG_WIDTH, IMG_HEIGTH);
 
-  img.src = Tcanvas.toDataURL();
-  await context.drawImage(img, x, y);
+  const b = Tcanvas.toBuffer('image/jpeg', { quality: 0.7, progressive: true });
+  await context.drawImage(await loadImage(b), x, y);
 
   context.font = '20px Roboto';
   context.fillStyle = color;
@@ -187,7 +190,9 @@ function calcHeight(opt) {
   }
   return out;
 }
+
 export async function generateWishlist(options): Promise<Buffer> {
+  const time = process.hrtime();
   const opt = parseOptions(options);
   if (!opt.ids.length) {
     return null;
@@ -227,6 +232,8 @@ export async function generateWishlist(options): Promise<Buffer> {
     ctx.fillStyle = 'white';
     ctx.fillRect(MARGIN_SIDE, canvasHeight - EXTRA_TEXT_MARGIN, canvasWidth - MARGIN_SIDE * 2, 2);
   }
-
-  return canvas.toBuffer('image/jpeg', { quality: 1, progressive: true });
+  const outBuffer = canvas.toBuffer('image/jpeg', { quality: 0.8, progressive: true });
+  const diff = process.hrtime(time);
+  appLogger.info(`generateWishlist ${opt.caps.length} caps ${(diff[0] * NS_PER_SEC + diff[1]) / 1000000} ms`);
+  return outBuffer;
 }

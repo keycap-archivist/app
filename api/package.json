@@ -8,6 +8,7 @@
     "lint": "yarn eslint && yarn prettier",
     "watch": "nodemon -e yaml,ts,gql -w ./src -x yarn watch:serve",
     "watch:serve": "ts-node src/server.ts",
+    "watch:inspect": "nodemon --inspect -e yaml,ts,gql -w ./src -x node -r ts-node/register src/server.ts",
     "build": "rm -rf dist && tsc && cp src/api/graphql/schema.gql dist/api/graphql/schema.gql && cp -R src/public/ dist/public/ && cp -R src/internal/fonts/ dist/internal/fonts/ && cp -R src/internal/doc/ dist/internal/doc/"
   },
   "author": "",
@@ -22,7 +23,6 @@
     "fastify-openapi-glue": "1.5.0",
     "fastify-static": "2.6.0",
     "js-yaml": "3.13.1",
-    "lru_map": "0.3.3",
     "marked": "^0.8.2",
     "pino": "5.17.0",
     "pino-pretty": "3.6.1",
