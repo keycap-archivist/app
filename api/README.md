@@ -12,6 +12,7 @@ Availabe through querystring
 
 ```
 ids : id list separated by comma. eg : 10,12,13
+prio : id list separated by comma. eg : 10,12,13 . Caps to be highlighted
 bg : HexColor without #. eg : FF00F0
 title : string
 extraText : string

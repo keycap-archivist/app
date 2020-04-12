@@ -29,11 +29,14 @@ export interface Colorway {
 
 export interface ColorwayDetailed extends Colorway {
   sculpt: SculptDetailed;
+  isPrioritized?: boolean;
 }
+
 interface ApiDb {
   version: string;
   data: Artist[];
 }
+
 class CatalogDB {
   db: ApiDb;
   async init(): Promise<void> {

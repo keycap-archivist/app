@@ -10,7 +10,7 @@ import { typeDefs, resolvers } from 'api/graphql';
 import * as marked from 'marked';
 import { readFileSync } from 'fs';
 
-export async function createServer() {
+export async function createServer(): Promise<any> {
   const server = fastify({
     logger: apiLogger
   });

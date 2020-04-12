@@ -5,6 +5,7 @@
   "scripts": {
     "eslint": "eslint --ext .ts src",
     "prettier": "prettier -c \"./src/**/*.ts\"",
+    "prettier:write": "prettier -c \"./src/**/*.ts\" --write",
     "lint": "yarn eslint && yarn prettier",
     "watch": "nodemon -e yaml,ts,gql -w ./src -x yarn watch:serve",
     "watch:serve": "ts-node src/server.ts",

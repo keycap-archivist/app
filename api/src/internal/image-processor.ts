@@ -1,6 +1,6 @@
 import { join, resolve } from 'path';
 import { createCanvas, loadImage, registerFont, Image } from 'canvas';
-import { instance } from 'db/instance';
+import { instance, Colorway } from 'db/instance';
 import { existsSync, mkdirSync, promises as FSpromises, constants } from 'fs';
 import axios from 'axios';
 import { appLogger } from 'logger';
@@ -26,7 +26,7 @@ if (!existsSync(cachePath)) {
   mkdirSync(cachePath);
 }
 
-export async function resizeImg(imgBuffer) {
+export async function resizeImg(imgBuffer): Promise<Buffer> {
   const IMG_HEIGTH = 500;
   const IMG_WIDTH = 500;
   const _img = await loadImage(imgBuffer);
@@ -51,9 +51,9 @@ export async function resizeImg(imgBuffer) {
   return Tcanvas.toBuffer('image/jpeg', { quality: 1, progressive: true, chromaSubsampling: false });
 }
 
-export async function getImgBuffer(colorway) {
+export async function getImgBuffer(colorway): Promise<Buffer> {
   const filePath = join(cachePath, `${colorway.id}.jpg`);
-  let output;
+  let output: Buffer;
   if (
     !(await FSpromises.access(filePath, constants.R_OK)
       .then(() => true)
@@ -94,6 +94,11 @@ function fitText(ctx, legend, maxWidth): string {
   return `${outLegend.trim()}...`;
 }
 
+function drawBorder(ctx, width, height, thickness = 1): void {
+  ctx.fillStyle = '#F00';
+  ctx.fillRect(0 - thickness, 0 - thickness, width + thickness * 2, height + thickness * 2);
+}
+
 async function drawTheCap(context, color, cap, x, y): Promise<void> {
   const imgBuffer = await getImgBuffer(cap);
 
@@ -125,7 +130,25 @@ async function drawTheCap(context, color, cap, x, y): Promise<void> {
   Tctx.quadraticCurveTo(0, 0, THUMB_RADIUS, 0);
   Tctx.closePath();
   Tctx.clip();
-  Tctx.drawImage(_img, sx, sy, w, h, 0, 0, IMG_WIDTH, IMG_HEIGTH);
+
+  if (cap.isPrioritized) {
+    const thickness = 4;
+    drawBorder(Tctx, IMG_WIDTH, IMG_HEIGTH, thickness);
+    color = '#F00';
+    Tctx.drawImage(
+      _img,
+      sx,
+      sy,
+      w - thickness * 2,
+      h - thickness * 2,
+      thickness,
+      thickness,
+      IMG_WIDTH - thickness * 2,
+      IMG_HEIGTH - thickness * 2
+    );
+  } else {
+    Tctx.drawImage(_img, sx, sy, w, h, 0, 0, IMG_WIDTH, IMG_HEIGTH);
+  }
 
   const b = Tcanvas.toBuffer('image/jpeg', { quality: 0.7, progressive: true });
   await context.drawImage(await loadImage(b), x, y);
@@ -133,6 +156,7 @@ async function drawTheCap(context, color, cap, x, y): Promise<void> {
   context.font = '20px Roboto';
   context.fillStyle = color;
   context.textAlign = 'center';
+
   const legend = `${cap.sculpt.name} ${cap.name}`;
   if (!isTextFittingSpace(context, legend, IMG_WIDTH)) {
     context.fillText(fitText(context, cap.sculpt.name, IMG_WIDTH), x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
@@ -142,12 +166,21 @@ async function drawTheCap(context, color, cap, x, y): Promise<void> {
   }
 }
 
-function getCaps(ids: string[]) {
-  return ids.map((x) => instance.getColorway(x)).filter((x) => !!x);
+function getCaps(ids: string[], priorities: string[]): Colorway[] {
+  return ids
+    .map((x) => {
+      const cap = instance.getColorway(x);
+      if (priorities.includes(cap.id)) {
+        cap.isPrioritized = true;
+      }
+      return cap;
+    })
+    .filter((x) => !!x);
 }
 
 const defaultOptions = {
   ids: '15559f6e,e951b800,486a0062',
+  prio: '',
   bg: '',
   textcolor: '',
   title: 'Wishlist',
@@ -160,21 +193,22 @@ const defaultOptions = {
 function parseOptions(options): any {
   const opt = Object.assign({}, defaultOptions, options);
   opt.ids = [...new Set(opt.ids.split(','))];
+  opt.priorities = [...new Set(opt.prio.split(','))];
   opt.bg = opt.bg ? `#${opt.bg}` : 'black';
   opt.titleColor = opt.titleColor ? `#${opt.titleColor}` : 'red';
   opt.textcolor = opt.textcolor ? `#${opt.textcolor}` : 'white';
   opt.extraTextColor = opt.extraTextColor ? `#${opt.extraTextColor}` : 'white';
   opt.capsPerLine = parseInt(opt.capsPerLine);
   opt.extraText = opt.extraText.trim();
-  opt.caps = getCaps(opt.ids);
+  opt.caps = getCaps(opt.ids, opt.priorities);
   return opt;
 }
 
-function calcWidth(opt) {
+function calcWidth(opt): number {
   return opt.capsPerLine * IMG_WIDTH + opt.capsPerLine * MARGIN_SIDE + MARGIN_SIDE;
 }
 
-function calcHeight(opt) {
+function calcHeight(opt): number {
   const nbCaps = opt.caps.length;
   if (opt.capsPerLine > nbCaps) {
     opt.capsPerLine = nbCaps;
@@ -232,7 +266,7 @@ export async function generateWishlist(options): Promise<Buffer> {
     ctx.fillStyle = 'white';
     ctx.fillRect(MARGIN_SIDE, canvasHeight - EXTRA_TEXT_MARGIN, canvasWidth - MARGIN_SIDE * 2, 2);
   }
-  const outBuffer = canvas.toBuffer('image/jpeg', { quality: 0.8, progressive: true });
+  const outBuffer = canvas.toBuffer('image/jpeg', { quality: 0.9, progressive: true });
   const diff = process.hrtime(time);
   appLogger.info(`generateWishlist ${opt.caps.length} caps ${(diff[0] * NS_PER_SEC + diff[1]) / 1000000} ms`);
   return outBuffer;
