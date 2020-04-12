@@ -201,6 +201,7 @@ function parseOptions(options): any {
   opt.capsPerLine = parseInt(opt.capsPerLine);
   opt.extraText = opt.extraText.trim();
   opt.caps = getCaps(opt.ids, opt.priorities);
+  opt.hasPrior = !!opt.caps.find((x) => x.isPrioritized);
   return opt;
 }
 
@@ -222,6 +223,7 @@ function calcHeight(opt): number {
   if (opt.extraText.trim().length) {
     out += EXTRA_TEXT_MARGIN;
   }
+
   return out;
 }
 
@@ -266,6 +268,14 @@ export async function generateWishlist(options): Promise<Buffer> {
     ctx.fillStyle = 'white';
     ctx.fillRect(MARGIN_SIDE, canvasHeight - EXTRA_TEXT_MARGIN, canvasWidth - MARGIN_SIDE * 2, 2);
   }
+
+  if (opt.hasPrior) {
+    ctx.font = '20px Roboto';
+    ctx.fillStyle = 'red';
+    ctx.textAlign = 'left';
+    ctx.fillText('Priorities', MARGIN_SIDE, 30);
+  }
+
   const outBuffer = canvas.toBuffer('image/jpeg', { quality: 0.9, progressive: true });
   const diff = process.hrtime(time);
   appLogger.info(`generateWishlist ${opt.caps.length} caps ${(diff[0] * NS_PER_SEC + diff[1]) / 1000000} ms`);
