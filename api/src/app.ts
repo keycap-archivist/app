@@ -77,7 +77,37 @@ padding: 15px;
   server.route({
     method: 'GET',
     url: '/api/v1',
-    handler: controllers.genWishlist
+    handler: controllers.genWishlistGet
+  });
+
+  server.route({
+    method: 'POST',
+    url: '/api/v1',
+    schema: {
+      body: {
+        required: ['ids'],
+        ids: {
+          type: 'array',
+          items: {
+            type: 'string'
+          }
+        },
+        priorities: {
+          type: 'array',
+          items: {
+            type: 'string'
+          }
+        },
+        bg: { type: 'string' },
+        titleText: { type: 'string' },
+        titleColor: { type: 'string' },
+        textColor: { type: 'string' },
+        extraTextColor: { type: 'string' },
+        capsPerLine: { type: 'integer' },
+        extraText: { type: 'string' }
+      }
+    },
+    handler: controllers.genWishlistPost
   });
 
   server.route({

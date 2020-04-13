@@ -1,6 +1,6 @@
 import { join, resolve } from 'path';
 import { createCanvas, loadImage, registerFont, Image } from 'canvas';
-import { instance, Colorway } from 'db/instance';
+import { instance, Colorway, ColorwayDetailed } from 'db/instance';
 import { existsSync, mkdirSync, promises as FSpromises, constants } from 'fs';
 import axios from 'axios';
 import { appLogger } from 'logger';
@@ -170,7 +170,7 @@ function getCaps(ids: string[], priorities: string[]): Colorway[] {
   return ids
     .map((x) => {
       const cap = instance.getColorway(x);
-      if (priorities.includes(cap.id)) {
+      if (cap && priorities.includes(cap.id)) {
         cap.isPrioritized = true;
       }
       return cap;
@@ -183,20 +183,34 @@ const defaultOptions = {
   prio: '',
   bg: '',
   textcolor: '',
-  title: 'Wishlist',
+  titleText: 'Wishlist',
   titleColor: '',
   extraText: '',
   extraTextColor: '',
   capsPerLine: 3
 };
 
-function parseOptions(options): any {
+interface WishlistOptions {
+  ids: string[];
+  priorities: string[];
+  bg: string;
+  titleText: string;
+  titleColor: string;
+  textColor: string;
+  extraTextColor: string;
+  capsPerLine: number;
+  extraText: string;
+  caps: ColorwayDetailed[];
+  hasPrior: boolean;
+}
+
+function parseQsOptions(options): WishlistOptions {
   const opt = Object.assign({}, defaultOptions, options);
   opt.ids = [...new Set(opt.ids.split(','))];
   opt.priorities = [...new Set(opt.prio.split(','))];
   opt.bg = opt.bg ? `#${opt.bg}` : 'black';
   opt.titleColor = opt.titleColor ? `#${opt.titleColor}` : 'red';
-  opt.textcolor = opt.textcolor ? `#${opt.textcolor}` : 'white';
+  opt.textColor = opt.textcolor ? `#${opt.textcolor}` : 'white';
   opt.extraTextColor = opt.extraTextColor ? `#${opt.extraTextColor}` : 'white';
   opt.capsPerLine = parseInt(opt.capsPerLine);
   opt.extraText = opt.extraText.trim();
@@ -227,12 +241,8 @@ function calcHeight(opt): number {
   return out;
 }
 
-export async function generateWishlist(options): Promise<Buffer> {
+export async function generateWishlist(opt: WishlistOptions): Promise<Buffer> {
   const time = process.hrtime();
-  const opt = parseOptions(options);
-  if (!opt.ids.length) {
-    return null;
-  }
   const p = [];
   const canvasWidth = calcWidth(opt);
   const canvasHeight = calcHeight(opt);
@@ -247,7 +257,7 @@ export async function generateWishlist(options): Promise<Buffer> {
       idx = 0;
       y += rowHeight;
     }
-    p.push(drawTheCap(ctx, opt.textcolor, cap, idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y));
+    p.push(drawTheCap(ctx, opt.textColor, cap, idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y));
     idx++;
   }
 
@@ -257,7 +267,7 @@ export async function generateWishlist(options): Promise<Buffer> {
   ctx.font = '60px RedRock';
   ctx.fillStyle = opt.titleColor;
   ctx.textAlign = 'center';
-  ctx.fillText(opt.title ? opt.title : 'Wishlist', canvasWidth / 2, 60);
+  ctx.fillText(opt.titleText ? opt.titleText : 'Wishlist', canvasWidth / 2, 60);
 
   // Extra text
   if (opt.extraText.length) {
@@ -280,4 +290,12 @@ export async function generateWishlist(options): Promise<Buffer> {
   const diff = process.hrtime(time);
   appLogger.info(`generateWishlist ${opt.caps.length} caps ${(diff[0] * NS_PER_SEC + diff[1]) / 1000000} ms`);
   return outBuffer;
+}
+
+export async function generateWishlistFromQS(options): Promise<Buffer> {
+  const opt = parseQsOptions(options);
+  if (!opt.ids.length) {
+    return null;
+  }
+  return generateWishlist(opt);
 }

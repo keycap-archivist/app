@@ -1,16 +1,30 @@
-import { generateWishlist, getImgBuffer } from 'internal/image-processor';
+import { generateWishlistFromQS, getImgBuffer, generateWishlist } from 'internal/image-processor';
 import { instance, ColorwayDetailed } from 'db/instance';
 import * as tablemark from 'tablemark';
+import { appLogger } from 'logger';
 
-const genWishlist = async (req, resp) => {
-  const imgBuffer = await generateWishlist(req.query);
-  return (
+const genWishlistGet = async (req, resp) => {
+  try {
+    const imgBuffer = await generateWishlistFromQS(req.query);
+    resp.type('image/jpeg').status(200).send(imgBuffer);
+  } catch (e) {
+    appLogger.error(e);
+    resp.status(500).send('Oops! An error has occured');
+  }
+};
+
+const genWishlistPost = async (req, resp) => {
+  try {
+    const imgBuffer = await generateWishlist(req.body);
     resp
       // .header('content-disposition', `attachment; filename="wishlist.jpg"`)
       .type('image/jpeg')
       .status(200)
-      .send(imgBuffer)
-  );
+      .send(imgBuffer);
+  } catch (e) {
+    appLogger.error(e);
+    resp.status(500).send('Oops! An error has occured');
+  }
 };
 
 const genTable = async (req, resp) => {
@@ -30,23 +44,19 @@ const genTable = async (req, resp) => {
     }),
     { columns: ['Artist', 'Sculpt', 'Colorway', 'Image'] }
   );
-  return resp.status(200).send(out);
+  resp.status(200).send(out);
 };
 
 const getKeycapImage = async (req, resp) => {
   const colorway = instance.getColorway(req.params.id);
 
   if (!colorway) {
-    return resp.status(404).send('Not found');
+    resp.status(404).send('Not found');
+    return;
   }
 
   const output = await getImgBuffer(colorway);
-
-  return resp
-    .header('content-disposition', `filename="${colorway.id}.jpg"`)
-    .type('image/jpeg')
-    .status(200)
-    .send(output);
+  resp.header('content-disposition', `filename="${colorway.id}.jpg"`).type('image/jpeg').status(200).send(output);
 };
 
-export const controllers = { getKeycapImage, genWishlist, genTable };
+export const controllers = { getKeycapImage, genWishlistGet, genWishlistPost, genTable };

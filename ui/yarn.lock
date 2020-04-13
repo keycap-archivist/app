@@ -7106,7 +7106,7 @@ minipass@^3.0.0, minipass@^3.1.1:
   dependencies:
     yallist "^4.0.0"
 
-mint-ui@^2.2.13:
+mint-ui@2.2.13:
   version "2.2.13"
   resolved "https://registry.yarnpkg.com/mint-ui/-/mint-ui-2.2.13.tgz#856a2cba9608c6ecf21f0e521ce89ed8ddfe33d3"
   integrity sha512-Xz1SFagHSzKOprwQv3fcekXT5RJvhh939zwZHcWeazk1OJrCjsD4I2qm49AEUCfT1AoYzC+rsZIwGP/J6LwVVw==

@@ -91,7 +91,7 @@ export default {
       this.$nextTick().then(() => {
         this.wishlistImg = `${process.env.VUE_APP_API_URL}/v1?${stringify({
           ids: this.wishlistItems.join(","),
-          title: this.wishlistName,
+          titleText: this.wishlistName,
           capsPerLine: this.capsPerLine,
           extraText: this.extraText
         })}`;

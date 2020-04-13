@@ -12,22 +12,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+      - id: nodeversion
+        run: echo ::set-output name=NODE::$(cat .nvmrc)
       - uses: actions/cache@v1
         with:
           path: api/node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('api/yarn.lock') }}
+          key: ${{ steps.nodeversion.outputs.NODE }}-node_modules-${{ hashFiles('api/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-node_modules-
+            ${{ steps.nodeversion.outputs.NODE }}-node_modules-
       - uses: actions/cache@v1
         with:
           path: ui/node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('ui/yarn.lock') }}
+          key: ${{ steps.nodeversion.outputs.NODE }}-node_modules-${{ hashFiles('ui/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-node_modules-
-      - name: Use Node.js 12.16.1
+            ${{ steps.nodeversion.outputs.NODE }}-node_modules-
+      - name: Use Node.js ${{steps.nodeversion.outputs.NODE}}
         uses: actions/setup-node@v1
         with:
-          node-version: 12.16.1
+          node-version: ${{ steps.nodeversion.outputs.NODE }}
       - name: install API
         run: |
           cd api

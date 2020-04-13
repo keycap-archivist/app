@@ -43,7 +43,7 @@ export default {
           this.setDbVersion(distantVersion);
         }
       }
-
+      // TODO: Sanitized wishlist
       Vue.nextTick(() => {
         this.rdy = true;
       });
