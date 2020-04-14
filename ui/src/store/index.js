@@ -16,18 +16,16 @@ function loadLocalDb() {
     } catch (e) {
       return {};
     }
-  } else {
-    return {};
   }
+  return {};
 }
 
 function loadLocalDbVersion() {
   const localDbVersion = localStorageLoad(CONSTS.dbVersion);
   if (localDbVersion) {
     return localDbVersion;
-  } else {
-    return null;
   }
+  return null;
 }
 
 function loadLocalWishlist() {
@@ -38,9 +36,20 @@ function loadLocalWishlist() {
     } catch (e) {
       return [];
     }
-  } else {
-    return [];
   }
+  return [];
+}
+
+function loadLocalWishlistPriorities() {
+  const prios = localStorageLoad(CONSTS.wishlistPriorities);
+  if (prios) {
+    try {
+      return JSON.parse(prios).filter(x => !!x);
+    } catch (e) {
+      return [];
+    }
+  }
+  return [];
 }
 
 export default new Vuex.Store({
@@ -52,7 +61,37 @@ export default new Vuex.Store({
     dbVersion: loadLocalDbVersion(),
     wishlistItems: loadLocalWishlist(),
     wishlistName: "",
+    wishlistPriorities: loadLocalWishlistPriorities(),
     wishlistParams: {}
+  },
+  getters: {
+    // Might consider having a flattened version of DB
+    wishlistParsed: state => {
+      const temp = [];
+
+      // Get all the items in a temporary array
+      for (const a of state.db) {
+        for (const s of a.sculpts) {
+          for (const c of s.colorways) {
+            if (state.wishlistItems.includes(c.id)) {
+              temp.push({
+                id: c.id,
+                colorway: c.name,
+                artist: a.name,
+                sculpt: s.name,
+                img: c.img
+              });
+            }
+          }
+        }
+      }
+      // this map make the order possible
+      return state.wishlistItems.map(x => {
+        const cap = temp.find(z => z.id === x);
+        cap.isPrioritized = state.wishlistPriorities.includes(cap.id);
+        return cap;
+      });
+    }
   },
   mutations: {
     setDb(state, _db) {
@@ -60,6 +99,19 @@ export default new Vuex.Store({
     },
     setDbVersion(state, _version) {
       state.dbVersion = _version;
+    },
+    rmPriority(state, _id) {
+      const index = state.wishlistPriorities.indexOf(_id);
+      if (index > -1) {
+        state.wishlistPriorities.splice(index, 1);
+      }
+      state.wishlistPriorities = state.wishlistPriorities.filter(x => !!x);
+      Vue.set(state.wishlistPriorities, state.wishlistPriorities);
+      localStorageSet(CONSTS.wishlistPriorities, JSON.stringify(state.wishlistItems));
+    },
+    addPriority(state, _id) {
+      Vue.set(state.wishlistPriorities, state.wishlistPriorities.length, _id);
+      localStorageSet(CONSTS.wishlistPriorities, JSON.stringify(state.wishlistPriorities));
     },
     rmWishlist(state, _id) {
       const index = state.wishlistItems.indexOf(_id);
@@ -72,6 +124,13 @@ export default new Vuex.Store({
     },
     addWishlist(state, _id) {
       Vue.set(state.wishlistItems, state.wishlistItems.length, _id);
+      localStorageSet(CONSTS.wishlist, JSON.stringify(state.wishlistItems));
+    },
+    setWishlist(state, wishlistArray) {
+      state.wishlistItems.splice(0);
+      wishlistArray.forEach(e => {
+        state.wishlistItems.push(e);
+      });
       localStorageSet(CONSTS.wishlist, JSON.stringify(state.wishlistItems));
     }
   },

@@ -68,6 +68,9 @@ export default {
   },
   mounted() {
     this.observer = new IntersectionObserver(this.infiniteScroll);
+    // this.searchResult = this.rngCaps(5);
+    this.displayResults = this.rngCaps(5);
+    this.showCap(this.displayResults[0]);
   },
   computed: {
     ...mapState(["db", "wishlistItems"]),
@@ -85,6 +88,39 @@ export default {
     }
   },
   methods: {
+    searchFocus() {
+      console.log("search click");
+    },
+    rngInt(max) {
+      return Math.floor(Math.random() * Math.floor(max));
+    },
+    rngCap(currentCaps) {
+      const currentIds = currentCaps.map(x => x.ident);
+      let rngArtist, rngSculpt, rngCapId, outCap;
+      let end = false;
+      rngArtist = this.rngInt(this.db.length);
+      const artist = this.db[rngArtist];
+      rngSculpt = this.rngInt(artist.sculpts.length);
+      const sculpt = artist.sculpts[rngSculpt];
+      while (!end) {
+        rngCapId = this.rngInt(sculpt.colorways.length);
+        outCap = sculpt.colorways[rngCapId];
+        outCap.ident = outCap.id;
+        // avoid potential dupes
+        if (!currentIds.includes(outCap.ident)) {
+          outCap.name = `${artist.name} ${sculpt.name} ${outCap.name}`;
+          end = true;
+        }
+      }
+      return outCap;
+    },
+    rngCaps(nbCap) {
+      const output = [];
+      for (let i = 0; i < nbCap; i++) {
+        output.push(this.rngCap(output));
+      }
+      return output;
+    },
     clickCap() {
       const currentTap = Date.now();
       if (currentTap - this.lastTap < 500) {
@@ -101,6 +137,7 @@ export default {
       }
     },
     async onOpen() {
+      // this.
       await this.$nextTick();
       this.observer.observe(this.$refs.load);
     },

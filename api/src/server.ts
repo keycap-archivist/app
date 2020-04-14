@@ -1,7 +1,7 @@
 import 'app-module-path/register';
 import { createServer } from 'app';
 const port = Number(process.env.LISTEN_PORT) || 3000;
-const start = async (server) => {
+const start = async (server): Promise<void> => {
   try {
     await server.listen(port, '0.0.0.0');
   } catch (err) {

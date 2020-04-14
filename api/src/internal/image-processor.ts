@@ -1,5 +1,5 @@
 import { join, resolve } from 'path';
-import { createCanvas, loadImage, registerFont, Image } from 'canvas';
+import { createCanvas, loadImage, registerFont } from 'canvas';
 import { instance, Colorway, ColorwayDetailed } from 'db/instance';
 import { existsSync, mkdirSync, promises as FSpromises, constants } from 'fs';
 import axios from 'axios';

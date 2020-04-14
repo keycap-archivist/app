@@ -4,7 +4,7 @@ import * as fastifyCORS from 'fastify-cors';
 import { controllers } from 'api/controllers';
 import { join } from 'path';
 import { instance } from 'db/instance';
-import { apiLogger, appLogger } from 'logger';
+import { apiLogger } from 'logger';
 import { ApolloServer } from 'apollo-server-fastify';
 import { typeDefs, resolvers } from 'api/graphql';
 import * as marked from 'marked';
@@ -18,7 +18,7 @@ export async function createServer(): Promise<any> {
   server.register(fastifyCORS, { origin: true });
   server.register(fastifyStatic, {
     root: join(__dirname, 'public'),
-    setHeaders: (res, path, _) => {
+    setHeaders: (res, path, _F) => {
       // ignore cache for index
       if (path.indexOf('index.html') !== -1) {
         res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');

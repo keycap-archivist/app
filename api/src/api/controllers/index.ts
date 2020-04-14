@@ -3,7 +3,7 @@ import { instance, ColorwayDetailed } from 'db/instance';
 import * as tablemark from 'tablemark';
 import { appLogger } from 'logger';
 
-const genWishlistGet = async (req, resp) => {
+const genWishlistGet = async (req, resp): Promise<void> => {
   try {
     const imgBuffer = await generateWishlistFromQS(req.query);
     resp.type('image/jpeg').status(200).send(imgBuffer);
@@ -13,7 +13,7 @@ const genWishlistGet = async (req, resp) => {
   }
 };
 
-const genWishlistPost = async (req, resp) => {
+const genWishlistPost = async (req, resp): Promise<void> => {
   try {
     const imgBuffer = await generateWishlist(req.body);
     resp
@@ -27,7 +27,7 @@ const genWishlistPost = async (req, resp) => {
   }
 };
 
-const genTable = async (req, resp) => {
+const genTable = async (req, resp): Promise<void> => {
   let out = '';
   const caps: ColorwayDetailed[] = [];
   for (const i of req.query.ids.split(',').filter((x) => x)) {
@@ -47,7 +47,7 @@ const genTable = async (req, resp) => {
   resp.status(200).send(out);
 };
 
-const getKeycapImage = async (req, resp) => {
+const getKeycapImage = async (req, resp): Promise<void> => {
   const colorway = instance.getColorway(req.params.id);
 
   if (!colorway) {
