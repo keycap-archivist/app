@@ -9,13 +9,14 @@ import { Plugin } from "vue-fragment";
 import vSelect from "vue-select";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faSkullCrossbones, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faSkullCrossbones, faCheck, faAlignJustify } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 import Mint from "mint-ui";
 import "mint-ui/lib/style.css";
 
 library.add(faSkullCrossbones);
+library.add(faAlignJustify);
 library.add(faCheck);
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);

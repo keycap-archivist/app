@@ -45,21 +45,15 @@
       Generate wishlist
     </button>
     <span v-if="!wishlistArray.length">Nothing in wishlist yet.</span>
-
-    <div v-if="wishlistArray.length" class="w-full flex mb-2 ">
-      <div class="w-3/12 mr-2"><span class="text-xs mb-2">(Drag the images to reorder)</span></div>
-      <div class="w-6/12 self-center "></div>
-      <div class="w-2/12  self-center ">
-        Priority
-      </div>
-      <div class="w-1/12  self-center "></div>
-    </div>
     <draggable v-model="wishlistArray" handle=".handle">
       <div class="w-full flex mb-2 " v-for="a in this.wishlistArray" v-bind:key="a.id">
-        <div class="w-3/12 mr-2">
-          <img class="h-24 object-cover rounded-lg handle cursor-pointer" :src="getCapImg(a)" />
+        <div class="w-1/12 cursor-move text-center self-center handle">
+          <font-awesome-icon icon="align-justify" />
         </div>
-        <div class="w-6/12 self-center ">{{ a.sculpt }} {{ a.colorway }}</div>
+        <div class="w-3/12  cursor-resize mr-2">
+          <img class="h-24 object-cover rounded-lg" :src="getCapImg(a)" />
+        </div>
+        <div class="w-5/12 self-center ">{{ a.sculpt }} {{ a.colorway }}</div>
         <div class="w-2/12  self-center ">
           <mt-switch v-model="a.isPrioritized" @change="priorityChange(a.id, a.isPrioritized)"></mt-switch>
         </div>
