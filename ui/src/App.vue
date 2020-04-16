@@ -1,7 +1,7 @@
 <template>
   <div class="flex md:flex-row-reverse flex-wrap">
     <div class="w-full md:w-10/12 lg:w-10/12 bg-gray-100">
-      <div class="bg-gray-100 pt-4 lg:w-8/12 xl:w-6/12">
+      <div class="bg-gray-100 pt-2 md:pt-4 lg:w-8/12 xl:w-6/12">
         <div v-if="!rdy && !broken" class="text-center">
           <span>Application is currently loading</span>
           <ScaleLoader />
@@ -43,7 +43,6 @@ export default {
           this.setDbVersion(distantVersion);
         }
       }
-      // TODO: Sanitized wishlist
       Vue.nextTick(() => {
         this.rdy = true;
       });

@@ -8,11 +8,31 @@ Vue.use(Vuex);
 
 export const backend_baseurl = process.env.VUE_APP_API_URL;
 
+function flattenDb(db) {
+  const out = [];
+  for (const a of db) {
+    for (const s of a.sculpts) {
+      for (const c of s.colorways) {
+        out.push({
+          artistId: a.id,
+          artistName: a.name,
+          sculptId: s.id,
+          sculptName: s.name,
+          id: c.id,
+          colorwayName: c.name ? c.name : "No name",
+          img: c.img
+        });
+      }
+    }
+  }
+  return out;
+}
+
 function loadLocalDb() {
   const localDb = localStorageLoad(CONSTS.db);
   if (localDb) {
     try {
-      return JSON.parse(localDb);
+      return flattenDb(JSON.parse(localDb));
     } catch (e) {
       return {};
     }
@@ -57,7 +77,7 @@ export default new Vuex.Store({
     app
   },
   state: {
-    db: loadLocalDb(),
+    flattennedDb: loadLocalDb(),
     dbVersion: loadLocalDbVersion(),
     wishlistItems: loadLocalWishlist(),
     wishlistName: "",
@@ -65,24 +85,18 @@ export default new Vuex.Store({
     wishlistParams: {}
   },
   getters: {
-    // Might consider having a flattened version of DB
     wishlistParsed: state => {
       const temp = [];
-
       // Get all the items in a temporary array
-      for (const a of state.db) {
-        for (const s of a.sculpts) {
-          for (const c of s.colorways) {
-            if (state.wishlistItems.includes(c.id)) {
-              temp.push({
-                id: c.id,
-                colorway: c.name,
-                artist: a.name,
-                sculpt: s.name,
-                img: c.img
-              });
-            }
-          }
+      for (const cap of state.flattennedDb) {
+        if (state.wishlistItems.includes(cap.id)) {
+          temp.push({
+            id: cap.id,
+            colorway: cap.name,
+            artist: cap.artistName,
+            sculpt: cap.sculptName,
+            img: cap.img
+          });
         }
       }
       // this map make the order possible
@@ -94,8 +108,8 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    setDb(state, _db) {
-      state.db = _db;
+    setflattennedDb(state, _db) {
+      state.flattennedDb = flattenDb(_db);
     },
     setDbVersion(state, _version) {
       state.dbVersion = _version;
@@ -175,7 +189,7 @@ export default new Vuex.Store({
       }).then(result => {
         return result.data.data.allArtists;
       });
-      commit("setDb", db);
+      commit("setflattennedDb", db);
       localStorageSet(CONSTS.db, JSON.stringify(db));
     },
     async loadDbVersion() {

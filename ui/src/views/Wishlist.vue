@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4 mb-16 ">
+  <div class="px-2 mb-16 md:px-6">
     <wishlistImgComponent v-if="wishlistImg != ''" v-bind:src="wishlistImg" />
     <div>
       <div class="mb-4">
@@ -7,7 +7,7 @@
           Wishlist Title
         </label>
         <input
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          class="shadow appearance-none border border-gray-100 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="wishlistname"
           v-model="wishlistName"
           type="text"
@@ -15,11 +15,11 @@
         />
       </div>
       <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="extraText">
+        <label class="block text-gray-700 border-gray-100 text-sm font-bold mb-2" for="extraText">
           Extra text
         </label>
         <input
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          class="shadow appearance-none border rounded border-gray-100 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="extraText"
           v-model="extraText"
           type="text"
@@ -32,7 +32,7 @@
         </label>
         <input
           id="capsPerLine"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          class="shadow appearance-none border border-gray-100 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           type="number"
           v-model="capsPerLine"
         />

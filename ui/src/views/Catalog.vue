@@ -1,10 +1,12 @@
 <template>
   <div>
-    <div class="mb-5 px-6" style="height:13vh; max-height: 70px;">
-      <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
-        Search: Artist, Sculpt, Colorway...
+    <div class="px-2 mb-1 md:px-6">
+      <label class="block text-gray-600 text-sm font-bold mb-2" for="freeSearch">
+        Search:
       </label>
       <v-select
+        v-model="researchInput"
+        id="freeSearch"
         :filterable="false"
         :options="searchResultPaginated"
         label="displayName"
@@ -17,7 +19,38 @@
           <li ref="load" class="loader"></li>
         </template>
       </v-select>
-      <span v-if="selectedCap" class="text-xs">(double tap on cap to add to wishlist)</span>
+      <div class="flex flex-wrap mt-2">
+        <div class="w-1/2 pr-2 mb-2">
+          <label class="block text-gray-700 text-sm font-bold mb-2">
+            Artist:
+          </label>
+          <select
+            v-model="selectedArtist"
+            class=" block appearance-none w-full bg-gray-200 border border-gray-100 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+          >
+            <option v-for="option in artistSearchList" v-bind:value="option.value" :key="option.id">
+              {{ option.text }}</option
+            ></select
+          >
+        </div>
+        <div class="w-1/2" v-if="selectedArtist !== null">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="">
+            Sculpt:
+          </label>
+          <select
+            v-model="selectedSculpt"
+            @change="selectSculpt"
+            class=" block appearance-none w-full bg-gray-200 border border-gray-100 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+          >
+            <option v-for="option in sculptSearchList" v-bind:value="option.value" :key="option.id">
+              {{ option.text }}</option
+            ></select
+          >
+        </div>
+      </div>
+      <div>
+        <span v-if="selectedCap" class="text-xs">(double tap on cap to add to wishlist)</span>
+      </div>
     </div>
     <div
       class="mx-auto w-auto overflow-hidden mb-5 px-6 cursor-pointer noSelect"
@@ -54,7 +87,7 @@
 </template>
 
 <script>
-import vue from "vue";
+// import vue from "vue";
 import { Toast } from "mint-ui";
 import { mapState, mapActions } from "vuex";
 import { PerfectScrollbar } from "vue2-perfect-scrollbar";
@@ -68,12 +101,11 @@ export default {
   },
   mounted() {
     this.observer = new IntersectionObserver(this.infiniteScroll);
-    // this.searchResult = this.rngCaps(5);
     this.displayResults = this.rngCaps(5);
     this.showCap(this.displayResults[0]);
   },
   computed: {
-    ...mapState(["db", "wishlistItems"]),
+    ...mapState(["flattennedDb", "wishlistItems"]),
     searchResultPaginated() {
       return this.searchResultFiltered.slice(0, this.searchLimit);
     },
@@ -85,34 +117,52 @@ export default {
     },
     previewImgSrc() {
       return this.selectedCap !== null ? `${process.env.VUE_APP_API_URL}/v1/img/${this.selectedCap.ident}` : null;
+    },
+    artistSearchList() {
+      const out = [];
+      out.push({
+        value: null,
+        text: "Select an Artist"
+      });
+      for (const c of this.flattennedDb) {
+        if (!out.find(x => x.value === c.artistId)) {
+          out.push({
+            value: c.artistId,
+            text: c.artistName
+          });
+        }
+      }
+      return out;
+    },
+    sculptSearchList() {
+      const out = [];
+      for (const c of this.flattennedDb) {
+        if (c.artistId === this.selectedArtist && !out.find(x => x.value === c.sculptId)) {
+          out.push({
+            value: c.sculptId,
+            text: c.sculptName
+          });
+        }
+      }
+      // this.selectedSculpt = out[0];
+      return out;
     }
   },
   methods: {
-    searchFocus() {
-      console.log("search click");
-    },
     rngInt(max) {
       return Math.floor(Math.random() * Math.floor(max));
     },
     rngCap(currentCaps) {
-      const currentIds = currentCaps.map(x => x.ident);
-      let rngArtist, rngSculpt, rngCapId, outCap;
-      let end = false;
-      rngArtist = this.rngInt(this.db.length);
-      const artist = this.db[rngArtist];
-      rngSculpt = this.rngInt(artist.sculpts.length);
-      const sculpt = artist.sculpts[rngSculpt];
-      while (!end) {
-        rngCapId = this.rngInt(sculpt.colorways.length);
-        outCap = sculpt.colorways[rngCapId];
-        outCap.ident = outCap.id;
-        // avoid potential dupes
-        if (!currentIds.includes(outCap.ident)) {
-          outCap.name = `${artist.name} ${sculpt.name} ${outCap.name}`;
-          end = true;
+      const ids = currentCaps.map(x => x.ident);
+      const dbLength = this.flattennedDb.length;
+      for (;;) {
+        const outCap = this.flattennedDb[this.rngInt(dbLength)];
+        if (outCap && !ids.includes(outCap.id)) {
+          outCap.name = `${outCap.artistName} ${outCap.sculptName} ${outCap.colorwayName}`;
+          outCap.ident = outCap.id;
+          return outCap;
         }
       }
-      return outCap;
     },
     rngCaps(nbCap) {
       const output = [];
@@ -120,6 +170,21 @@ export default {
         output.push(this.rngCap(output));
       }
       return output;
+    },
+    selectSculpt() {
+      this.researchInput = null;
+      const cw = [];
+      for (const c of this.flattennedDb.filter(x => this.selectedSculpt === x.sculptId)) {
+        if (!cw.map(x => x.id).includes(c.id)) {
+          c.ident = c.id;
+          c.name = c.colorwayName;
+          cw.push(c);
+        }
+      }
+      this.displayResults.length = 0;
+      this.results.length = 0;
+      this.results = cw.sort(this.sortResults);
+      this.showCap(this.results[0]);
     },
     clickCap() {
       const currentTap = Date.now();
@@ -137,7 +202,6 @@ export default {
       }
     },
     async onOpen() {
-      // this.
       await this.$nextTick();
       this.observer.observe(this.$refs.load);
     },
@@ -167,8 +231,6 @@ export default {
       this.selectedCap = null;
       this.$nextTick().then(() => {
         this.selectedCap = cap;
-        // this.previewImgSrc = "";
-        //   this.previewImgSrc = `${process.env.VUE_APP_API_URL}/v1/img/${cap.ident}`;
       });
     },
     sortResults(a, b) {
@@ -179,71 +241,13 @@ export default {
     setSelected(value) {
       this.displayResults.length = 0;
       this.results.length = 0;
-      // Deselection event
       if (!value) {
         return;
       }
-      if (value.type === "colorway") {
-        // In case of colorway we directly show it
-        this.displayResults = [value];
-        this.showCap(value);
-      } else if (value.type === "sculpt") {
-        // In case of sculpt Selection we show all the colorways
-        vue.nextTick(() => {
-          this.results = this.db
-            .map(a => {
-              const r = a.sculpts.find(s => s.id === value.ident);
-              if (r) {
-                let idx = 0;
-                return r.colorways.map(c => {
-                  const out = { ...c };
-                  out.idx = idx++;
-                  if (!c.name.trim()) {
-                    out.name = "No Name";
-                  }
-                  out.ident = out.id;
-                  return out;
-                });
-              }
-            })
-            .filter(x => x)[0]
-            .sort(this.sortResults);
-          this.endOfScroll();
-          this.showCap(this.displayResults[0]);
-        });
-      } else {
-        // In case of Artist Selection we show all the sculpts and colorways
-        vue.nextTick(() => {
-          const o = [
-            ...this.db
-              .map(a => {
-                if (a.id === value.ident) {
-                  return a.sculpts;
-                }
-              })
-              .filter(x => x)[0]
-              .map(r =>
-                r.colorways.map(c => {
-                  const out = { ...c };
-                  out.ident = out.id;
-                  out.name = `${r.name} ${c.name}`;
-                  return out;
-                })
-              )
-          ];
-          let idx = 0;
-          o.forEach(i => {
-            this.results = [...this.results, ...i]
-              .map(e => {
-                e.idx = idx++;
-                return e;
-              })
-              .sort(this.sortResults);
-          });
-          this.endOfScroll();
-          this.showCap(this.displayResults[0]);
-        });
-      }
+      this.displayResults = [value];
+      this.showCap(value);
+      this.selectedArtist = value.artistId;
+      this.selectedSculpt = value.sculptId;
     },
     async infiniteScroll([{ isIntersecting, target }]) {
       if (isIntersecting) {
@@ -262,55 +266,42 @@ export default {
       }
       this.searchResultFiltered.length = 0;
       this.searchLimit = 20;
-      const artistResult = [];
-      const sculptResult = [];
-      const cwResult = [];
+      const r = [];
       const sanitizedSearch = q.toLowerCase().trim();
       let i = 0;
-      for (const a of this.db) {
-        i++;
-        let addAllScupts = false;
-        if (this.isMatch(a.name, sanitizedSearch)) {
-          addAllScupts = true;
-          artistResult.push({
-            id: i,
-            ident: a.id,
-            name: `${a.name}`,
-            displayName: `Artist: ${a.name}`,
-            type: "artist"
-          });
+      for (const c of this.flattennedDb) {
+        let push = false;
+        if (this.selectedArtist !== null) {
+          if (
+            c.artistId === this.selectedArtist &&
+            this.isMatch(`${c.sculptName} ${c.colorwayName}`, sanitizedSearch)
+          ) {
+            push = true;
+          }
+        } else if (this.selectedArtist !== null && this.selectedSculpt !== null) {
+          if (c.artistId === this.selectedSculpt && this.isMatch(c.colorwayName, sanitizedSearch)) {
+            push = true;
+          }
+        } else {
+          if (this.isMatch(`${c.artistName} ${c.sculptName} ${c.colorwayName}`, sanitizedSearch)) {
+            push = true;
+          }
         }
-        for (const s of a.sculpts) {
-          i++;
-          let addAllcolorways = false;
-          if (this.isMatch(s.name, sanitizedSearch) || addAllScupts) {
-            addAllcolorways = true;
-            sculptResult.push({
-              id: i,
-              ident: s.id,
-              name: `${s.name}`,
-              displayName: `Sculpt: ${a.name} ${s.name}`,
-              type: "sculpt"
-            });
-          }
-          for (const c of s.colorways) {
-            i++;
-            if (this.isMatch(c.name, sanitizedSearch) || addAllcolorways) {
-              cwResult.push({
-                id: i,
-                ident: c.id,
-                name: `${c.name}`,
-                img: c.img,
-                displayName: `Colorway: ${s.name} ${c.name}`,
-                type: "colorway"
-              });
-            }
-          }
+        if (push) {
+          r.push({
+            id: ++i,
+            ident: c.id,
+            name: `${c.colorwayName}`,
+            artistId: c.artistId,
+            sculptId: c.sculptId,
+            img: c.img,
+            displayName: `${c.artistName} ${c.sculptName} ${c.colorwayName}`
+          });
         }
       }
       await this.$nextTick();
 
-      this.searchResult = [...artistResult, ...sculptResult, ...cwResult];
+      this.searchResult = r;
     },
     isMatch(input, search) {
       return (
@@ -325,9 +316,10 @@ export default {
     lastTap: 0,
     searchLimit: 20,
     observer: null,
-    researchInput: "",
-    selectedSearch: "",
+    researchInput: null,
     selectedCap: null,
+    selectedArtist: null,
+    selectedSculpt: null,
     results: [],
     displayResults: [],
     searchResult: []
