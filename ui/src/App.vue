@@ -21,7 +21,6 @@ import Vue from "vue";
 import Sidebar from "./components/Sidebar.vue";
 import { ScaleLoader } from "@saeris/vue-spinners";
 import { mapActions, mapState } from "vuex";
-import { isEmpty } from "lodash";
 export default {
   name: "App",
   components: {
@@ -29,12 +28,12 @@ export default {
     ScaleLoader
   },
   computed: {
-    ...mapState(["db", "dbVersion"])
+    ...mapState(["flattennedDb", "dbVersion"])
   },
   async created() {
     try {
       const distantVersion = await this.loadDbVersion();
-      if (isEmpty(this.db)) {
+      if (!this.flattennedDb.length) {
         await this.loadDb();
         this.setDbVersion(distantVersion);
       } else {

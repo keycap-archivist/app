@@ -34,10 +34,10 @@ function loadLocalDb() {
     try {
       return flattenDb(JSON.parse(localDb));
     } catch (e) {
-      return {};
+      return [];
     }
   }
-  return {};
+  return [];
 }
 
 function loadLocalDbVersion() {

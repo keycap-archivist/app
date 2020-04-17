@@ -15,7 +15,6 @@
     "@fortawesome/vue-fontawesome": "0.1.9",
     "@saeris/vue-spinners": "1.0.8",
     "axios": "0.19.2",
-    "lodash": "4.17.15",
     "mint-ui": "2.2.13",
     "qs": "6.9.3",
     "vue": "2.6.11",
