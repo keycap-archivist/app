@@ -26,10 +26,7 @@ jobs:
         with:
           node-version: ${{ steps.nodeversion.outputs.NODE }}
       - name: Install project
-        run: |
-          yarn
-      - name: Lint packages
-        run: npx lerna run lint
+        run: yarn
       - name: Builds packages
         run: |
           echo VUE_APP_REVISION=$GITHUB_SHA >> packages/ui/.env.production
