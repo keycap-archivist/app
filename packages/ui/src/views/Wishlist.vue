@@ -98,6 +98,9 @@
         </div>
       </div>
     </div>
+    <div>
+      <p class="text-center mb-2">{{ wishlistArray.length }} caps in Wishlist</p>
+    </div>
     <button
       class="w-full mb-3 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-1 px-2 border border-yellow-700 rounded"
       @click="generateWishlist"
@@ -113,7 +116,7 @@
         <div class="w-3/12  cursor-resize mr-2">
           <img class="h-24 object-cover rounded-lg" :src="getCapImg(a)" />
         </div>
-        <div class="w-5/12 self-center ">{{ a.sculpt }} {{ a.colorway }}</div>
+        <div class="w-5/12 self-center ">{{ a.artist }} {{ a.sculpt }} {{ a.colorway }}</div>
         <div class="w-2/12  self-center ">
           <mt-switch v-model="a.isPrioritized" @change="priorityChange(a.id, a.isPrioritized)"></mt-switch>
         </div>

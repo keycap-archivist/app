@@ -92,7 +92,7 @@ export default new Vuex.Store({
         if (state.wishlistItems.includes(cap.id)) {
           temp.push({
             id: cap.id,
-            colorway: cap.name,
+            colorway: cap.colorwayName,
             artist: cap.artistName,
             sculpt: cap.sculptName,
             img: cap.img
