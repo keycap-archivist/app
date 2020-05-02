@@ -14,19 +14,23 @@ jobs:
       - uses: actions/checkout@v1
       - id: nodeversion
         run: echo ::set-output name=NODE::$(cat .nvmrc)
-      # - name: restore Cache
-      #   uses: actions/cache@master
-      #   with:
-      #     path: |
-      #       node_modules
-      #       */*/node_modules
-      #     key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - name: restore Cache
+        uses: actions/cache@master
+        with:
+          path: |
+            node_modules
+            */*/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Use Node.js ${{steps.nodeversion.outputs.NODE}}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ steps.nodeversion.outputs.NODE }}
       - name: Install project
         run: yarn
+      - name: Install ui
+        run: cd packages/ui && yarn
+      - name: Install api
+        run: cd packages/api && yarn
       - name: Builds packages
         run: |
           echo VUE_APP_REVISION=$GITHUB_SHA >> packages/ui/.env.production
