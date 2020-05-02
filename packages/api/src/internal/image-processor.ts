@@ -9,6 +9,8 @@ const fontPath = resolve(join(__dirname, 'fonts'));
 registerFont(join(fontPath, 'RedRock.ttf'), { family: 'RedRock' });
 registerFont(join(fontPath, 'Roboto-Regular.ttf'), { family: 'Roboto' });
 
+const supportedPolice = ['RedRock', 'Roboto'];
+
 const MARGIN_SIDE = 10;
 const MARGIN_BOTTOM = 60;
 const LINE_HEIGHT = 22;
@@ -94,14 +96,14 @@ function fitText(ctx, legend, maxWidth): string {
   return `${outLegend.trim()}...`;
 }
 
-function drawBorder(ctx, width, height, thickness = 1): void {
+function drawBorder(ctx, width: number, height: number, thickness = 1): void {
   ctx.fillStyle = '#F00';
   ctx.fillRect(0 - thickness, 0 - thickness, width + thickness * 2, height + thickness * 2);
 }
 
-async function drawTheCap(context, color, cap, x, y): Promise<void> {
+async function drawTheCap(context, opt: WishlistOptions, cap, x: number, y: number): Promise<void> {
   const imgBuffer = await getImgBuffer(cap);
-
+  let color = opt.textColor;
   const _img = await loadImage(imgBuffer);
   let h: number, w: number, sx: number, sy: number;
   if (_img.width > _img.height) {
@@ -117,6 +119,9 @@ async function drawTheCap(context, color, cap, x, y): Promise<void> {
   }
   const Tcanvas = createCanvas(IMG_WIDTH, IMG_HEIGTH);
   const Tctx = Tcanvas.getContext('2d');
+
+  Tctx.fillStyle = opt.bg;
+  Tctx.fillRect(0, 0, IMG_WIDTH, IMG_HEIGTH);
 
   Tctx.beginPath();
   Tctx.moveTo(THUMB_RADIUS, 0);
@@ -195,6 +200,7 @@ interface WishlistOptions {
   priorities: string[];
   bg: string;
   titleText: string;
+  titlePolice: string;
   titleColor: string;
   textColor: string;
   extraTextColor: string;
@@ -207,11 +213,12 @@ interface WishlistOptions {
 function parseQsOptions(options): WishlistOptions {
   const opt = Object.assign({}, defaultOptions, options);
   opt.ids = [...new Set(opt.ids.split(','))];
+  opt.titlePolice = opt.titlePolice ? opt.titlePolice : 'RedRock';
   opt.priorities = [...new Set(opt.prio.split(','))];
-  opt.bg = opt.bg ? `#${opt.bg}` : 'black';
-  opt.titleColor = opt.titleColor ? `#${opt.titleColor}` : 'red';
-  opt.textColor = opt.textcolor ? `#${opt.textcolor}` : 'white';
-  opt.extraTextColor = opt.extraTextColor ? `#${opt.extraTextColor}` : 'white';
+  opt.bg = opt.bg ? opt.bg : 'black';
+  opt.titleColor = opt.titleColor ? opt.titleColor : 'red';
+  opt.textColor = opt.textColor ? opt.textColor : 'white';
+  opt.extraTextColor = opt.extraTextColor ? opt.extraTextColor : 'white';
   opt.capsPerLine = parseInt(opt.capsPerLine);
   opt.extraText = opt.extraText.trim();
   opt.caps = getCaps(opt.ids, opt.priorities);
@@ -223,7 +230,7 @@ function calcWidth(opt): number {
   return opt.capsPerLine * IMG_WIDTH + opt.capsPerLine * MARGIN_SIDE + MARGIN_SIDE;
 }
 
-function calcHeight(opt): number {
+function calcHeight(opt: WishlistOptions): number {
   const nbCaps = opt.caps.length;
   if (opt.capsPerLine > nbCaps) {
     opt.capsPerLine = nbCaps;
@@ -257,14 +264,14 @@ export async function generateWishlist(opt: WishlistOptions): Promise<Buffer> {
       idx = 0;
       y += rowHeight;
     }
-    p.push(drawTheCap(ctx, opt.textColor, cap, idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y));
+    p.push(drawTheCap(ctx, opt, cap, idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y));
     idx++;
   }
 
   await Promise.all(p);
 
   // Title
-  ctx.font = '60px RedRock';
+  ctx.font = `60px ${opt.titlePolice}`;
   ctx.fillStyle = opt.titleColor;
   ctx.textAlign = 'center';
   ctx.fillText(opt.titleText ? opt.titleText : 'Wishlist', canvasWidth / 2, 60);

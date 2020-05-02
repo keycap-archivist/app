@@ -26,15 +26,15 @@ jobs:
         with:
           node-version: ${{ steps.nodeversion.outputs.NODE }}
       - name: Install project
-        run: |
-          yarn
-          npx lerna bootstrap
-      - name: Lint packages
-        run: npx lerna run lint
+        run: yarn
+      - name: Install ui
+        run: cd packages/ui && yarn
+      - name: Install api
+        run: cd packages/api && yarn
       - name: Builds packages
         run: |
           echo VUE_APP_REVISION=$GITHUB_SHA >> packages/ui/.env.production
-          npx lerna run package
+          yarn package
       - name: docker build
         run: docker build .
       - name: Push to registry

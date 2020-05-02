@@ -1,24 +1,6 @@
 <template>
   <div>
     <div class="px-2 mb-1 md:px-6">
-      <label class="block text-gray-600 text-sm font-bold mb-2" for="freeSearch">
-        Search:
-      </label>
-      <v-select
-        v-model="researchInput"
-        id="freeSearch"
-        :filterable="false"
-        :options="searchResultPaginated"
-        label="displayName"
-        @search="search"
-        @input="setSelected"
-        @open="onOpen"
-        @close="onClose"
-      >
-        <template #list-footer>
-          <li ref="load" class="loader"></li>
-        </template>
-      </v-select>
       <div class="flex flex-wrap mt-2">
         <div class="w-1/2 pr-2 mb-2">
           <label class="block text-gray-700 text-sm font-bold mb-2">
@@ -48,6 +30,15 @@
           >
         </div>
       </div>
+      <label class="block text-gray-600 text-sm font-bold mb-2" for="freeSearch">
+        Search:
+      </label>
+      <input
+        type="text"
+        v-model="researchInput"
+        v-on:input="search"
+        class=" block appearance-none w-full bg-gray-200 border border-gray-100 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+      />
       <div>
         <span v-if="selectedCap" class="text-xs">(double tap on cap to add to wishlist)</span>
       </div>
@@ -87,7 +78,6 @@
 </template>
 
 <script>
-// import vue from "vue";
 import { Toast } from "mint-ui";
 import { mapState, mapActions } from "vuex";
 import { PerfectScrollbar } from "vue2-perfect-scrollbar";
@@ -100,21 +90,11 @@ export default {
     lazyloadImg
   },
   mounted() {
-    this.observer = new IntersectionObserver(this.infiniteScroll);
     this.displayResults = this.rngCaps(5);
     this.showCap(this.displayResults[0]);
   },
   computed: {
     ...mapState(["flattennedDb", "wishlistItems"]),
-    searchResultPaginated() {
-      return this.searchResultFiltered.slice(0, this.searchLimit);
-    },
-    searchResultFiltered() {
-      return this.searchResult;
-    },
-    hasNextPage() {
-      return this.searchResultPaginated.length < this.searchResultFiltered.length;
-    },
     previewImgSrc() {
       return this.selectedCap !== null ? `${process.env.VUE_APP_API_URL}/v1/img/${this.selectedCap.ident}` : null;
     },
@@ -144,7 +124,6 @@ export default {
           });
         }
       }
-      // this.selectedSculpt = out[0];
       return out;
     }
   },
@@ -201,13 +180,7 @@ export default {
         this.lastTap = currentTap;
       }
     },
-    async onOpen() {
-      await this.$nextTick();
-      this.observer.observe(this.$refs.load);
-    },
-    onClose() {
-      this.observer.disconnect();
-    },
+
     ...mapActions(["addWishlist", "rmWishlist"]),
     // Infinite Scroll Result
     endOfScroll() {
@@ -249,22 +222,13 @@ export default {
       this.selectedArtist = value.artistId;
       this.selectedSculpt = value.sculptId;
     },
-    async infiniteScroll([{ isIntersecting, target }]) {
-      if (isIntersecting) {
-        const ul = target.offsetParent;
-        const scrollTop = target.offsetParent.scrollTop;
-        this.searchLimit += 10;
-        await this.$nextTick();
-        ul.scrollTop = scrollTop;
-      }
-    },
-    async search(q) {
+    async search() {
+      const q = this.researchInput;
       // in case of 1 char too much results
       // laggy on bad phones (like mine)
-      if (q.length == 1) {
+      if (!q || q.length == 1) {
         return;
       }
-      this.searchResultFiltered.length = 0;
       this.searchLimit = 20;
       const r = [];
       const sanitizedSearch = q.toLowerCase().trim();
@@ -288,10 +252,11 @@ export default {
           }
         }
         if (push) {
+          // TODO : Sanitize the result format throught all components
           r.push({
             id: ++i,
             ident: c.id,
-            name: `${c.colorwayName}`,
+            name: `${c.artistName} ${c.sculptName} ${c.colorwayName}`,
             artistId: c.artistId,
             sculptId: c.sculptId,
             img: c.img,
@@ -301,7 +266,9 @@ export default {
       }
       await this.$nextTick();
 
-      this.searchResult = r;
+      this.displayResults.length = 0;
+      this.results.length = 0;
+      this.results = r.sort(this.sortResults);
     },
     isMatch(input, search) {
       return (
@@ -316,13 +283,12 @@ export default {
     lastTap: 0,
     searchLimit: 20,
     observer: null,
-    researchInput: null,
+    researchInput: "",
     selectedCap: null,
     selectedArtist: null,
     selectedSculpt: null,
     results: [],
-    displayResults: [],
-    searchResult: []
+    displayResults: []
   })
 };
 </script>

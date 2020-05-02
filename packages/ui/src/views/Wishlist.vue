@@ -27,15 +27,75 @@
         />
       </div>
       <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="capsPerLine">
-          Number keycap per line
-        </label>
-        <input
-          id="capsPerLine"
-          class="shadow appearance-none border border-gray-100 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          type="number"
-          v-model="capsPerLine"
-        />
+        <div class="flex flex-wrap mt-2">
+          <div class="w-1/2 pr-2">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="capsPerLine">
+              Number keycap per line
+            </label>
+            <input
+              id="capsPerLine"
+              class="shadow appearance-none border border-gray-100 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              type="number"
+              v-model="capsPerLine"
+            />
+          </div>
+          <div class="w-1/2 pr-2">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="textColor">
+              Title Police
+            </label>
+            <select
+              id="titlePolice"
+              class="shadow appearance-none border border-gray-100 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              type="select"
+              v-model="titlePolice"
+            >
+              <option v-for="police in ['RedRock', 'Roboto']" :key="police" :value="police">{{ police }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="mb-4">
+        <div class="flex flex-wrap mt-2">
+          <div class="w-1/3 pr-2">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="titleColor">
+              Title Color
+            </label>
+            <select
+              id="titleColor"
+              class="shadow appearance-none border border-gray-100 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              type="select"
+              v-model="titleColor"
+            >
+              <option v-for="color in cssColors" :key="color" :value="color">{{ color }}</option>
+            </select>
+          </div>
+          <div class="w-1/3 pr-2">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="textColor">
+              Text Color
+            </label>
+            <select
+              id="textColor"
+              class="shadow appearance-none border border-gray-100 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              type="select"
+              v-model="textColor"
+            >
+              <option v-for="color in cssColors" :key="color" :value="color">{{ color }}</option>
+            </select>
+          </div>
+          <div class="w-1/3 pr-2">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="bgColor">
+              Background Color
+            </label>
+            <select
+              id="bgColor"
+              class="shadow appearance-none border border-gray-100 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              type="select"
+              v-model="bg"
+            >
+              <option v-for="color in cssColors" :key="color" :value="color">{{ color }}</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
     <button
@@ -71,7 +131,10 @@
 </template>
 
 <script>
+// TODO : Save wishlist parameters in localstorage
+// TODO : Find a way to display image from POST requests
 import { MessageBox } from "mint-ui";
+import { cssColors } from "../utils/misc";
 import { stringify } from "qs";
 import draggable from "vuedraggable";
 import { mapState, mapActions, mapGetters, mapMutations } from "vuex";
@@ -116,6 +179,10 @@ export default {
             .map(x => x.id)
             .join(","),
           titleText: this.wishlistName,
+          titleColor: this.titleColor,
+          bg: this.bg,
+          titlePolice: this.titlePolice,
+          textColor: this.textColor,
           capsPerLine: this.capsPerLine,
           extraText: this.extraText
         })}`;
@@ -123,6 +190,9 @@ export default {
     }
   },
   computed: {
+    cssColors() {
+      return cssColors;
+    },
     ...mapGetters(["wishlistParsed"]),
     ...mapState(["db", "wishlistItems", "wishlistPriorities"]),
     wishlistArray: {
@@ -137,6 +207,10 @@ export default {
   data: () => ({
     imgLoaded: false,
     wishlistImg: "",
+    titleColor: "Red",
+    titlePolice: "RedRock",
+    bg: "Black",
+    textColor: "White",
     wishlistName: "",
     extraText: "",
     capsPerLine: 3

@@ -4,19 +4,13 @@
     "target": "es6",
     "baseUrl": "./src",
     "paths": {
-      "*": [
-        "*",
-      ]
+      "*": ["*"]
     },
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "./dist"
   },
-  "include": [
-    "./src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["./src/**/*.ts"],
+  "exclude": ["node_modules"]
 }

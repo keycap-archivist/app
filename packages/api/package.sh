@@ -4,4 +4,4 @@ yarn build
 cp package.json dist/package.json
 cp yarn.lock dist/yarn.lock
 cd dist
-yarn
+yarn install --production=true

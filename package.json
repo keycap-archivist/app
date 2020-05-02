@@ -1,6 +1,11 @@
 {
+  "scripts": {
+    "installProject": "npx ultra -r yarn install",
+    "package": "npx ultra -r yarn package",
+    "serve": "npx ultra -r yarn serve"
+  },
   "devDependencies": {
-    "lerna": "3.20.2"
+    "ultra-runner": "3.2.2"
   },
   "name": "too-much-artisans"
 }
