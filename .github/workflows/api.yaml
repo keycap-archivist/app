@@ -28,13 +28,12 @@ jobs:
       - name: Install project
         run: |
           yarn
-          npx lerna bootstrap
       - name: Lint packages
         run: npx lerna run lint
       - name: Builds packages
         run: |
           echo VUE_APP_REVISION=$GITHUB_SHA >> packages/ui/.env.production
-          npx lerna run package
+          yarn package
       - name: docker build
         run: docker build .
       - name: Push to registry
