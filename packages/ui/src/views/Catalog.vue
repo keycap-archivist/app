@@ -36,7 +36,7 @@
       <input
         type="text"
         v-model="researchInput"
-        v-on:keypress="search"
+        v-on:input="search"
         class=" block appearance-none w-full bg-gray-200 border border-gray-100 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
       />
       <div>
