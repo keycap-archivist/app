@@ -1,7 +1,8 @@
 {
   "scripts": {
     "installProject": "npx ultra -r yarn install",
-    "package": "npx ultra -r yarn package",
+    "clearProject": "npx ultra -r rm -rf node_modules",
+    "package": "rm -rf packages/*/dist && npx ultra -r yarn package",
     "serve": "npx ultra -r yarn serve"
   },
   "devDependencies": {

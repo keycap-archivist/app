@@ -14,8 +14,8 @@ Project uses Lerna
 # Setup env
 yarn
 # Install env
-npx lerna bootstrap
+yarn installProject
 # Start API and UI
-npx lerna run serve --parallel
+yarn serve
 # UI exposed on 8080 and API on 3000
 ```
