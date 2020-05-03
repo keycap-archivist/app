@@ -2,11 +2,15 @@
   "scripts": {
     "installProject": "npx ultra -r yarn install",
     "clearProject": "npx ultra -r rm -rf node_modules",
-    "package": "rm -rf packages/*/dist && npx ultra -r yarn package",
-    "serve": "rm -rf packages/*/dist && npx ultra -r yarn serve"
+    "package": "npx ultra -r yarn package",
+    "serve": "npx ultra -r yarn serve"
   },
   "devDependencies": {
     "ultra-runner": "3.2.2"
   },
-  "name": "too-much-artisans"
+  "name": "too-much-artisans",
+  "private": true,
+  "workspaces": [
+    "packages/!(dist)"
+  ]
 }
