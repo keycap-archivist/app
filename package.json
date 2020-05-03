@@ -1,16 +1,13 @@
 {
   "scripts": {
-    "installProject": "npx ultra -r yarn install",
+    "installProject": "yarn cleanDist && npx ultra -r yarn install",
     "clearProject": "npx ultra -r rm -rf node_modules",
-    "package": "npx ultra -r yarn package",
-    "serve": "npx ultra -r yarn serve"
+    "package": "yarn cleanDist && npx ultra -r yarn package",
+    "cleanDist": "rm -rf packages/*/dist",
+    "serve": "yarn cleanDist && npx ultra -r yarn serve"
   },
   "devDependencies": {
     "ultra-runner": "3.2.2"
   },
-  "name": "too-much-artisans",
-  "private": true,
-  "workspaces": [
-    "packages/!(dist)"
-  ]
+  "name": "too-much-artisans"
 }
