@@ -146,13 +146,14 @@ export default {
   components: { wishlistImgComponent, draggable },
   methods: {
     ...mapMutations(["setWishlist", "addPriority", "rmPriority"]),
-    ...mapActions(["rmWishlist", "saveWishListParams"]),
+    ...mapActions(["rmWishlist", "saveWishListParams", "saveWishListPriorities"]),
     priorityChange(id, e) {
       if (e) {
         this.addPriority(id);
       } else {
         this.rmPriority(id);
       }
+      this.saveWishListPriorities();
     },
     getCapImg(cap) {
       return `${process.env.VUE_APP_API_URL}/v1/img/${cap.id}`;
@@ -168,6 +169,7 @@ export default {
       }).then(action => {
         if (action === "confirm") {
           this.rmWishlist(id);
+          this.rmPriority(id);
         }
       });
     },

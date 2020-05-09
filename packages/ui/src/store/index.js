@@ -52,7 +52,7 @@ function loadLocalWishlist() {
   const localWishlist = localStorageLoad(CONSTS.wishlist);
   if (localWishlist) {
     try {
-      return JSON.parse(localWishlist).filter(x => !!x);
+      return JSON.parse(localWishlist).filter(Boolean);
     } catch (e) {
       return [];
     }
@@ -64,7 +64,7 @@ function loadLocalWishlistPriorities() {
   const prios = localStorageLoad(CONSTS.wishlistPriorities);
   if (prios) {
     try {
-      return JSON.parse(prios).filter(x => !!x);
+      return JSON.parse(prios).filter(Boolean);
     } catch (e) {
       return [];
     }
@@ -142,23 +142,23 @@ export default new Vuex.Store({
     },
     rmPriority(state, _id) {
       const index = state.wishlistPriorities.indexOf(_id);
-      if (index > -1) {
-        state.wishlistPriorities.splice(index, 1);
+      if (index === -1) {
+        return;
       }
-      state.wishlistPriorities = state.wishlistPriorities.filter(x => !!x);
+      state.wishlistPriorities.splice(index, 1);
+      state.wishlistPriorities = state.wishlistPriorities.filter(Boolean);
       Vue.set(state.wishlistPriorities, state.wishlistPriorities);
-      localStorageSet(CONSTS.wishlistPriorities, JSON.stringify(state.wishlistItems));
     },
     addPriority(state, _id) {
       Vue.set(state.wishlistPriorities, state.wishlistPriorities.length, _id);
-      localStorageSet(CONSTS.wishlistPriorities, JSON.stringify(state.wishlistPriorities));
     },
     rmWishlist(state, _id) {
       const index = state.wishlistItems.indexOf(_id);
-      if (index > -1) {
-        state.wishlistItems.splice(index, 1);
+      if (index === -1) {
+        return;
       }
-      state.wishlistItems = state.wishlistItems.filter(x => !!x);
+      state.wishlistItems.splice(index, 1);
+      state.wishlistItems = state.wishlistItems.filter(Boolean);
       Vue.set(state.wishlistItems, state.wishlistItems);
       localStorageSet(CONSTS.wishlist, JSON.stringify(state.wishlistItems));
     },
@@ -175,6 +175,11 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    saveWishListPriorities({ state }) {
+      const c = state.wishlistItems.filter(x => state.wishlistPriorities.includes(x));
+      console.log(c);
+      localStorageSet(CONSTS.wishlistPriorities, JSON.stringify(c));
+    },
     rmWishlist({ state, commit }, _id) {
       if (state.wishlistItems.indexOf(_id) > -1) {
         commit("rmWishlist", _id);
