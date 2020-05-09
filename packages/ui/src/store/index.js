@@ -72,6 +72,28 @@ function loadLocalWishlistPriorities() {
   return [];
 }
 
+const defaultParams = {
+  titleText: "",
+  titleColor: "Red",
+  bg: "Black",
+  titlePolice: "RedRock",
+  textColor: "White",
+  capsPerLine: 3,
+  extraText: ""
+};
+
+function loadLocalWishlistParams() {
+  const params = localStorageLoad(CONSTS.wishlistParams);
+  if (params) {
+    try {
+      return JSON.parse(params);
+    } catch (e) {
+      return { ...defaultParams };
+    }
+  }
+  return { ...defaultParams };
+}
+
 export default new Vuex.Store({
   modules: {
     app
@@ -80,9 +102,8 @@ export default new Vuex.Store({
     flattennedDb: loadLocalDb(),
     dbVersion: loadLocalDbVersion(),
     wishlistItems: loadLocalWishlist(),
-    wishlistName: "",
     wishlistPriorities: loadLocalWishlistPriorities(),
-    wishlistParams: {}
+    wishlistParams: loadLocalWishlistParams()
   },
   getters: {
     wishlistParsed: state => {
@@ -100,11 +121,16 @@ export default new Vuex.Store({
         }
       }
       // this map make the order possible
-      return state.wishlistItems.map(x => {
-        const cap = temp.find(z => z.id === x);
-        cap.isPrioritized = state.wishlistPriorities.includes(cap.id);
-        return cap;
-      });
+      return state.wishlistItems
+        .map(x => {
+          const cap = temp.find(z => z.id === x);
+          if (!cap) {
+            return;
+          }
+          cap.isPrioritized = state.wishlistPriorities.includes(cap.id);
+          return cap;
+        })
+        .filter(Boolean);
     }
   },
   mutations: {
@@ -153,6 +179,9 @@ export default new Vuex.Store({
       if (state.wishlistItems.indexOf(_id) > -1) {
         commit("rmWishlist", _id);
       }
+    },
+    saveWishListParams({ state }) {
+      localStorageSet(CONSTS.wishlistParams, JSON.stringify(state.wishlistParams));
     },
     addWishlist({ state, commit }, _id) {
       if (state.wishlistItems.indexOf(_id) === -1) {

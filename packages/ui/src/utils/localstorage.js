@@ -3,7 +3,8 @@ const CONSTS = {
   dbVersion: "catalogDbVersion",
   settings: "catalogSettings",
   wishlist: "catalogWishlist",
-  wishlistPriorities: "wishlistPriorities"
+  wishlistPriorities: "wishlistPriorities",
+  wishlistParams: "wishlistParams"
 };
 
 function localStorageLoad(key) {

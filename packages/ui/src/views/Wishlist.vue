@@ -9,7 +9,7 @@
         <input
           class="shadow appearance-none border border-gray-100 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="wishlistname"
-          v-model="wishlistName"
+          v-model="wishlistParams.titleText"
           type="text"
           placeholder="Wishlist"
         />
@@ -21,7 +21,7 @@
         <input
           class="shadow appearance-none border rounded border-gray-100 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="extraText"
-          v-model="extraText"
+          v-model="wishlistParams.extraText"
           type="text"
           placeholder="Contact me u/foobar"
         />
@@ -36,7 +36,7 @@
               id="capsPerLine"
               class="shadow appearance-none border border-gray-100 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               type="number"
-              v-model="capsPerLine"
+              v-model="wishlistParams.capsPerLine"
             />
           </div>
           <div class="w-1/2 pr-2">
@@ -47,7 +47,7 @@
               id="titlePolice"
               class="shadow appearance-none border border-gray-100 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               type="select"
-              v-model="titlePolice"
+              v-model="wishlistParams.titlePolice"
             >
               <option v-for="police in ['RedRock', 'Roboto']" :key="police" :value="police">{{ police }}</option>
             </select>
@@ -64,7 +64,7 @@
               id="titleColor"
               class="shadow appearance-none border border-gray-100 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               type="select"
-              v-model="titleColor"
+              v-model="wishlistParams.titleColor"
             >
               <option v-for="color in cssColors" :key="color" :value="color">{{ color }}</option>
             </select>
@@ -77,7 +77,7 @@
               id="textColor"
               class="shadow appearance-none border border-gray-100 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               type="select"
-              v-model="textColor"
+              v-model="wishlistParams.textColor"
             >
               <option v-for="color in cssColors" :key="color" :value="color">{{ color }}</option>
             </select>
@@ -90,7 +90,7 @@
               id="bgColor"
               class="shadow appearance-none border border-gray-100 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               type="select"
-              v-model="bg"
+              v-model="wishlistParams.bg"
             >
               <option v-for="color in cssColors" :key="color" :value="color">{{ color }}</option>
             </select>
@@ -134,7 +134,6 @@
 </template>
 
 <script>
-// TODO : Save wishlist parameters in localstorage
 // TODO : Find a way to display image from POST requests
 import { MessageBox } from "mint-ui";
 import { cssColors } from "../utils/misc";
@@ -147,7 +146,7 @@ export default {
   components: { wishlistImgComponent, draggable },
   methods: {
     ...mapMutations(["setWishlist", "addPriority", "rmPriority"]),
-    ...mapActions(["rmWishlist"]),
+    ...mapActions(["rmWishlist", "saveWishListParams"]),
     priorityChange(id, e) {
       if (e) {
         this.addPriority(id);
@@ -173,6 +172,7 @@ export default {
       });
     },
     generateWishlist() {
+      this.saveWishListParams();
       this.wishlistImg = "";
       this.$nextTick().then(() => {
         this.wishlistImg = `${process.env.VUE_APP_API_URL}/v1?${stringify({
@@ -181,13 +181,13 @@ export default {
             .filter(x => x.isPrioritized)
             .map(x => x.id)
             .join(","),
-          titleText: this.wishlistName,
-          titleColor: this.titleColor,
-          bg: this.bg,
-          titlePolice: this.titlePolice,
-          textColor: this.textColor,
-          capsPerLine: this.capsPerLine,
-          extraText: this.extraText
+          titleText: this.wishlistParams.titleText,
+          titleColor: this.wishlistParams.titleColor,
+          bg: this.wishlistParams.bg,
+          titlePolice: this.wishlistParams.titlePolice,
+          textColor: this.wishlistParams.textColor,
+          capsPerLine: this.wishlistParams.capsPerLine,
+          extraText: this.wishlistParams.extraText
         })}`;
       });
     }
@@ -197,7 +197,7 @@ export default {
       return cssColors;
     },
     ...mapGetters(["wishlistParsed"]),
-    ...mapState(["db", "wishlistItems", "wishlistPriorities"]),
+    ...mapState(["db", "wishlistItems", "wishlistPriorities", "wishlistParams"]),
     wishlistArray: {
       get() {
         return this.wishlistParsed;
@@ -208,15 +208,7 @@ export default {
     }
   },
   data: () => ({
-    imgLoaded: false,
-    wishlistImg: "",
-    titleColor: "Red",
-    titlePolice: "RedRock",
-    bg: "Black",
-    textColor: "White",
-    wishlistName: "",
-    extraText: "",
-    capsPerLine: 3
+    wishlistImg: ""
   })
 };
 </script>
