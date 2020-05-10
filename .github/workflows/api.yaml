@@ -57,7 +57,7 @@ jobs:
           port: ${{ secrets.SRV_PORT }}
           script: |
             cd artisans
-            docker-compose down
             docker-compose pull
+            docker-compose down
             docker-compose up -d
             docker rmi -f $(docker images -f "dangling=true" -q) || true
