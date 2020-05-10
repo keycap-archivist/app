@@ -42,7 +42,7 @@ jobs:
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
           dockerfile: Dockerfile
-          name: keycap-archivist/database/api
+          name: keycap-archivist/app/api
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
