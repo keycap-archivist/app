@@ -23,11 +23,11 @@
       The database is a public JSON file exposed by github
       <a
         class=" hover:text-yellow-700"
-        href="https://github.com/zekth/too-much-artisans-db/blob/master/db/catalog.json"
+        href="https://github.com/keycap-archivist/database/blob/master/db/catalog.json"
         target="_blank"
         >here</a
       >. Whole project is
-      <a class=" hover:text-yellow-700" href="https://github.com/zekth/too-much-artisans-db" target="_blank">here</a>,
+      <a class=" hover:text-yellow-700" href="https://github.com/keycap-archivist/database" target="_blank">here</a>,
       it self update on a daily basis using a cron github workflow.
     </p>
     <h2 class="text-xl mb-2">Web Application</h2>

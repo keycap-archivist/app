@@ -1,6 +1,6 @@
 # Too much artisans API
 
-This API is based on the data exposed in : [https://github.com/zekth/too-much-artisans-db](https://github.com/zekth/too-much-artisans-db)
+This API is based on the data exposed in : [https://github.com/keycap-archivist/database](https://github.com/keycap-archivist/database)
 
 ## API
 

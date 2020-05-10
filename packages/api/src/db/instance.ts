@@ -45,7 +45,7 @@ class CatalogDB {
   }
   async downloadDbVersion(): Promise<string> {
     const version = await axios
-      .get('https://api.github.com/repos/zekth/too-much-artisans-db/git/ref/heads/master')
+      .get('https://api.github.com/repos/keycap-archivist/database/git/ref/heads/master')
       .then((res) => {
         return res.data.object.sha;
       });
@@ -58,7 +58,7 @@ class CatalogDB {
     } else {
       appLogger.info('Loading the JSON Catalog');
       const _db = await axios
-        .get('https://raw.githubusercontent.com/zekth/too-much-artisans-db/master/db/catalog.json')
+        .get('https://raw.githubusercontent.com/keycap-archivist/database/master/db/catalog.json')
         .then((res) => {
           return res.data;
         });
