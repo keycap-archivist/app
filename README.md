@@ -1,10 +1,10 @@
 # Keycap Archivist ![Build](https://github.com/keycap-archivist/app/workflows/Image%20Build/badge.svg?branch=master&event=push)
 
-accessible here : [https://artisans.mechanical-keyboards.fr/](https://artisans.mechanical-keyboards.fr/).
+accessible here : [https://app.keycap-archivist.com/](https://artisans.mechanical-keyboards.fr/).
 
 It uses https://github.com/keycap-archivist/database artifacts
 
-Documentation available here : [https://artisans.mechanical-keyboards.fr/](https://artisans.mechanical-keyboards.fr/api)
+API Documentation available here : [https://app.keycap-archivist.com/api](https://app.keycap-archivist.com/api)
 
 # Development
 
