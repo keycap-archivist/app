@@ -1,4 +1,4 @@
-# Too much artisans ![Build](https://github.com/keycap-archivist/app/workflows/Image%20Build/badge.svg?branch=master&event=push)
+# Keycap Archivist ![Build](https://github.com/keycap-archivist/app/workflows/Image%20Build/badge.svg?branch=master&event=push)
 
 accessible here : [https://artisans.mechanical-keyboards.fr/](https://artisans.mechanical-keyboards.fr/).
 
