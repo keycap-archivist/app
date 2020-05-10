@@ -1,8 +1,8 @@
 <template>
   <div class=" px-4">
     <h1 class="text-2xl mb-4">
-      Too many artisans
-      <a class="inline-block hover:text-yellow-700 mr-5" href="https://github.com/zekth/too-much-artisans">
+      Keycap Archivist
+      <a class="inline-block hover:text-yellow-700 mr-5" href="https://github.com/keycap-archivist/">
         <svg class="fill-current w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
           <title>GitHub</title>
           <path

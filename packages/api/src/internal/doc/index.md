@@ -1,4 +1,4 @@
-# Too much artisans API
+# Keycap Archivist API
 
 This API is based on the data exposed in : [https://github.com/keycap-archivist/database](https://github.com/keycap-archivist/database)
 
