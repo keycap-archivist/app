@@ -171,7 +171,7 @@ async function drawTheCap(context, opt: WishlistOptions, cap, x: number, y: numb
   }
 }
 
-function getCaps(ids: string[], priorities: string[]): Colorway[] {
+function getCaps(ids: string[], priorities: string[] = []): Colorway[] {
   return ids
     .map((x) => {
       const cap = instance.getColorway(x);
@@ -186,12 +186,13 @@ function getCaps(ids: string[], priorities: string[]): Colorway[] {
 const defaultOptions = {
   ids: '15559f6e,e951b800,486a0062',
   prio: '',
-  bg: '',
-  textcolor: '',
+  bg: 'black',
+  textColor: 'white',
   titleText: 'Wishlist',
-  titleColor: '',
+  titleColor: 'red',
   extraText: '',
-  extraTextColor: '',
+  extraTextColor: 'white',
+  titlePolice: 'RedRock',
   capsPerLine: 3
 };
 
@@ -213,8 +214,8 @@ interface WishlistOptions {
 function parseQsOptions(options): WishlistOptions {
   const opt = Object.assign({}, defaultOptions, options);
   opt.ids = [...new Set(opt.ids.split(','))];
-  opt.titlePolice = opt.titlePolice ? opt.titlePolice : 'RedRock';
   opt.priorities = [...new Set(opt.prio.split(','))];
+  opt.titlePolice = opt.titlePolice ? opt.titlePolice : 'RedRock';
   opt.bg = opt.bg ? opt.bg : 'black';
   opt.titleColor = opt.titleColor ? opt.titleColor : 'red';
   opt.textColor = opt.textColor ? opt.textColor : 'white';
@@ -241,7 +242,7 @@ function calcHeight(opt: WishlistOptions): number {
   let out = HEADER_HEIGHT + rowHeight * nbRows;
 
   // Add extra size for additionnal text
-  if (opt.extraText.trim().length) {
+  if (opt.extraText && opt.extraText.trim().length) {
     out += EXTRA_TEXT_MARGIN;
   }
 
@@ -277,7 +278,7 @@ export async function generateWishlist(opt: WishlistOptions): Promise<Buffer> {
   ctx.fillText(opt.titleText ? opt.titleText : 'Wishlist', canvasWidth / 2, 60);
 
   // Extra text
-  if (opt.extraText.length) {
+  if (opt.extraText && opt.extraText.length) {
     ctx.font = '20px Roboto';
     ctx.fillStyle = opt.extraTextColor;
     ctx.textAlign = 'left';
@@ -297,6 +298,18 @@ export async function generateWishlist(opt: WishlistOptions): Promise<Buffer> {
   const diff = process.hrtime(time);
   appLogger.info(`generateWishlist ${opt.caps.length} caps ${(diff[0] * NS_PER_SEC + diff[1]) / 1000000} ms`);
   return outBuffer;
+}
+
+export async function generateWishListFromPost(options): Promise<Buffer> {
+  if (!options.ids.length) {
+    return null;
+  }
+  const opt = Object.assign({}, defaultOptions, options);
+  opt.ids = options.ids;
+  opt.priorities = options.priorities;
+  opt.caps = getCaps(opt.ids, opt.priorities);
+  opt.hasPrior = !!opt.caps.find((x) => x.isPrioritized);
+  return generateWishlist(opt);
 }
 
 export async function generateWishlistFromQS(options): Promise<Buffer> {

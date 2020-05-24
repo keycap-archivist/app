@@ -1,4 +1,4 @@
-import { generateWishlistFromQS, getImgBuffer, generateWishlist } from 'internal/image-processor';
+import { generateWishlistFromQS, getImgBuffer, generateWishListFromPost } from 'internal/image-processor';
 import { instance, ColorwayDetailed } from 'db/instance';
 import * as tablemark from 'tablemark';
 import { appLogger } from 'logger';
@@ -15,7 +15,7 @@ const genWishlistGet = async (req, resp): Promise<void> => {
 
 const genWishlistPost = async (req, resp): Promise<void> => {
   try {
-    const imgBuffer = await generateWishlist(req.body);
+    const imgBuffer = await generateWishListFromPost(req.body);
     resp
       // .header('content-disposition', `attachment; filename="wishlist.jpg"`)
       .type('image/jpeg')
