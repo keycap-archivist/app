@@ -1,15 +1,8 @@
-import { join, resolve } from 'path';
-import { createCanvas, loadImage, registerFont } from 'canvas';
-import { instance, Colorway, ColorwayDetailed } from 'db/instance';
-import { existsSync, mkdirSync, promises as FSpromises, constants } from 'fs';
-import axios from 'axios';
+import { createCanvas, loadImage } from 'canvas';
+import { instance } from 'db/instance';
+import type { Colorway, ColorwayDetailed } from 'db/instance';
+import { getImgBuffer, fitText, isTextFittingSpace, drawBorder } from 'internal/utils';
 import { appLogger } from 'logger';
-
-const fontPath = resolve(join(__dirname, 'fonts'));
-registerFont(join(fontPath, 'RedRock.ttf'), { family: 'RedRock' });
-registerFont(join(fontPath, 'Roboto-Regular.ttf'), { family: 'Roboto' });
-
-const supportedPolice = ['RedRock', 'Roboto'];
 
 const MARGIN_SIDE = 10;
 const MARGIN_BOTTOM = 60;
@@ -23,85 +16,13 @@ const IMG_HEIGTH = IMG_WIDTH;
 const rowHeight = IMG_HEIGTH + MARGIN_BOTTOM;
 const NS_PER_SEC = 1e9;
 
-const cachePath = resolve(join(__dirname, '..', '..', 'img-cache'));
-if (!existsSync(cachePath)) {
-  mkdirSync(cachePath);
-}
-
-export async function resizeImg(imgBuffer): Promise<Buffer> {
-  const IMG_HEIGTH = 500;
-  const IMG_WIDTH = 500;
-  const _img = await loadImage(imgBuffer);
-
-  let h: number, w: number, sx: number, sy: number;
-  if (_img.width > _img.height) {
-    h = _img.height;
-    w = h;
-    sy = 0;
-    sx = Math.ceil((_img.width - _img.height) / 2);
-  } else {
-    sx = 0;
-    sy = Math.ceil((_img.height - _img.width) / 2);
-    w = _img.width;
-    h = w;
-  }
-  const Tcanvas = createCanvas(IMG_WIDTH, IMG_HEIGTH);
-  const Tctx = Tcanvas.getContext('2d');
-
-  Tctx.drawImage(_img, sx, sy, w, h, 0, 0, IMG_WIDTH, IMG_HEIGTH);
-
-  return Tcanvas.toBuffer('image/jpeg', { quality: 1, progressive: true, chromaSubsampling: false });
-}
-
-export async function getImgBuffer(colorway): Promise<Buffer> {
-  const filePath = join(cachePath, `${colorway.id}.jpg`);
-  let output: Buffer;
-  if (
-    !(await FSpromises.access(filePath, constants.R_OK)
-      .then(() => true)
-      .catch(() => false))
-  ) {
-    await axios
-      .request({
-        method: 'GET',
-        responseType: 'arraybuffer',
-        url: colorway.img
-      })
-      .then(async (response) => {
-        output = await resizeImg(response.data);
-        FSpromises.writeFile(filePath, output);
-      });
-  } else {
-    output = await FSpromises.readFile(filePath);
-  }
-  return output;
-}
-
-function isTextFittingSpace(ctx, legend, maxWidth): boolean {
-  const measurement = ctx.measureText(legend);
-  if (measurement.width > maxWidth - 10) {
-    return false;
-  }
-  return true;
-}
-
-function fitText(ctx, legend, maxWidth): string {
-  let outLegend = legend.trim();
-  if (isTextFittingSpace(ctx, outLegend, maxWidth)) {
-    return outLegend;
-  }
-  while (!isTextFittingSpace(ctx, `${outLegend}...`, maxWidth)) {
-    outLegend = outLegend.trim().slice(0, -1);
-  }
-  return `${outLegend.trim()}...`;
-}
-
-function drawBorder(ctx, width: number, height: number, thickness = 1): void {
-  ctx.fillStyle = '#F00';
-  ctx.fillRect(0 - thickness, 0 - thickness, width + thickness * 2, height + thickness * 2);
-}
-
-async function drawTheCap(context, opt: WishlistOptions, cap, x: number, y: number): Promise<void> {
+async function drawTheCap(
+  context: CanvasRenderingContext2D,
+  opt: WishlistOptions,
+  cap,
+  x: number,
+  y: number
+): Promise<void> {
   const imgBuffer = await getImgBuffer(cap);
   let color = opt.textColor;
   const _img = await loadImage(imgBuffer);
@@ -155,8 +76,10 @@ async function drawTheCap(context, opt: WishlistOptions, cap, x: number, y: numb
     Tctx.drawImage(_img, sx, sy, w, h, 0, 0, IMG_WIDTH, IMG_HEIGTH);
   }
 
-  const b = Tcanvas.toBuffer('image/jpeg', { quality: 0.7, progressive: true });
-  await context.drawImage(await loadImage(b), x, y);
+  const b: Buffer = Tcanvas.toBuffer('image/jpeg', { quality: 0.7, progressive: true });
+  //@ts-ignore
+  // typing is fucked up but it works like this
+  context.drawImage(await loadImage(b), x, y);
 
   context.font = '20px Roboto';
   context.fillStyle = color;
@@ -180,7 +103,7 @@ function getCaps(ids: string[], priorities: string[] = []): Colorway[] {
       }
       return cap;
     })
-    .filter((x) => !!x);
+    .filter(Boolean);
 }
 
 const defaultOptions = {
@@ -227,7 +150,7 @@ function parseQsOptions(options): WishlistOptions {
   return opt;
 }
 
-function calcWidth(opt): number {
+function calcWidth(opt: WishlistOptions): number {
   return opt.capsPerLine * IMG_WIDTH + opt.capsPerLine * MARGIN_SIDE + MARGIN_SIDE;
 }
 
@@ -300,7 +223,7 @@ export async function generateWishlist(opt: WishlistOptions): Promise<Buffer> {
   return outBuffer;
 }
 
-export async function generateWishListFromPost(options): Promise<Buffer> {
+export async function generateWishListFromPost(options): Promise<Buffer | null> {
   if (!options.ids.length) {
     return null;
   }
@@ -312,7 +235,7 @@ export async function generateWishListFromPost(options): Promise<Buffer> {
   return generateWishlist(opt);
 }
 
-export async function generateWishlistFromQS(options): Promise<Buffer> {
+export async function generateWishlistFromQS(options): Promise<Buffer | null> {
   const opt = parseQsOptions(options);
   if (!opt.ids.length) {
     return null;
