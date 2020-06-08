@@ -1,6 +1,11 @@
 import fastify from 'fastify';
 import fastifyCORS from 'fastify-cors';
 import { controllers } from 'api/controllers';
+import * as fastify from 'fastify';
+import * as fastifyStatic from 'fastify-static';
+import * as fastifyCORS from 'fastify-cors';
+import * as openapiGlue from 'fastify-openapi-glue';
+import * as yaml from 'js-yaml';
 import { v1, v2 } from 'api/controllers';
 import { join } from 'path';
 import { instance } from 'db/instance';
@@ -12,7 +17,6 @@ import { readFileSync } from 'fs';
 import { initImgProcessor } from 'internal/utils';
 
 export async function createServer(): Promise<any> {
-
   initImgProcessor();
 
   await instance.init();
@@ -34,7 +38,7 @@ export async function createServer(): Promise<any> {
     '{gql-content}',
     gqlStr
   );
-  const compiledIndex = `<html><head><title>Too much Artisans API</title>
+  const compiledIndex = `<html><head><title>Keycap Archivist API</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 .markdown-body {
@@ -117,6 +121,15 @@ padding: 15px;
     method: 'GET',
     url: '/api/v1/img/:id',
     handler: v1.getKeycapImage
+  });
+
+  const specs = yaml.safeLoad(readFileSync(join(__dirname, 'public', 'v2-spec.yml')));
+  console.log(specs);
+  server.register(openapiGlue, {
+    specification: specs,
+    prefix: 'api/v2',
+    service: v2,
+    noAdditional: true
   });
 
   return server;

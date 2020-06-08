@@ -1,17 +1,90 @@
 import { appLogger } from 'logger';
 import { generateWishlist } from 'internal/image-processor-v2';
 
-const genWishlistPost = async (req, resp): Promise<void> => {
+export type wishlistApi = {
+  caps: {
+    id: string;
+    legend?: string;
+    isPriority?: boolean;
+  }[];
+  settings: {
+    capsPerLine: number;
+    title: {
+      color: string;
+      text: string;
+      font: string;
+    };
+    legends: {
+      color: string;
+      font: string;
+    };
+    background: {
+      color: string;
+    };
+    extraText: {
+      text: string;
+      color: string;
+      font: string;
+    };
+  };
+};
+
+export const getWishlist = async (req, resp): Promise<void> => {
+  // todo : PARSE DA SHIET
+  const foo = {};
   try {
-    const imgBuffer = await generateWishlist(req.body);
-    resp
-      // .header('content-disposition', `attachment; filename="wishlist.jpg"`)
-      .type('image/jpeg')
-      .status(200)
-      .send(imgBuffer);
+    const imgBuffer = await generateWishlist(foo);
+    if (imgBuffer) {
+      return resp
+        .header('content-disposition', `attachment; filename="wishlist.jpg"`)
+        .type('image/jpeg')
+        .status(200)
+        .send(imgBuffer);
+    }
+    return resp.status(500).send('Oops! An error has occured');
   } catch (e) {
     appLogger.error(e);
     resp.status(500).send('Oops! An error has occured');
   }
 };
-export const controllers = { genWishlistPost };
+
+export const postWishlist = async (req, resp): Promise<void> => {
+  try {
+    const imgBuffer = await generateWishlist(req.body);
+    if (imgBuffer) {
+      return resp
+        .header('content-disposition', `attachment; filename="wishlist.jpg"`)
+        .type('image/jpeg')
+        .status(200)
+        .send(imgBuffer);
+    }
+    return resp.status(500).send('Oops! An error has occured');
+  } catch (e) {
+    appLogger.error(e);
+    resp.status(500).send('Oops! An error has occured');
+  }
+};
+
+export const postTable = async (req, resp): Promise<void> => {
+  let out = '';
+  // const caps: ColorwayDetailed[] = [];
+  // for (const i of req.query.ids.split(',').filter((x) => x)) {
+  //   caps.push(instance.getColorway(i));
+  // }
+  // out = tablemark(
+  //   caps.map((c) => {
+  //     return {
+  //       Artist: c.sculpt.artist.name,
+  //       Sculpt: c.sculpt.name,
+  //       Colorway: c.name,
+  //       Image: `[link](${c.img})`
+  //     };
+  //   }),
+  //   { columns: ['Artist', 'Sculpt', 'Colorway', 'Image'] }
+  // );
+  resp.status(200).send(out);
+};
+
+export const fkunav = async (_, resp): Promise<void> => {
+  resp.header('colorway', 'EVA IZ SHIET').status(508).send('FKU NAV');
+};

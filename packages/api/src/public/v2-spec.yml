@@ -1,0 +1,71 @@
+openapi: 3.0.0
+info:
+  title: Keycap Archivist api v2
+  description: This is a sample server for a pet store.
+  version: 0.0.1
+paths:
+  /wishlist:
+    get:
+      operationId: getWishlist
+      responses:
+        '200':
+          description: image of the generated wishlist
+          content:
+            image/jpg:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+    post:
+      operationId: postWishlist
+      requestBody:
+        description: A JSON object containing pet information
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: image of the generated wishlist
+          content:
+            image/jpg:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+  /table:
+    post:
+      operationId: postWishListTable
+      requestBody:
+        description: A JSON object containing pet information
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Markdown markup
+          content:
+            text/plain; charset=utf-8:
+              schema:
+                type: string
+  /fkunav:
+    get:
+      responses:
+        '508':
+          description: What did you expect
+          content:
+            text/plain; charset=utf-8:
+              schema:
+                type: string
+
+components:
+  schemas:
+    wishlist:
+      type: object

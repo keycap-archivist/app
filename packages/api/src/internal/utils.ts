@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, promises as FSpromises, constants } from 'fs';
+import { existsSync, mkdirSync, readdirSync, promises as FSpromises, constants, fstat } from 'fs';
 import { createCanvas, loadImage, registerFont } from 'canvas';
 import { join, resolve } from 'path';
 import axios from 'axios';
@@ -11,8 +11,9 @@ export function initImgProcessor() {
     mkdirSync(cachePath);
   }
   const fontPath = resolve(join(__dirname, 'fonts'));
-  registerFont(join(fontPath, 'RedRock.ttf'), { family: 'RedRock' });
-  registerFont(join(fontPath, 'Roboto-Regular.ttf'), { family: 'Roboto' });
+  for (const f of readdirSync(fontPath)) {
+    registerFont(join(fontPath, f), { family: f.split('.')[0].split('-')[0] });
+  }
 }
 
 export async function getImgBuffer(colorway): Promise<Buffer> {
