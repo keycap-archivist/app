@@ -47,7 +47,9 @@ paths:
         content:
           application/json:
             schema:
-              type: object
+              type: array
+                items:
+                  type: object
       responses:
         '200':
           description: Markdown markup

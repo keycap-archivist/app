@@ -1,10 +1,11 @@
-import { existsSync, mkdirSync, readdirSync, promises as FSpromises, constants, fstat } from 'fs';
+import { existsSync, mkdirSync, readdirSync, promises as FSpromises, constants } from 'fs';
 import { createCanvas, loadImage, registerFont } from 'canvas';
 import { join, resolve } from 'path';
 import axios from 'axios';
 
 const cachePath = resolve(join(__dirname, '..', '..', 'img-cache'));
-const supportedPolice = ['RedRock', 'Roboto'];
+
+export const supportedPolice = [];
 
 export function initImgProcessor() {
   if (!existsSync(cachePath)) {
@@ -12,7 +13,8 @@ export function initImgProcessor() {
   }
   const fontPath = resolve(join(__dirname, 'fonts'));
   for (const f of readdirSync(fontPath)) {
-    registerFont(join(fontPath, f), { family: f.split('.')[0].split('-')[0] });
+    const family = f.split('.')[0].split('-')[0];
+    registerFont(join(fontPath, f), { family });
   }
 }
 
@@ -24,23 +26,20 @@ export async function getImgBuffer(colorway): Promise<Buffer> {
       .then(() => true)
       .catch(() => false))
   ) {
-    await axios
-      .request({
-        method: 'GET',
-        responseType: 'arraybuffer',
-        url: colorway.img
-      })
-      .then(async (response) => {
-        output = await resizeImg(response.data);
-        FSpromises.writeFile(filePath, output);
-      });
+    const { data } = await axios.request({
+      method: 'GET',
+      responseType: 'arraybuffer',
+      url: colorway.img
+    });
+    output = await resizeImg(data);
+    FSpromises.writeFile(filePath, output);
   } else {
     output = await FSpromises.readFile(filePath);
   }
   return output;
 }
 
-export async function resizeImg(imgBuffer): Promise<Buffer> {
+export async function resizeImg(imgBuffer: Buffer): Promise<Buffer> {
   const IMG_HEIGTH = 500;
   const IMG_WIDTH = 500;
   const _img = await loadImage(imgBuffer);

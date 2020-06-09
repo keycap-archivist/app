@@ -1,32 +1,38 @@
 import { appLogger } from 'logger';
 import { generateWishlist } from 'internal/image-processor-v2';
+import { instance, ColorwayDetailed } from 'db/instance';
+import * as tablemark from 'tablemark';
+
+export type wishlistCap = {
+  id: string;
+  legend?: string;
+  isPriority?: boolean;
+};
+
+export type wishlistSetting = {
+  capsPerLine: number;
+  title: {
+    color: string;
+    text: string;
+    font: string;
+  };
+  legends: {
+    color: string;
+    font: string;
+  };
+  background: {
+    color: string;
+  };
+  extraText: {
+    text: string;
+    color: string;
+    font: string;
+  };
+};
 
 export type wishlistApi = {
-  caps: {
-    id: string;
-    legend?: string;
-    isPriority?: boolean;
-  }[];
-  settings: {
-    capsPerLine: number;
-    title: {
-      color: string;
-      text: string;
-      font: string;
-    };
-    legends: {
-      color: string;
-      font: string;
-    };
-    background: {
-      color: string;
-    };
-    extraText: {
-      text: string;
-      color: string;
-      font: string;
-    };
-  };
+  caps: wishlistCap[];
+  settings: wishlistSetting;
 };
 
 export const getWishlist = async (req, resp): Promise<void> => {
@@ -66,22 +72,20 @@ export const postWishlist = async (req, resp): Promise<void> => {
 };
 
 export const postTable = async (req, resp): Promise<void> => {
-  let out = '';
-  // const caps: ColorwayDetailed[] = [];
-  // for (const i of req.query.ids.split(',').filter((x) => x)) {
-  //   caps.push(instance.getColorway(i));
-  // }
-  // out = tablemark(
-  //   caps.map((c) => {
-  //     return {
-  //       Artist: c.sculpt.artist.name,
-  //       Sculpt: c.sculpt.name,
-  //       Colorway: c.name,
-  //       Image: `[link](${c.img})`
-  //     };
-  //   }),
-  //   { columns: ['Artist', 'Sculpt', 'Colorway', 'Image'] }
-  // );
+  const requestCaps: wishlistCap[] = req.body;
+  const caps: ColorwayDetailed[] = requestCaps.map((x) => instance.getColorway(x.id));
+  const out = tablemark(
+    caps.map((c) => {
+      return {
+        Artist: c.sculpt.artist.name,
+        Sculpt: c.sculpt.name,
+        Colorway: c.name,
+        Image: `[link](${c.img})`
+      };
+    }),
+    { columns: ['Artist', 'Sculpt', 'Colorway', 'Image'] }
+  );
+
   resp.status(200).send(out);
 };
 
