@@ -4,21 +4,37 @@ info:
   description: This is a sample server for a pet store.
   version: 0.0.1
 paths:
-  /wishlist:
+  /img/{id}:
+    parameters:
+      - name: id
+        description: id of the keycap
+        in: path
+        required: true
+        schema:
+          type: string
     get:
-      operationId: getWishlist
+      operationId: getImg
       responses:
         '200':
-          description: image of the generated wishlist
+          description: resized/proxied image of the keycap
           content:
             image/jpg:
               schema:
                 type: string
                 format: binary
-        '400':
-          description: Bad Request
+        '404':
+          description: Keycap not found
         '500':
           description: Internal Server Error
+  /wishlist-settings:
+    get:
+      operationId: getWishlistSettings
+      responses:
+        '200':
+          description: available settings for the wishlist generation
+        '500':
+          description: Internal Server Error
+  /wishlist:
     post:
       operationId: postWishlist
       requestBody:
@@ -48,8 +64,8 @@ paths:
           application/json:
             schema:
               type: array
-                items:
-                  type: object
+              items:
+                type: object
       responses:
         '200':
           description: Markdown markup
@@ -71,3 +87,21 @@ components:
   schemas:
     wishlist:
       type: object
+      required:
+        - caps
+      properties:
+        caps:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: string
+              legend:
+                type: string
+              isPriority:
+                type: boolean
+        settings:
+          type: object

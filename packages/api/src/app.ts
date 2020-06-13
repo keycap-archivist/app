@@ -124,7 +124,6 @@ padding: 15px;
   });
 
   const specs = yaml.safeLoad(readFileSync(join(__dirname, 'public', 'v2-spec.yml')));
-  console.log(specs);
   server.register(openapiGlue, {
     specification: specs,
     prefix: 'api/v2',

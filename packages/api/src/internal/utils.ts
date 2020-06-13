@@ -15,6 +15,7 @@ export function initImgProcessor() {
   for (const f of readdirSync(fontPath)) {
     const family = f.split('.')[0].split('-')[0];
     registerFont(join(fontPath, f), { family });
+    supportedPolice.push(family);
   }
 }
 

@@ -1,58 +1,9 @@
 import { appLogger } from 'logger';
+import { getImgBuffer, supportedPolice } from 'internal/utils';
 import { generateWishlist } from 'internal/image-processor-v2';
 import { instance, ColorwayDetailed } from 'db/instance';
 import * as tablemark from 'tablemark';
-
-export type wishlistCap = {
-  id: string;
-  legend?: string;
-  isPriority?: boolean;
-};
-
-export type wishlistSetting = {
-  capsPerLine: number;
-  title: {
-    color: string;
-    text: string;
-    font: string;
-  };
-  legends: {
-    color: string;
-    font: string;
-  };
-  background: {
-    color: string;
-  };
-  extraText: {
-    text: string;
-    color: string;
-    font: string;
-  };
-};
-
-export type wishlistApi = {
-  caps: wishlistCap[];
-  settings: wishlistSetting;
-};
-
-export const getWishlist = async (req, resp): Promise<void> => {
-  // todo : PARSE DA SHIET
-  const foo = {};
-  try {
-    const imgBuffer = await generateWishlist(foo);
-    if (imgBuffer) {
-      return resp
-        .header('content-disposition', `attachment; filename="wishlist.jpg"`)
-        .type('image/jpeg')
-        .status(200)
-        .send(imgBuffer);
-    }
-    return resp.status(500).send('Oops! An error has occured');
-  } catch (e) {
-    appLogger.error(e);
-    resp.status(500).send('Oops! An error has occured');
-  }
-};
+import type { wishlistCap } from 'internal/image-processor-v2';
 
 export const postWishlist = async (req, resp): Promise<void> => {
   try {
@@ -91,4 +42,20 @@ export const postTable = async (req, resp): Promise<void> => {
 
 export const fkunav = async (_, resp): Promise<void> => {
   resp.header('colorway', 'EVA IZ SHIET').status(508).send('FKU NAV');
+};
+
+export const getImg = async (req, resp): Promise<void> => {
+  const colorway = instance.getColorway(req.params.id);
+
+  if (!colorway) {
+    resp.status(404).send('Not found');
+    return;
+  }
+
+  const output = await getImgBuffer(colorway);
+  resp.header('content-disposition', `filename="${colorway.id}.jpg"`).type('image/jpeg').status(200).send(output);
+};
+
+export const getWishlistSettings = async (_, resp): Promise<void> => {
+  resp.type('application/json').status(200).send({ polices: supportedPolice });
 };
