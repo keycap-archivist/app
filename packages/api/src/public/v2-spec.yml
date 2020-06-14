@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Keycap Archivist api v2
-  description: This is a sample server for a pet store.
+  description: Keycap archivist Api
   version: 0.0.1
 paths:
   /img/{id}:
