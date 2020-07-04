@@ -29,6 +29,10 @@ jobs:
         run: yarn
       - name: Install ui
         run: cd packages/ui && yarn
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev librsvg2-dev
       - name: Install api
         run: cd packages/api && yarn
       - name: Builds packages
