@@ -2,6 +2,7 @@
   "allowSyntheticDefaultImports": true,
   "compilerOptions": {
     "target": "es6",
+    "esModuleInterop": true,
     "baseUrl": "./src",
     "paths": {
       "*": ["*"]

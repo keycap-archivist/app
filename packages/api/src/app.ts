@@ -1,12 +1,12 @@
-import * as fastify from 'fastify';
-import * as fastifyCORS from 'fastify-cors';
+import fastify from 'fastify';
+import fastifyCORS from 'fastify-cors';
 import { controllers } from 'api/controllers';
 import { join } from 'path';
 import { instance } from 'db/instance';
 import { apiLogger } from 'logger';
 import { ApolloServer } from 'apollo-server-fastify';
 import { typeDefs, resolvers } from 'api/graphql';
-import * as marked from 'marked';
+import marked from 'marked';
 import { readFileSync } from 'fs';
 
 export async function createServer(): Promise<any> {
