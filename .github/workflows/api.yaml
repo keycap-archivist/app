@@ -12,19 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - id: nodeversion
-        run: echo ::set-output name=NODE::$(cat .nvmrc)
-      - name: restore Cache
-        uses: actions/cache@master
-        with:
-          path: |
-            node_modules
-            */*/node_modules
-          key: ${{ runner.os }}-${{ steps.nodeversion.outputs.NODE }}-${{ hashFiles('**/yarn.lock') }}
-      - name: Use Node.js ${{steps.nodeversion.outputs.NODE}}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ steps.nodeversion.outputs.NODE }}
       - name: docker build
         run: docker build --build-arg VUE_APP_REVISION=$GITHUB_SHA .
       - name: Push to registry
