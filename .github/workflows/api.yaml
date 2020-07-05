@@ -20,27 +20,13 @@ jobs:
           path: |
             node_modules
             */*/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-${{ steps.nodeversion.outputs.NODE }}-${{ hashFiles('**/yarn.lock') }}
       - name: Use Node.js ${{steps.nodeversion.outputs.NODE}}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ steps.nodeversion.outputs.NODE }}
-      - name: Install project
-        run: yarn
-      - name: Install ui
-        run: cd packages/ui && yarn
-      - name: Install Dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev librsvg2-dev
-      - name: Install api
-        run: cd packages/api && yarn
-      - name: Builds packages
-        run: |
-          echo VUE_APP_REVISION=$GITHUB_SHA >> packages/ui/.env.production
-          yarn package
       - name: docker build
-        run: docker build .
+        run: docker build --build-arg VUE_APP_REVISION=$GITHUB_SHA .
       - name: Push to registry
         if: github.ref == 'refs/heads/master'
         uses: elgohr/Publish-Docker-Github-Action@master
