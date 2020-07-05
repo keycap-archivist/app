@@ -23,3 +23,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
           tags: "latest"
+      - name: Dispatch "base_image_build"
+        run: |
+          curl -X POST https://api.github.com/repos/keycap-archivist/app/dispatches \
+            -H 'Accept: application/vnd.github.everest-preview+json' \
+            -H 'Authorization: token ${{ secrets.GITHUB_TOKEN }}' \
+            --data '{"event_type": "base_image_build"}'

@@ -1,7 +1,9 @@
 name: Image Build
 
 on:
-  pull_request:
+  repository_dispatch:
+    types:
+      - base_image_build
   push:
     branches:
       - master
@@ -18,10 +20,7 @@ jobs:
           login-server: docker.pkg.github.com
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: docker build
-        run: docker build --build-arg VUE_APP_REVISION=$GITHUB_SHA .
       - name: Push to registry
-        if: github.ref == 'refs/heads/master'
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
           dockerfile: Dockerfile
@@ -30,8 +29,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
           tags: "latest"
+          buildargs: VUE_APP_REVISION=$GITHUB_SHA
       - name: Push to server
-        if: github.ref == 'refs/heads/master'
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SRV_HOST }}
