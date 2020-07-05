@@ -1,4 +1,4 @@
-name: Base Image build
+name: Base Image build and publish
 
 on:
   push:
@@ -10,12 +10,11 @@ on:
 
 jobs:
   build:
-    name: Build base image
+    name: Build base image and publish
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - name: Push to registry
-        if: github.ref == 'refs/heads/master'
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
           dockerfile: Dockerfile_base
@@ -24,3 +23,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
           tags: "latest"
+      - name: Dispatch "base_image_build"
+        run: |
+          curl -X POST https://api.github.com/repos/keycap-archivist/app/dispatches \
+            -H 'Accept: application/vnd.github.everest-preview+json' \
+            -H 'Authorization: token ${{ secrets.GITHUB_TOKEN }}' \
+            --data '{"event_type": "base_image_build"}'
