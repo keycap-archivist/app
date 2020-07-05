@@ -1,0 +1,28 @@
+name: Base Image build
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  path:
+   - Dockerfile_base
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: docker build
+        run: docker build -f Dockerfile_base .
+      - name: Push to registry
+        if: github.ref == 'refs/heads/master'
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          dockerfile: Dockerfile
+          name: keycap-archivist/app/base
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          tags: "latest"
