@@ -22,7 +22,7 @@ jobs:
         if: github.ref == 'refs/heads/master'
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          dockerfile: Dockerfile
+          dockerfile: Dockerfile_base
           name: keycap-archivist/app/base
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
