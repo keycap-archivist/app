@@ -16,7 +16,7 @@ jobs:
         uses: azure/docker-login@v1
         with:
           login-server: docker.pkg.github.com
-          username: $GITHUB_ACTOR
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: docker build
         run: docker build --build-arg VUE_APP_REVISION=$GITHUB_SHA .

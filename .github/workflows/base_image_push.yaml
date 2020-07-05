@@ -15,7 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Push to registry
-        if: github.ref == 'refs/heads/master'
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
           dockerfile: Dockerfile_base
