@@ -1,5 +1,4 @@
 import * as fastify from 'fastify';
-import * as fastifyStatic from 'fastify-static';
 import * as fastifyCORS from 'fastify-cors';
 import { controllers } from 'api/controllers';
 import { join } from 'path';
@@ -16,17 +15,6 @@ export async function createServer(): Promise<any> {
   });
 
   server.register(fastifyCORS, { origin: true });
-  server.register(fastifyStatic, {
-    root: join(__dirname, 'public'),
-    setHeaders: (res, path, _F) => {
-      // ignore cache for index
-      if (path.indexOf('index.html') !== -1) {
-        res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-        res.setHeader('Expires', '-1');
-        res.setHeader('Pragma', 'no-cache');
-      }
-    }
-  });
   await instance.init();
 
   const graphQlServer = new ApolloServer({
@@ -65,6 +53,15 @@ padding: 15px;
     url: '/api',
     handler: (_, resp) => {
       resp.type('text/html').send(compiledIndex.replace('{SHA_API_VERSION}', instance.getDbVersion()));
+    }
+  });
+
+  // Redirecting on / for legacy app
+  server.route({
+    method: 'GET',
+    url: '/',
+    handler: (_, rep) => {
+      rep.redirect('https://keycap-archivist.com/');
     }
   });
 
