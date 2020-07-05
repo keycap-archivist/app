@@ -17,17 +17,13 @@ RUN yarn
 RUN yarn build
 
 FROM node:${NODEVERSION}-slim
-COPY packages/api/dist/ /server/
-COPY packages/ui/dist/ /server/public/
-WORKDIR /server/
-RUN apt-get update
-RUN apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-
 COPY --from=apibuilder /project/dist/ /server/
 COPY --from=apibuilder /project/package.json /server/
 COPY --from=apibuilder /project/yarn.lock /server/
 COPY --from=uibuilder /project/dist/ /server/public/
 WORKDIR /server/
+RUN apt-get update
+RUN apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 RUN yarn install --production
 
 CMD [ "node", "server.js" ]
