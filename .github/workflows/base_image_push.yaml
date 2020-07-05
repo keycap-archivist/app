@@ -1,13 +1,11 @@
 name: Base Image build
 
 on:
-  pull_request:
-    paths:
-      - Dockerfile_base
   push:
     branches:
       - master
     paths:
+      - .github/workflows/base_image_push.yaml
       - Dockerfile_base
 
 jobs:
@@ -16,8 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: docker build
-        run: docker build -f Dockerfile_base .
       - name: Push to registry
         if: github.ref == 'refs/heads/master'
         uses: elgohr/Publish-Docker-Github-Action@master
