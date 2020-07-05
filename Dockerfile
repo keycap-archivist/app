@@ -1,6 +1,6 @@
 ARG VUE_APP_REVISION
 
-FROM FROM docker.pkg.github.com/keycap-archivist/app/base:latest as apibuilder
+FROM docker.pkg.github.com/keycap-archivist/app/base:latest as apibuilder
 COPY ./packages/api /project
 WORKDIR /project
 RUN apt-get update
@@ -8,14 +8,14 @@ RUN apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev
 RUN yarn
 RUN yarn build
 
-FROM FROM docker.pkg.github.com/keycap-archivist/app/base:latest as uibuilder
+FROM docker.pkg.github.com/keycap-archivist/app/base:latest as uibuilder
 ENV VUE_APP_REVISION=${NODEVERSION}
 COPY ./packages/ui /project
 WORKDIR /project
 RUN yarn
 RUN yarn build
 
-FROM FROM docker.pkg.github.com/keycap-archivist/app/base:latest
+FROM docker.pkg.github.com/keycap-archivist/app/base:latest
 COPY --from=apibuilder /project/dist/ /server/
 COPY --from=apibuilder /project/package.json /server/
 COPY --from=apibuilder /project/yarn.lock /server/
