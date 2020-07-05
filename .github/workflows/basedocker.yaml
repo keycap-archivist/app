@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - master
-  path:
+  paths:
     - Dockerfile_base
 
 jobs:
