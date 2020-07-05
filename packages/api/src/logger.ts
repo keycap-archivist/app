@@ -1,4 +1,4 @@
-import * as pino from 'pino';
+import pino from 'pino';
 
 const apiLogger: pino = pino({
   prettyPrint: { colorize: false },
