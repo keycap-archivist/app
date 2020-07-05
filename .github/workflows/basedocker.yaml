@@ -2,11 +2,13 @@ name: Base Image build
 
 on:
   pull_request:
+    paths:
+      - Dockerfile_base
   push:
     branches:
       - master
-  paths:
-    - Dockerfile_base
+    paths:
+      - Dockerfile_base
 
 jobs:
   build:
