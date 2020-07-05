@@ -6,11 +6,11 @@ on:
     branches:
       - master
   path:
-   - Dockerfile_base
+    - Dockerfile_base
 
 jobs:
   build:
-    name: build
+    name: Build base image
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
