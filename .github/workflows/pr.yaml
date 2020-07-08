@@ -16,4 +16,4 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: docker build
-        run: docker build --build-arg VUE_APP_REVISION=$GITHUB_SHA .
+        run: docker build .

@@ -1,5 +1,5 @@
 FROM docker.pkg.github.com/keycap-archivist/app/base:latest as apibuilder
-COPY ./packages/api /project
+COPY ./ /project
 WORKDIR /project
 RUN yarn
 RUN yarn build

@@ -1,6 +1,8 @@
 import fastify from 'fastify';
 import fastifyCORS from 'fastify-cors';
-import { controllers } from 'api/controllers';
+import openapiGlue from 'fastify-openapi-glue';
+import yaml from 'js-yaml';
+import { v1, v2 } from 'api/controllers';
 import { join } from 'path';
 import { instance } from 'db/instance';
 import { apiLogger } from 'logger';
@@ -8,12 +10,16 @@ import { ApolloServer } from 'apollo-server-fastify';
 import { typeDefs, resolvers } from 'api/graphql';
 import marked from 'marked';
 import { readFileSync } from 'fs';
+import { initImgProcessor } from 'internal/utils';
 
 export async function createServer(): Promise<any> {
+  initImgProcessor();
+
+  await instance.init();
+
   const server = fastify({
     logger: apiLogger
   });
-
   server.register(fastifyCORS, { origin: true });
   await instance.init();
 
@@ -28,7 +34,7 @@ export async function createServer(): Promise<any> {
     '{gql-content}',
     gqlStr
   );
-  const compiledIndex = `<html><head><title>Too much Artisans API</title>
+  const compiledIndex = `<html><head><title>Keycap Archivist API</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 .markdown-body {
@@ -68,13 +74,13 @@ padding: 15px;
   server.route({
     method: 'GET',
     url: '/api/v1/table',
-    handler: controllers.genTable
+    handler: v1.genTable
   });
 
   server.route({
     method: 'GET',
     url: '/api/v1',
-    handler: controllers.genWishlistGet
+    handler: v1.genWishlistGet
   });
 
   server.route({
@@ -104,13 +110,21 @@ padding: 15px;
         extraText: { type: 'string' }
       }
     },
-    handler: controllers.genWishlistPost
+    handler: v1.genWishlistPost
   });
 
   server.route({
     method: 'GET',
     url: '/api/v1/img/:id',
-    handler: controllers.getKeycapImage
+    handler: v1.getKeycapImage
+  });
+
+  const specs = yaml.safeLoad(readFileSync(join(__dirname, 'public', 'v2-spec.yml')));
+  server.register(openapiGlue, {
+    specification: specs,
+    prefix: 'api/v2',
+    service: v2,
+    noAdditional: true
   });
 
   return server;

@@ -1,0 +1,107 @@
+openapi: 3.0.0
+info:
+  title: Keycap Archivist api v2
+  description: Keycap archivist Api
+  version: 0.0.1
+paths:
+  /img/{id}:
+    parameters:
+      - name: id
+        description: id of the keycap
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getImg
+      responses:
+        '200':
+          description: resized/proxied image of the keycap
+          content:
+            image/jpg:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Keycap not found
+        '500':
+          description: Internal Server Error
+  /wishlist-settings:
+    get:
+      operationId: getWishlistSettings
+      responses:
+        '200':
+          description: available settings for the wishlist generation
+        '500':
+          description: Internal Server Error
+  /wishlist:
+    post:
+      operationId: postWishlist
+      requestBody:
+        description: A JSON object containing pet information
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: image of the generated wishlist
+          content:
+            image/jpg:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+  /table:
+    post:
+      operationId: postWishListTable
+      requestBody:
+        description: A JSON object containing pet information
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+      responses:
+        '200':
+          description: Markdown markup
+          content:
+            text/plain; charset=utf-8:
+              schema:
+                type: string
+  /fkunav:
+    get:
+      responses:
+        '508':
+          description: What did you expect
+          content:
+            text/plain; charset=utf-8:
+              schema:
+                type: string
+
+components:
+  schemas:
+    wishlist:
+      type: object
+      required:
+        - caps
+      properties:
+        caps:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: string
+              legend:
+                type: string
+              isPriority:
+                type: boolean
+        settings:
+          type: object
