@@ -3,9 +3,6 @@ name: Pull Request analysis
 on:
   pull_request:
 
-env:
-  DOCKER_BUILDKIT: 1
-
 jobs:
   build:
     name: build
