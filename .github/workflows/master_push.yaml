@@ -29,7 +29,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
           tags: "latest"
-          buildargs: VUE_APP_REVISION=$GITHUB_SHA
       - name: Push to server
         uses: appleboy/ssh-action@master
         with:

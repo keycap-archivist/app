@@ -1,11 +1,7 @@
 import fastify from 'fastify';
 import fastifyCORS from 'fastify-cors';
-import { controllers } from 'api/controllers';
-import * as fastify from 'fastify';
-import * as fastifyStatic from 'fastify-static';
-import * as fastifyCORS from 'fastify-cors';
-import * as openapiGlue from 'fastify-openapi-glue';
-import * as yaml from 'js-yaml';
+import openapiGlue from 'fastify-openapi-glue';
+import yaml from 'js-yaml';
 import { v1, v2 } from 'api/controllers';
 import { join } from 'path';
 import { instance } from 'db/instance';
