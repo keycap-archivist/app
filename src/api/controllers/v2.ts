@@ -1,5 +1,5 @@
 import { appLogger } from 'logger';
-import { getImgBuffer, supportedPolice } from 'internal/utils';
+import { getImgBuffer, supportedFonts } from 'internal/utils';
 import { generateWishlist } from 'internal/image-processor-v2';
 import { instance, ColorwayDetailed } from 'db/instance';
 import * as tablemark from 'tablemark';
@@ -57,5 +57,5 @@ export const getImg = async (req, resp): Promise<void> => {
 };
 
 export const getWishlistSettings = async (_, resp): Promise<void> => {
-  resp.type('application/json').status(200).send({ polices: supportedPolice });
+  resp.type('application/json').status(200).send({ fonts: supportedFonts });
 };

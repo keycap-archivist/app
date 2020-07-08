@@ -5,9 +5,9 @@ import axios from 'axios';
 
 const cachePath = resolve(join(__dirname, '..', '..', 'img-cache'));
 
-export const supportedPolice = [];
+export const supportedFonts = [];
 
-export function initImgProcessor() {
+export function initImgProcessor(): void {
   if (!existsSync(cachePath)) {
     mkdirSync(cachePath);
   }
@@ -15,7 +15,7 @@ export function initImgProcessor() {
   for (const f of readdirSync(fontPath)) {
     const family = f.split('.')[0].split('-')[0];
     registerFont(join(fontPath, f), { family });
-    supportedPolice.push(family);
+    supportedFonts.push(family);
   }
 }
 
