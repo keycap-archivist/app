@@ -1,15 +1,28 @@
+import { appLogger } from 'logger';
 import { existsSync, mkdirSync, readdirSync, promises as FSpromises, constants } from 'fs';
 import { createCanvas, loadImage, registerFont } from 'canvas';
 import { join, resolve } from 'path';
+import { LRUMap } from 'lru_map';
 import axios from 'axios';
 
 const cachePath = resolve(join(__dirname, '..', '..', 'img-cache'));
+const submissionCachePath = resolve(join(__dirname, '..', '..', 'submission-cache'));
+
+const cacheMap = new LRUMap(100);
+cacheMap.shift = function () {
+  const entry = LRUMap.prototype.shift.call(this);
+  // doSomethingWith(entry);
+  return entry;
+};
 
 export const supportedFonts = [];
 
 export function initImgProcessor(): void {
   if (!existsSync(cachePath)) {
     mkdirSync(cachePath);
+  }
+  if (!existsSync(submissionCachePath)) {
+    mkdirSync(submissionCachePath);
   }
   const fontPath = resolve(join(__dirname, 'fonts'));
   for (const f of readdirSync(fontPath)) {
@@ -98,4 +111,8 @@ export function drawBorder(
 ): void {
   ctx.fillStyle = color;
   ctx.fillRect(0 - thickness, 0 - thickness, width + thickness * 2, height + thickness * 2);
+}
+
+export function addSubmission(submission: any) {
+  appLogger.info(submission);
 }

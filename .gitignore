@@ -3,4 +3,5 @@ dist
 *.log
 *.lerna_backup
 img-cache
+submission-cache
 .ultra.cache.json

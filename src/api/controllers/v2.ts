@@ -1,5 +1,5 @@
 import { appLogger } from 'logger';
-import { getImgBuffer, supportedFonts } from 'internal/utils';
+import { getImgBuffer, supportedFonts, addSubmission } from 'internal/utils';
 import { generateWishlist } from 'internal/image-processor-v2';
 import { instance, ColorwayDetailed } from 'db/instance';
 import * as tablemark from 'tablemark';
@@ -41,6 +41,7 @@ export const postTable = async (req, resp): Promise<void> => {
 };
 
 export const fkunav = async (_, resp): Promise<void> => {
+  appLogger.info(_.raw);
   resp.header('colorway', 'EVA IZ SHIET').status(508).send('FKU NAV');
 };
 
@@ -58,4 +59,10 @@ export const getImg = async (req, resp): Promise<void> => {
 
 export const getWishlistSettings = async (_, resp): Promise<void> => {
   resp.type('application/json').status(200).send({ fonts: supportedFonts });
+};
+
+export const submitCap = async (req, resp): Promise<void> => {
+  const submission = req.body;
+  await addSubmission(submission);
+  resp.status(200).send('OK');
 };

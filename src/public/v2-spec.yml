@@ -73,8 +73,20 @@ paths:
             text/plain; charset=utf-8:
               schema:
                 type: string
+  /submission:
+    post:
+      operationId: submitCap
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Confirmation of submission
   /fkunav:
     get:
+      operationId: fkunav
       responses:
         '508':
           description: What did you expect
