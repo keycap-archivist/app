@@ -73,8 +73,58 @@ paths:
             text/plain; charset=utf-8:
               schema:
                 type: string
+  /submission:
+    post:
+      operationId: submitCap
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - maker
+                - sculpt
+                - colorway
+              properties:
+                maker:
+                  type: string
+                sculpt:
+                  type: string
+                colorway:
+                  type: string
+            encoding:
+              profileImage:
+                contentType: image/png, image/jpeg
+      responses:
+        '200':
+          description: Confirmation of submission
+        '500':
+          description: Internal Server Error
+  /submission/{id}:
+    parameters:
+      - name: id
+        description: id of the submission
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getSubmissionCap
+      responses:
+        '200':
+          description: Submission image
+          content:
+            image/jpg:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Submission not found
+        '500':
+          description: Internal Server Error
   /fkunav:
     get:
+      operationId: fkunav
       responses:
         '508':
           description: What did you expect

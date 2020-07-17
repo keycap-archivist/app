@@ -1,8 +1,10 @@
 import { appLogger } from 'logger';
-import { getImgBuffer, supportedFonts } from 'internal/utils';
+import { getImgBuffer, supportedFonts, addSubmission } from 'internal/utils';
 import { generateWishlist } from 'internal/image-processor-v2';
 import { instance, ColorwayDetailed } from 'db/instance';
+import { v4 as uuidv4 } from 'uuid';
 import * as tablemark from 'tablemark';
+import { getSubmissionBuffer, discordSubmissionUpdate } from 'internal/utils';
 import type { wishlistCap } from 'internal/image-processor-v2';
 
 export const postWishlist = async (req, resp): Promise<void> => {
@@ -58,4 +60,22 @@ export const getImg = async (req, resp): Promise<void> => {
 
 export const getWishlistSettings = async (_, resp): Promise<void> => {
   resp.type('application/json').status(200).send({ fonts: supportedFonts });
+};
+
+export const getSubmissionCap = async (req, resp): Promise<void> => {
+  const b = await getSubmissionBuffer(req.params.id);
+  if (!b) {
+    resp.status(404).send('Not found');
+    return;
+  }
+  resp.header('content-disposition', `filename="${req.params.id}.jpg"`).type('image/jpeg').status(200).send(b);
+};
+
+export const submitCap = async (req, resp): Promise<void> => {
+  const fileBuffer = req.body.file;
+  const { maker, sculpt, colorway } = req.body;
+  const submission = { maker, sculpt, colorway, id: uuidv4() };
+  await addSubmission(submission, fileBuffer[0].data);
+  await discordSubmissionUpdate(submission);
+  resp.status(200).send('OK');
 };

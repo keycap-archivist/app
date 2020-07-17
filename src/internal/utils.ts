@@ -1,9 +1,23 @@
-import { existsSync, mkdirSync, readdirSync, promises as FSpromises, constants } from 'fs';
+import { appLogger } from 'logger';
+import { existsSync, mkdirSync, unlinkSync, readdirSync, promises as FSpromises, constants } from 'fs';
 import { createCanvas, loadImage, registerFont } from 'canvas';
-import { join, resolve } from 'path';
+import { join, resolve, parse } from 'path';
+import { LRUMap } from 'lru_map';
 import axios from 'axios';
+import { writeFile } from 'fs/promises';
 
-const cachePath = resolve(join(__dirname, '..', '..', 'img-cache'));
+export const cachePath = resolve(join(__dirname, '..', '..', 'img-cache'));
+export const submissionCachePath = resolve(join(__dirname, '..', '..', 'submission-cache'));
+
+const cacheMap = new LRUMap(50);
+cacheMap.shift = function () {
+  const entry = LRUMap.prototype.shift.call(this);
+  const imgPath = join(submissionCachePath, `${entry[0]}.jpg`);
+  if (existsSync(imgPath)) {
+    unlinkSync(imgPath);
+  }
+  return entry;
+};
 
 export const supportedFonts = [];
 
@@ -11,12 +25,34 @@ export function initImgProcessor(): void {
   if (!existsSync(cachePath)) {
     mkdirSync(cachePath);
   }
+  if (!existsSync(submissionCachePath)) {
+    mkdirSync(submissionCachePath);
+  } else {
+    for (const f of readdirSync(submissionCachePath)) {
+      const id = parse(f).name;
+      cacheMap.set(id, id);
+      appLogger.info(`Add ${id} to submissionCache`);
+    }
+  }
   const fontPath = resolve(join(__dirname, 'fonts'));
   for (const f of readdirSync(fontPath)) {
     const family = f.split('.')[0].split('-')[0];
     registerFont(join(fontPath, f), { family });
     supportedFonts.push(family);
   }
+}
+
+export async function getSubmissionBuffer(id: string): Promise<Buffer> {
+  let output: Buffer;
+  const filePath = join(submissionCachePath, `${id}.jpg`);
+  if (
+    await FSpromises.access(filePath, constants.R_OK)
+      .then(() => true)
+      .catch(() => false)
+  ) {
+    output = await FSpromises.readFile(filePath);
+  }
+  return output;
 }
 
 export async function getImgBuffer(colorway): Promise<Buffer> {
@@ -98,4 +134,23 @@ export function drawBorder(
 ): void {
   ctx.fillStyle = color;
   ctx.fillRect(0 - thickness, 0 - thickness, width + thickness * 2, height + thickness * 2);
+}
+
+export async function addSubmission(submission: any, imgBuffer: Buffer): Promise<void> {
+  appLogger.info(submission);
+  cacheMap.set(submission.id, submission.id);
+  await writeFile(join(submissionCachePath, `${submission.id}.jpg`), imgBuffer);
+}
+
+const discordHook = process.env.DISCORD_WEBHOOK;
+export async function discordSubmissionUpdate(submission): Promise<void> {
+  const output: string[] = [];
+  output.push('**New Submission**');
+  output.push(`Maker: ${submission.maker}`);
+  output.push(`Sculpt: ${submission.sculpt}`);
+  output.push(`Colorway: ${submission.colorway}`);
+  output.push(`Image link: https://app.keycap-archivist.com/api/v2/submission/${submission.id}`);
+  await axios.post(discordHook, {
+    content: output.join('\n')
+  });
 }

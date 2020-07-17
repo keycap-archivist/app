@@ -1,5 +1,6 @@
 import fastify from 'fastify';
 import fastifyCORS from 'fastify-cors';
+import fastifyMultipart from 'fastify-multipart';
 import openapiGlue from 'fastify-openapi-glue';
 import yaml from 'js-yaml';
 import { v1, v2 } from 'api/controllers';
@@ -29,6 +30,7 @@ export async function createServer(): Promise<any> {
   });
 
   server.register(graphQlServer.createHandler({ path: '/api/graphql' }));
+  server.register(fastifyMultipart, { addToBody: true, limits: { files: 1, fieldSize: 5e6 } });
   const gqlStr = readFileSync(join(__dirname, 'api', 'graphql', 'schema.gql'), 'utf-8');
   const indexFile = readFileSync(join(__dirname, 'internal', 'doc', 'index.md'), 'utf-8').replace(
     '{gql-content}',

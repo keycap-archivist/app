@@ -8,7 +8,7 @@
     "prettier:write": "prettier -c \"./src/**/*.ts\" --write",
     "lint": "yarn eslint && yarn prettier",
     "serve": "nodemon -e yml,ts,gql -w ./src -x yarn watch:serve",
-    "watch:serve": "ts-node src/server.ts",
+    "watch:serve": "ts-node -r dotenv/config src/server.ts",
     "watch:inspect": "nodemon --inspect -e yaml,ts,gql -w ./src -x node -r ts-node/register src/server.ts",
     "build": "rm -rf dist && npx tsc && cp -R src/public/ dist/public && cp src/api/graphql/schema.gql dist/api/graphql/schema.gql && cp -R src/internal/fonts/ dist/internal/fonts/ && cp -R src/internal/doc/ dist/internal/doc/",
     "package": "sh package.sh"
@@ -22,12 +22,15 @@
     "canvas": "2.6.1",
     "fastify": "2.15.1",
     "fastify-cors": "3.0.3",
+    "fastify-multipart": "1.0.6",
     "fastify-openapi-glue": "1.6.0",
     "js-yaml": "3.13.1",
+    "lru_map": "0.4.0",
     "marked": "^0.8.2",
     "pino": "5.17.0",
     "pino-pretty": "3.6.1",
-    "tablemark": "2.0.0"
+    "tablemark": "2.0.0",
+    "uuid": "8.2.0"
   },
   "devDependencies": {
     "@ava/typescript": "1.1.1",
@@ -35,6 +38,7 @@
     "@typescript-eslint/eslint-plugin": "3.5.0",
     "@typescript-eslint/parser": "3.5.0",
     "ava": "3.5.0",
+    "dotenv": "8.2.0",
     "eslint": "7.4.0",
     "eslint-config-prettier": "6.10.0",
     "eslint-plugin-prettier": "3.1.2",
