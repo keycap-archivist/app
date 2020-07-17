@@ -5,3 +5,4 @@ dist
 img-cache
 submission-cache
 .ultra.cache.json
+.env
