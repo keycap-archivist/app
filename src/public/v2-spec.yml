@@ -92,8 +92,8 @@ paths:
                   type: string
                 colorway:
                   type: string
-            encoding: # The same level as schema
-              profileImage: # Property name (see above)
+            encoding:
+              profileImage:
                 contentType: image/png, image/jpeg
       responses:
         '200':
