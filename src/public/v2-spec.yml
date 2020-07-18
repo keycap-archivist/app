@@ -38,7 +38,7 @@ paths:
     post:
       operationId: postWishlist
       requestBody:
-        description: A JSON object containing pet information
+        description: The wishilist to be generated
         content:
           application/json:
             schema:
@@ -59,7 +59,7 @@ paths:
     post:
       operationId: postWishListTable
       requestBody:
-        description: A JSON object containing pet information
+        description: The wishlist object
         content:
           application/json:
             schema:
@@ -122,6 +122,23 @@ paths:
           description: Submission not found
         '500':
           description: Internal Server Error
+  /submitName:
+    post:
+      operationId: submitName
+      requestBody:
+        description: Submission name object
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - name
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
   /fkunav:
     get:
       operationId: fkunav

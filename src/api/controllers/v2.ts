@@ -4,7 +4,7 @@ import { generateWishlist } from 'internal/image-processor-v2';
 import { instance, ColorwayDetailed } from 'db/instance';
 import { v4 as uuidv4 } from 'uuid';
 import * as tablemark from 'tablemark';
-import { getSubmissionBuffer, discordSubmissionUpdate } from 'internal/utils';
+import { getSubmissionBuffer, discordSubmissionUpdate, discordSubmitCapName } from 'internal/utils';
 import type { wishlistCap } from 'internal/image-processor-v2';
 
 export const postWishlist = async (req, resp): Promise<void> => {
@@ -77,5 +77,19 @@ export const submitCap = async (req, resp): Promise<void> => {
   const submission = { maker, sculpt, colorway, id: uuidv4() };
   await addSubmission(submission, fileBuffer[0].data);
   await discordSubmissionUpdate(submission);
+  resp.status(200).send('OK');
+};
+
+export const submitName = async (req, resp): Promise<void> => {
+  const { id, name } = req.body;
+
+  const colorway = instance.getColorway(id);
+
+  if (!colorway) {
+    resp.status(404).send('Not found');
+    return;
+  }
+
+  await discordSubmitCapName(colorway, name);
   resp.status(200).send('OK');
 };
