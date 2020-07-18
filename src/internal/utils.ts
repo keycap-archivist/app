@@ -5,6 +5,7 @@ import { join, resolve, parse } from 'path';
 import { LRUMap } from 'lru_map';
 import axios from 'axios';
 import { writeFile } from 'fs/promises';
+import type { ColorwayDetailed } from 'db/instance';
 
 export const cachePath = resolve(join(__dirname, '..', '..', 'img-cache'));
 export const submissionCachePath = resolve(join(__dirname, '..', '..', 'submission-cache'));
@@ -143,6 +144,7 @@ export async function addSubmission(submission: any, imgBuffer: Buffer): Promise
 }
 
 const discordHook = process.env.DISCORD_WEBHOOK;
+
 export async function discordSubmissionUpdate(submission): Promise<void> {
   const output: string[] = [];
   output.push('**New Submission**');
@@ -150,6 +152,20 @@ export async function discordSubmissionUpdate(submission): Promise<void> {
   output.push(`Sculpt: ${submission.sculpt}`);
   output.push(`Colorway: ${submission.colorway}`);
   output.push(`Image link: https://app.keycap-archivist.com/api/v2/submission/${submission.id}`);
+  await axios.post(discordHook, {
+    content: output.join('\n')
+  });
+}
+
+export async function discordSubmitCapName(colorway: ColorwayDetailed, name: string): Promise<void> {
+  const output: string[] = [];
+  output.push('**Colorway Name Correction**');
+  if (colorway.name.length) {
+    output.push(`Correction : ${colorway.name} => ${name}`);
+  } else {
+    output.push(`Name is : ${name}`);
+  }
+  output.push(`Image link: https://app.keycap-archivist.com/api/v2/img/${colorway.id}`);
   await axios.post(discordHook, {
     content: output.join('\n')
   });
