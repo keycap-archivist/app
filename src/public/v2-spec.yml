@@ -139,6 +139,11 @@ paths:
                   type: string
                 name:
                   type: string
+      responses:
+        '200':
+          description: Confirmation of submission
+        '500':
+          description: Internal Server Error
   /fkunav:
     get:
       operationId: fkunav
