@@ -10,7 +10,7 @@
     "serve": "nodemon -e yml,ts,gql -w ./src -x yarn watch:serve",
     "watch:serve": "ts-node -r dotenv/config src/server.ts",
     "watch:inspect": "nodemon --inspect -e yaml,ts,gql -w ./src -x node -r ts-node/register src/server.ts",
-    "build": "rm -rf dist && npx tsc && cp -R src/public/ dist/public && cp src/api/graphql/schema.gql dist/api/graphql/schema.gql && cp -R src/internal/fonts/ dist/internal/fonts/ && cp -R src/internal/doc/ dist/internal/doc/",
+    "build": "rm -rf dist && npx tsc && cp -R src/api/v2-spec.yml dist/api/v2-spec.yml && cp src/api/graphql/schema.gql dist/api/graphql/schema.gql && cp -R src/internal/fonts/ dist/internal/fonts/ && cp -R src/internal/doc/ dist/internal/doc/",
     "package": "sh package.sh"
   },
   "author": "",

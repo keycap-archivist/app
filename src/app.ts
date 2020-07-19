@@ -90,26 +90,31 @@ padding: 15px;
     url: '/api/v1',
     schema: {
       body: {
-        required: ['ids'],
-        ids: {
-          type: 'array',
-          items: {
-            type: 'string'
+        schema: {
+          required: ['ids'],
+          type: 'object',
+          properties: {
+            ids: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            },
+            priorities: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            },
+            bg: { type: 'string' },
+            titleText: { type: 'string' },
+            titleColor: { type: 'string' },
+            textColor: { type: 'string' },
+            extraTextColor: { type: 'string' },
+            capsPerLine: { type: 'integer' },
+            extraText: { type: 'string' }
           }
-        },
-        priorities: {
-          type: 'array',
-          items: {
-            type: 'string'
-          }
-        },
-        bg: { type: 'string' },
-        titleText: { type: 'string' },
-        titleColor: { type: 'string' },
-        textColor: { type: 'string' },
-        extraTextColor: { type: 'string' },
-        capsPerLine: { type: 'integer' },
-        extraText: { type: 'string' }
+        }
       }
     },
     handler: v1.genWishlistPost
@@ -121,7 +126,7 @@ padding: 15px;
     handler: v1.getKeycapImage
   });
 
-  const specs = yaml.safeLoad(readFileSync(join(__dirname, 'public', 'v2-spec.yml')));
+  const specs = yaml.safeLoad(readFileSync(join(__dirname, 'api', 'v2-spec.yml')));
   server.register(openapiGlue, {
     specification: specs,
     prefix: 'api/v2',
