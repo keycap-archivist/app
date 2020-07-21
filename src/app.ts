@@ -1,5 +1,6 @@
 import fastify from 'fastify';
 import fastifyCORS from 'fastify-cors';
+import GQL from 'fastify-gql';
 import fastifyMultipart from 'fastify-multipart';
 import openapiGlue from 'fastify-openapi-glue';
 import yaml from 'js-yaml';
@@ -7,8 +8,7 @@ import { v1, v2 } from 'api/controllers';
 import { join } from 'path';
 import { instance } from 'db/instance';
 import { apiLogger } from 'logger';
-import { ApolloServer } from 'apollo-server-fastify';
-import { typeDefs, resolvers } from 'api/graphql';
+import { schema, resolvers } from 'api/graphql';
 import marked from 'marked';
 import { readFileSync } from 'fs';
 import { initImgProcessor } from 'internal/utils';
@@ -22,14 +22,11 @@ export async function createServer(): Promise<any> {
     logger: apiLogger
   });
   server.register(fastifyCORS, { origin: true });
+
+  server.register(GQL, { schema, resolvers, path: '/api/graphql' });
+
   await instance.init();
 
-  const graphQlServer = new ApolloServer({
-    typeDefs,
-    resolvers
-  });
-
-  server.register(graphQlServer.createHandler({ path: '/api/graphql' }));
   server.register(fastifyMultipart, { addToBody: true, limits: { files: 1, fieldSize: 5e6 } });
   const gqlStr = readFileSync(join(__dirname, 'api', 'graphql', 'schema.gql'), 'utf-8');
   const indexFile = readFileSync(join(__dirname, 'internal', 'doc', 'index.md'), 'utf-8').replace(
