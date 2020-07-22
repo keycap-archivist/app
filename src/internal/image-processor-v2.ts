@@ -1,40 +1,62 @@
 import { createCanvas, loadImage } from 'canvas';
-import { instance } from 'db/instance';
-import { getImgBuffer, fitText, isTextFittingSpace, drawBorder } from 'internal/utils';
+import { instance, ColorwayDetailed } from 'db/instance';
+import { getImgBuffer, fitText, isTextFittingSpace, drawBorder, assetsBuffer } from 'internal/utils';
 import { appLogger } from 'logger';
+import { merge } from 'lodash';
 
-export type wishlistCap = {
+export interface wishlistCap {
   id: string;
   legend?: string;
   isPriority?: boolean;
-};
+}
 
-type textOption = {
+interface textCuztomization {
   color: string;
-  text: string;
   font: string;
-};
+}
 
-export type wishlistSetting = {
+interface textOption extends textCuztomization {
+  text: string;
+}
+
+interface social extends textCuztomization {
+  discord: string;
+  reddit: string;
+}
+
+export interface wishlistSetting {
   capsPerLine: number;
-  priority: textOption;
+  priority: textCuztomization;
   title: textOption;
-  legends: textOption;
+  legends: textCuztomization;
   extraText: textOption;
   background: {
     color: string;
   };
-};
+  social?: social;
+}
 
-export type wishlistV2 = {
+export interface wishlistV2 {
   caps: wishlistCap[];
   settings: wishlistSetting;
+}
+
+interface hydratedWishlistCap extends ColorwayDetailed, wishlistCap {}
+
+const defaultWishlistSettings: wishlistSetting = {
+  capsPerLine: 3,
+  priority: { color: 'red', font: 'Roboto' },
+  title: { color: 'red', text: '', font: 'Roboto' },
+  legends: { color: 'red', font: 'Roboto' },
+  extraText: { color: 'red', text: '', font: 'Roboto' },
+  background: { color: 'black' }
 };
 
 const MARGIN_SIDE = 10;
 const MARGIN_BOTTOM = 60;
 const LINE_HEIGHT = 22;
 const EXTRA_TEXT_MARGIN = 50;
+const SOCIAL_ICONS_MARGIN = 70;
 const HEADER_HEIGHT = 90;
 const THUMB_RADIUS = 10;
 
@@ -46,7 +68,7 @@ const NS_PER_SEC = 1e9;
 async function drawTheCap(
   context: CanvasRenderingContext2D,
   settings: wishlistSetting,
-  cap: wishlistCap,
+  cap: hydratedWishlistCap,
   x: number,
   y: number
 ): Promise<void> {
@@ -104,9 +126,8 @@ async function drawTheCap(
   }
 
   const b: Buffer = Tcanvas.toBuffer('image/jpeg', { quality: 0.7, progressive: true });
-  //@ts-ignore
-  // typing is fucked up but it works like this
-  context.drawImage(await loadImage(b), x, y);
+  const i: any = await loadImage(b);
+  context.drawImage(i, x, y);
 
   context.font = `20px ${settings.legends.font}`;
   context.fillStyle = color;
@@ -115,12 +136,10 @@ async function drawTheCap(
   if (cap.legend) {
     context.fillText(cap.legend, x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
   } else {
-    const _cap = instance.getColorway(cap.id);
-    // hydrate cap
-    const legend = `${_cap.sculpt.name} ${_cap.name}`;
+    const legend = `${cap.sculpt.name} ${cap.name}`;
     if (!isTextFittingSpace(context, legend, IMG_WIDTH)) {
-      context.fillText(fitText(context, _cap.sculpt.name, IMG_WIDTH), x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
-      context.fillText(fitText(context, _cap.name, IMG_WIDTH), x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT * 2);
+      context.fillText(fitText(context, cap.sculpt.name, IMG_WIDTH), x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
+      context.fillText(fitText(context, cap.name, IMG_WIDTH), x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT * 2);
     } else {
       context.fillText(legend, x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
     }
@@ -142,18 +161,18 @@ function calcHeight(w: wishlistV2): number {
   let out = HEADER_HEIGHT + rowHeight * nbRows;
 
   // Add extra size for additionnal text
-  if (w.settings.extraText.text && w.settings.extraText.text.trim().length) {
+  if (w.settings.extraText && w.settings.extraText.text && w.settings.extraText.text.trim().length) {
     out += EXTRA_TEXT_MARGIN;
   }
-
+  if (w.settings.social) {
+    out += SOCIAL_ICONS_MARGIN;
+  }
   return out;
 }
 
 export async function generateWishlist(w: wishlistV2): Promise<Buffer> {
-
-// TODO: Hydrate with default values
-
   const time = process.hrtime();
+  w.settings = merge(defaultWishlistSettings, w.settings);
   const p = [];
   const canvasWidth = calcWidth(w.settings.capsPerLine);
   const canvasHeight = calcHeight(w);
@@ -164,11 +183,12 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer> {
   let y = HEADER_HEIGHT;
   let idx = 0;
   for (const cap of w.caps) {
+    const hCap = Object.assign(cap, instance.getColorway(cap.id));
     if (idx === w.settings.capsPerLine) {
       idx = 0;
       y += rowHeight;
     }
-    p.push(drawTheCap(ctx, w.settings, cap, idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y));
+    p.push(drawTheCap(ctx, w.settings, hCap, idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y));
     idx++;
   }
 
@@ -185,9 +205,36 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer> {
     ctx.font = `20px ${w.settings.extraText.font}`;
     ctx.fillStyle = w.settings.extraText.color;
     ctx.textAlign = 'left';
-    ctx.fillText(w.settings.extraText.text, MARGIN_SIDE, canvasHeight - 20);
+    ctx.fillText(
+      w.settings.extraText.text,
+      MARGIN_SIDE,
+      canvasHeight - 20 - (w.settings.social ? SOCIAL_ICONS_MARGIN : 0)
+    );
     ctx.fillStyle = w.settings.extraText.color;
-    ctx.fillRect(MARGIN_SIDE, canvasHeight - EXTRA_TEXT_MARGIN, canvasWidth - MARGIN_SIDE * 2, 2);
+    ctx.fillRect(
+      MARGIN_SIDE,
+      canvasHeight - EXTRA_TEXT_MARGIN - (w.settings.social ? SOCIAL_ICONS_MARGIN : 0),
+      canvasWidth - MARGIN_SIDE * 2,
+      2
+    );
+  }
+
+  // draw social
+  if (w.settings.social) {
+    ctx.textAlign = 'left';
+    ctx.font = `20px ${w.settings.social.font}`;
+    ctx.fillStyle = w.settings.social.color;
+    const textMargin = MARGIN_SIDE + 35;
+    if (w.settings.social.reddit) {
+      const redditLogo = await loadImage(assetsBuffer.redditLogo);
+      ctx.drawImage(redditLogo, 0, 0, 100, 100, MARGIN_SIDE, canvasHeight - SOCIAL_ICONS_MARGIN - 5, 25, 25);
+      ctx.fillText(w.settings.social.reddit, textMargin, canvasHeight - 55);
+    }
+    if (w.settings.social.discord) {
+      const discordLogo = await loadImage(assetsBuffer.discordLogo);
+      ctx.drawImage(discordLogo, 0, 0, 100, 100, MARGIN_SIDE - 1, canvasHeight - SOCIAL_ICONS_MARGIN / 2 - 5, 27, 27);
+      ctx.fillText(w.settings.social.discord, textMargin, canvasHeight - 20);
+    }
   }
 
   if (w.caps.findIndex((x) => x.isPriority === true) > -1) {

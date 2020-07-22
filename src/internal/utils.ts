@@ -1,5 +1,5 @@
 import { appLogger } from 'logger';
-import { existsSync, mkdirSync, unlinkSync, readdirSync, promises as FSpromises, constants } from 'fs';
+import { existsSync, mkdirSync, unlinkSync, readdirSync, promises as FSpromises, constants, readFileSync } from 'fs';
 import { createCanvas, loadImage, registerFont } from 'canvas';
 import { join, resolve, parse } from 'path';
 import { LRUMap } from 'lru_map';
@@ -9,6 +9,10 @@ import type { ColorwayDetailed } from 'db/instance';
 
 export const cachePath = resolve(join(__dirname, '..', '..', 'img-cache'));
 export const submissionCachePath = resolve(join(__dirname, '..', '..', 'submission-cache'));
+export const assetsBuffer = {
+  discordLogo: readFileSync(resolve(join(__dirname, 'assets', 'discord_logo.png'))),
+  redditLogo: readFileSync(resolve(join(__dirname, 'assets', 'reddit_logo.png')))
+};
 
 const cacheMap = new LRUMap(50);
 cacheMap.shift = function () {
@@ -56,7 +60,7 @@ export async function getSubmissionBuffer(id: string): Promise<Buffer> {
   return output;
 }
 
-export async function getImgBuffer(colorway): Promise<Buffer> {
+export async function getImgBuffer(colorway: ColorwayDetailed): Promise<Buffer> {
   const filePath = join(cachePath, `${colorway.id}.jpg`);
   let output: Buffer;
   if (

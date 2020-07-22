@@ -26,6 +26,7 @@
     "fastify-openapi-glue": "2.0.3",
     "graphql-tools": "^6.0.14",
     "js-yaml": "3.14.0",
+    "lodash": "4.17.19",
     "lru_map": "0.4.0",
     "marked": "1.1.1",
     "pino": "6.4.0",

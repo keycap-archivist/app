@@ -42,7 +42,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
+              $ref: '#/components/schemas/wishlist'
       responses:
         '200':
           description: image of the generated wishlist
