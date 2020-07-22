@@ -7,7 +7,7 @@ import { appLogger } from 'logger';
 const genWishlistGet = async (req, resp): Promise<void> => {
   try {
     const imgBuffer = await generateWishlistFromQS(req.query);
-    resp.type('image/jpeg').status(200).send(imgBuffer);
+    resp.type('image/png').status(200).send(imgBuffer);
   } catch (e) {
     appLogger.error(e);
     resp.status(500).send('Oops! An error has occured');
@@ -18,8 +18,8 @@ const genWishlistPost = async (req, resp): Promise<void> => {
   try {
     const imgBuffer = await generateWishListFromPost(req.body);
     resp
-      .header('content-disposition', `attachment; filename="wishlist.jpg"`)
-      .type('image/jpeg')
+      .header('content-disposition', `attachment; filename="wishlist.png"`)
+      .type('image/png')
       .status(200)
       .send(imgBuffer);
   } catch (e) {
