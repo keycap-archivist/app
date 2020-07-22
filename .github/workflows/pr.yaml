@@ -17,6 +17,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: docker build
         run: docker build -t test_api .
-      - run: docker run --name test_api --rm -d test_api
-      - run: sleep 10
-      - run: docker stop test_api
+      - run: docker run --name test_api -p 3000 --rm -d test_api
+      - run: sleep 10 && curl -D - http://localhost:3000/health
+      - name: Stop Docker container
+        run: docker stop test_api
+        if: always()
