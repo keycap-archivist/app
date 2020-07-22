@@ -21,7 +21,7 @@ jobs:
       - name: Test start of api
         run: |
           sleep 10
-          curl -D - http://localhost:3000/health
+          curl -D - http://127.0.0.1:3000/health
       - name: Stop Docker container
         run: docker stop test_api
         if: always()
