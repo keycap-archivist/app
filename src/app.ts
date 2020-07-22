@@ -72,6 +72,14 @@ padding: 15px;
 
   server.route({
     method: 'GET',
+    url: '/health',
+    handler: (_, rep) => {
+      rep.status(200).send('OK');
+    }
+  });
+
+  server.route({
+    method: 'GET',
     url: '/api/v1/table',
     handler: v1.genTable
   });

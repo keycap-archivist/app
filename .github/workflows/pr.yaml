@@ -16,4 +16,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: docker build
-        run: docker build .
+        run: docker build -t test_api .
+      - run: docker run --name test_api -p 127.0.0.1:3000:3000 -d test_api
+      - name: Test start of api
+        run: |
+          sleep 10
+          curl -D - http://127.0.0.1:3000/health
+      - name: Stop Docker container
+        if: always()
+        run: |
+          docker logs test_api
+          docker stop test_api
