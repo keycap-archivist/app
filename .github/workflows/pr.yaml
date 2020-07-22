@@ -16,4 +16,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: docker build
-        run: docker build .
+        run: docker build -t test_api .
+      - run: docker run --name test_api -rm -d test_api
+      - run: sleep 10
+      - run: docker stop test_api
