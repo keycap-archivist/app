@@ -76,7 +76,7 @@ async function drawTheCap(
     Tctx.drawImage(_img, sx, sy, w, h, 0, 0, IMG_WIDTH, IMG_HEIGTH);
   }
 
-  const b: Buffer = Tcanvas.toBuffer('image/jpeg', { quality: 0.7, progressive: true });
+  const b: Buffer = Tcanvas.toBuffer('image/jpeg', { quality: 1, progressive: true });
   //@ts-ignore
   // typing is fucked up but it works like this
   context.drawImage(await loadImage(b), x, y);
@@ -217,7 +217,7 @@ export async function generateWishlist(opt: WishlistOptions): Promise<Buffer> {
     ctx.fillText('Priorities', MARGIN_SIDE, 30);
   }
 
-  const outBuffer = canvas.toBuffer('image/jpeg', { quality: 0.9, progressive: true });
+  const outBuffer = canvas.toBuffer('image/png');
   const diff = process.hrtime(time);
   appLogger.info(`generateWishlist ${opt.caps.length} caps ${(diff[0] * NS_PER_SEC + diff[1]) / 1000000} ms`);
   return outBuffer;

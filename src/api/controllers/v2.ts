@@ -12,8 +12,8 @@ export const postWishlist = async (req, resp): Promise<void> => {
     const imgBuffer = await generateWishlist(req.body);
     if (imgBuffer) {
       return resp
-        .header('content-disposition', `attachment; filename="wishlist.jpg"`)
-        .type('image/jpeg')
+        .header('content-disposition', `attachment; filename="wishlist.png"`)
+        .type('image/png')
         .status(200)
         .send(imgBuffer);
     }
