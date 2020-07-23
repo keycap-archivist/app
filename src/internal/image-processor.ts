@@ -40,7 +40,7 @@ async function drawTheCap(
   }
   const Tcanvas = createCanvas(IMG_WIDTH, IMG_HEIGTH);
   const Tctx = Tcanvas.getContext('2d');
-
+  Tctx.quality = 'fast';
   Tctx.fillStyle = opt.bg;
   Tctx.fillRect(0, 0, IMG_WIDTH, IMG_HEIGTH);
 

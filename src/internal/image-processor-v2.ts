@@ -89,6 +89,7 @@ async function drawTheCap(
   }
   const Tcanvas = createCanvas(IMG_WIDTH, IMG_HEIGTH);
   const Tctx = Tcanvas.getContext('2d');
+  Tctx.quality = 'fast';
 
   Tctx.fillStyle = settings.background.color;
   Tctx.fillRect(0, 0, IMG_WIDTH, IMG_HEIGTH);
@@ -178,6 +179,8 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer> {
   const canvasHeight = calcHeight(w);
   const canvas = createCanvas(canvasWidth, canvasHeight);
   const ctx = canvas.getContext('2d');
+  ctx.quality = 'good';
+
   ctx.fillStyle = w.settings.background.color;
   ctx.fillRect(0, 0, canvasWidth, canvasHeight);
   let y = HEADER_HEIGHT;
