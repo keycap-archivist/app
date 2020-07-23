@@ -29,8 +29,8 @@ export async function createServer(): Promise<any> {
   await instance.init();
 
   server.register(fastifyMultipart, { addToBody: true, limits: { files: 1, fieldSize: 5e6 } });
-  const gqlStr = readFileSync(join(__dirname, 'api', 'graphql', 'schema.gql'), 'utf-8');
-  const indexFile = readFileSync(join(__dirname, 'internal', 'doc', 'index.md'), 'utf-8').replace(
+  const gqlStr = readFileSync(join(__dirname, 'assets', 'schema.gql'), 'utf-8');
+  const indexFile = readFileSync(join(__dirname, 'assets', 'doc', 'index.md'), 'utf-8').replace(
     '{gql-content}',
     gqlStr
   );
@@ -132,7 +132,8 @@ padding: 15px;
     handler: v1.getKeycapImage
   });
 
-  const specs = yaml.safeLoad(readFileSync(join(__dirname, 'api', 'v2-spec.yaml')));
+  const SPECS_PATH = join(__dirname, 'assets', 'v2-spec.yaml');
+  const specs = yaml.safeLoad(readFileSync(SPECS_PATH));
   server.register(openapiGlue, {
     specification: specs,
     prefix: 'api/v2',
@@ -142,9 +143,9 @@ padding: 15px;
   server.register(swagger, {
     mode: 'static',
     exposeRoute: true,
-    routePrefix:'/api/v2/documentation',
+    routePrefix: '/api/v2/documentation',
     specification: {
-      path: join(__dirname, 'api', 'v2-spec.yaml'),
+      path: SPECS_PATH,
       postProcessor: function (swaggerObject) {
         return swaggerObject;
       },

@@ -3,7 +3,7 @@ import { join } from 'path';
 import { instance } from 'db/instance';
 import type { Artist, Sculpt, Colorway } from 'db/instance';
 
-const gqlStr = readFileSync(join(__dirname, 'schema.gql'), 'utf-8');
+const gqlStr = readFileSync(join(__dirname, '..', '..', 'assets', 'schema.gql'), 'utf-8');
 export const schema = `
   ${gqlStr}
 `;
