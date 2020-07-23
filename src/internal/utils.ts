@@ -164,6 +164,8 @@ export async function discordSubmissionUpdate(submission): Promise<void> {
 export async function discordSubmitCapName(colorway: ColorwayDetailed, name: string): Promise<void> {
   const output: string[] = [];
   output.push('**Colorway Name Correction**');
+  output.push(`Maker: ${colorway.maker}`);
+  output.push(`Sculpt: ${colorway.sculpt}`);
   if (colorway.name.length) {
     output.push(`Correction : ${colorway.name} => ${name}`);
   } else {
