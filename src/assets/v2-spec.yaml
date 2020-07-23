@@ -40,7 +40,7 @@ paths:
     post:
       operationId: postWishlist
       requestBody:
-        description: The wishilist to be generated
+        description: The wishlist to be generated
         content:
           application/json:
             schema:
