@@ -10,11 +10,10 @@
     "serve": "nodemon -e yaml,ts,gql -w ./src -x yarn watch:serve",
     "watch:serve": "ts-node -r dotenv/config src/server.ts",
     "watch:inspect": "nodemon --inspect -e yaml,ts,gql -w ./src -x node -r ts-node/register src/server.ts",
-    "build": "rm -rf dist && npx tsc && cp -R src/assets/ dist/assets/",
-    "package": "sh package.sh"
+    "build": "rm -rf dist && npx tsc && cp -R src/assets/ dist/assets/"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Vincent LE GOFF",
+  "license": "MIT",
   "dependencies": {
     "app-module-path": "2.2.0",
     "axios": "0.19.2",
