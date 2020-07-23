@@ -3,6 +3,8 @@ info:
   title: Keycap Archivist api v2
   description: Keycap archivist Api
   version: 0.0.1
+servers:
+  - url: https://app.keycap-archivist.com/api/v2/
 paths:
   /img/{id}:
     parameters:

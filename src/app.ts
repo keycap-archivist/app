@@ -3,6 +3,7 @@ import fastifyCORS from 'fastify-cors';
 import GQL from 'fastify-gql';
 import fastifyMultipart from 'fastify-multipart';
 import openapiGlue from 'fastify-openapi-glue';
+import swagger from 'fastify-swagger';
 import yaml from 'js-yaml';
 import { v1, v2 } from 'api/controllers';
 import { join } from 'path';
@@ -131,13 +132,24 @@ padding: 15px;
     handler: v1.getKeycapImage
   });
 
-  const specs = yaml.safeLoad(readFileSync(join(__dirname, 'api', 'v2-spec.yml')));
+  const specs = yaml.safeLoad(readFileSync(join(__dirname, 'api', 'v2-spec.yaml')));
   server.register(openapiGlue, {
     specification: specs,
     prefix: 'api/v2',
     service: v2,
     noAdditional: true
   });
-
+  server.register(swagger, {
+    mode: 'static',
+    exposeRoute: true,
+    routePrefix:'/api/v2/documentation',
+    specification: {
+      path: join(__dirname, 'api', 'v2-spec.yaml'),
+      postProcessor: function (swaggerObject) {
+        return swaggerObject;
+      },
+      baseDir: __dirname
+    }
+  });
   return server;
 }

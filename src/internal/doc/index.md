@@ -6,6 +6,8 @@ This API is based on the data exposed in : [https://github.com/keycap-archivist/
 
 Database version of the API: {SHA_API_VERSION}
 
+API Documentation: [https://app.keycap-archivist.com/api/v2/documentation](https://app.keycap-archivist.com/api/v2/documentation)
+
 ### GraphQl
 
 - graphQl endpoint : [https://app.keycap-archivist.com/api/graphql](https://app.keycap-archivist.com/api/graphql)
