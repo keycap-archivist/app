@@ -13,6 +13,8 @@ import { schema, resolvers } from 'api/graphql';
 import marked from 'marked';
 import { readFileSync } from 'fs';
 import { initImgProcessor } from 'internal/utils';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { plugin, getSummary } = require('@promster/fastify');
 
 export async function createServer(): Promise<any> {
   initImgProcessor();
@@ -22,6 +24,7 @@ export async function createServer(): Promise<any> {
   const server = fastify({
     logger: apiLogger
   });
+
   server.register(fastifyCORS, { origin: true });
 
   server.register(GQL, { schema, resolvers, path: '/api/graphql' });
@@ -157,6 +160,15 @@ padding: 15px;
         return swaggerObject;
       },
       baseDir: __dirname
+    }
+  });
+
+  server.register(plugin as any);
+  server.route({
+    method: 'GET',
+    url: '/metrics',
+    handler: (_, rep) => {
+      rep.status(200).send(getSummary());
     }
   });
 
