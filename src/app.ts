@@ -26,6 +26,12 @@ export async function createServer(): Promise<any> {
 
   server.register(GQL, { schema, resolvers, path: '/api/graphql' });
 
+  server.addHook('onSend', (_, rep, payload, done) => {
+    rep.header('zekth-looking-for', 'bombkings did you see them?');
+    rep.header('seriously', "You're looking at http headers? COME ON");
+    done(null, payload);
+  });
+
   await instance.init();
 
   server.register(fastifyMultipart, { addToBody: true, limits: { files: 1, fieldSize: 5e6 } });
@@ -140,6 +146,7 @@ padding: 15px;
     service: v2,
     noAdditional: true
   });
+
   server.register(swagger, {
     mode: 'static',
     exposeRoute: true,
@@ -152,5 +159,6 @@ padding: 15px;
       baseDir: __dirname
     }
   });
+
   return server;
 }
