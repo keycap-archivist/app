@@ -100,7 +100,7 @@
     "@nodelib/fs.scandir" "2.1.3"
     fastq "^1.6.0"
 
-"@promster/fastify@^3.1.10":
+"@promster/fastify@3.1.10":
   version "3.1.10"
   resolved "https://registry.yarnpkg.com/@promster/fastify/-/fastify-3.1.10.tgz#e36952c420a27a9ff37dddae6bd439d680cdf92a"
   integrity sha512-07KP5aFCbPZmuGG0icpyX76x1LfFKGcs0vv2yISTSWaZdnApzSUEgRVLZP/u+52utiwmmXVG0MyHFKmAKixh+w==
@@ -125,6 +125,11 @@
     url-value-parser "2.0.1"
   optionalDependencies:
     gc-stats "1.4.0"
+
+"@promster/types@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@promster/types/-/types-1.0.6.tgz#9622a8e8e049bc452bbfde9760a07b902ea4df05"
+  integrity sha512-yqqDa2JXd/HdYKBEe2icdzVMRCBmqKERVzxO9wy7BiMjpUiFoyObTNbgW8laa6k1WuxuXHveI+2uujiNIPxaIQ==
 
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
@@ -2982,7 +2987,7 @@ progress@^2.0.0:
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
-prom-client@^12.0.0:
+prom-client@12.0.0:
   version "12.0.0"
   resolved "https://registry.yarnpkg.com/prom-client/-/prom-client-12.0.0.tgz#9689379b19bd3f6ab88a9866124db9da3d76c6ed"
   integrity sha512-JbzzHnw0VDwCvoqf8y1WDtq4wSBAbthMB1pcVI/0lzdqHGJI3KBJDXle70XK+c7Iv93Gihqo0a5LlOn+g8+DrQ==

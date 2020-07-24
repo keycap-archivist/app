@@ -13,7 +13,8 @@ import { schema, resolvers } from 'api/graphql';
 import marked from 'marked';
 import { readFileSync } from 'fs';
 import { initImgProcessor } from 'internal/utils';
-import { plugin, getSummary } from '@promster/fastify';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { plugin, getSummary } = require('@promster/fastify');
 
 export async function createServer(): Promise<any> {
   initImgProcessor();

@@ -16,6 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@promster/fastify": "3.1.10",
+    "@promster/types": "^1.0.6",
     "app-module-path": "2.2.0",
     "axios": "0.19.2",
     "canvas": "2.6.1",
