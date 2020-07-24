@@ -15,6 +15,7 @@
   "author": "Vincent LE GOFF",
   "license": "MIT",
   "dependencies": {
+    "@promster/fastify": "3.1.10",
     "app-module-path": "2.2.0",
     "axios": "0.19.2",
     "canvas": "2.6.1",
@@ -30,6 +31,7 @@
     "marked": "1.1.1",
     "pino": "6.4.0",
     "pino-pretty": "4.0.3",
+    "prom-client": "12.0.0",
     "tablemark": "2.0.0",
     "uuid": "8.2.0"
   },
