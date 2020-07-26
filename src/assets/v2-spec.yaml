@@ -175,7 +175,48 @@ components:
                 type: string
               legend:
                 type: string
+                maxLength: 50
+              legendColor:
+                type: string
               isPriority:
                 type: boolean
         settings:
           type: object
+          properties:
+            capsPerLine:
+              type: integer
+            priority:
+              $ref: '#/components/schemas/textCustomization'
+            legends:
+              $ref: '#/components/schemas/textCustomization'
+            title:
+              $ref: '#/components/schemas/textOption'
+            extraText:
+              $ref: '#/components/schemas/textOption'
+            background:
+              type: object
+              properties:
+                color:
+                  type: string
+            social:
+              type: object
+              properties:
+                reddit:
+                  type: string
+                discord:
+                  type: string
+    textCustomization:
+      type: object
+      properties:
+        color:
+          type: string
+        font:
+          type: string
+    textOption:
+      allOf:
+        - $ref: '#/components/schemas/textCustomization'
+        - type: object
+          properties:
+            text:
+              type: string
+              maxLength: 50

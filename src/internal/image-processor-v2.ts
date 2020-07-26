@@ -7,28 +7,29 @@ import { merge } from 'lodash';
 export interface wishlistCap {
   id: string;
   legend?: string;
+  legendColor?: string;
   isPriority?: boolean;
 }
 
-interface textCuztomization {
+interface textCustomization {
   color: string;
   font: string;
 }
 
-interface textOption extends textCuztomization {
+interface textOption extends textCustomization {
   text: string;
 }
 
-interface social extends textCuztomization {
+interface social extends textCustomization {
   discord: string;
   reddit: string;
 }
 
 export interface wishlistSetting {
   capsPerLine: number;
-  priority: textCuztomization;
+  priority: textCustomization;
   title: textOption;
-  legends: textCuztomization;
+  legends: textCustomization;
   extraText: textOption;
   background: {
     color: string;
@@ -73,7 +74,6 @@ async function drawTheCap(
   y: number
 ): Promise<void> {
   const imgBuffer = await getImgBuffer(cap);
-  let color = settings.legends.color;
   const _img = await loadImage(imgBuffer);
   let h: number, w: number, sx: number, sy: number;
   if (_img.width > _img.height) {
@@ -107,10 +107,11 @@ async function drawTheCap(
   Tctx.closePath();
   Tctx.clip();
 
+  let legendColor = cap.legendColor ? cap.legendColor : settings.legends.color;
   if (cap.isPriority) {
+    legendColor = settings.priority.color;
     const thickness = 4;
-    drawBorder(Tctx, IMG_WIDTH, IMG_HEIGTH, thickness);
-    color = settings.priority.color;
+    drawBorder(Tctx, IMG_WIDTH, IMG_HEIGTH, thickness, settings.priority.color);
     Tctx.drawImage(
       _img,
       sx,
@@ -131,11 +132,11 @@ async function drawTheCap(
   context.drawImage(i, x, y);
 
   context.font = `20px ${settings.legends.font}`;
-  context.fillStyle = color;
+  context.fillStyle = legendColor;
   context.textAlign = 'center';
 
   if (cap.legend) {
-    context.fillText(cap.legend, x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
+    context.fillText(fitText(context, cap.legend, IMG_WIDTH), x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
   } else {
     const legend = `${cap.sculpt.name} ${cap.name}`;
     if (!isTextFittingSpace(context, legend, IMG_WIDTH)) {
