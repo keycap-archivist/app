@@ -179,7 +179,7 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer> {
   const canvasHeight = calcHeight(w);
   const canvas = createCanvas(canvasWidth, canvasHeight);
   const ctx = canvas.getContext('2d');
-  ctx.quality = 'good';
+  ctx.quality = 'fast';
 
   ctx.fillStyle = w.settings.background.color;
   ctx.fillRect(0, 0, canvasWidth, canvasHeight);

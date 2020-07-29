@@ -179,6 +179,7 @@ export async function generateWishlist(opt: WishlistOptions): Promise<Buffer> {
   const canvasHeight = calcHeight(opt);
   const canvas = createCanvas(canvasWidth, canvasHeight);
   const ctx = canvas.getContext('2d');
+  ctx.quality = 'fast';
   ctx.fillStyle = opt.bg;
   ctx.fillRect(0, 0, canvasWidth, canvasHeight);
   let y = HEADER_HEIGHT;
