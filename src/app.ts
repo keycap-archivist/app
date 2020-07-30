@@ -163,7 +163,10 @@ padding: 15px;
     }
   });
 
-  server.register(plugin as any);
+  server.register(plugin, {
+    skip: (req) => req.method === 'OPTIONS'
+  });
+
   server.route({
     method: 'GET',
     url: '/metrics',
