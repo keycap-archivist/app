@@ -3,7 +3,7 @@ import { getImgBuffer, supportedFonts, addSubmission } from 'internal/utils';
 import { generateWishlist } from 'internal/image-processor-v2';
 import { instance, ColorwayDetailed } from 'db/instance';
 import { v4 as uuidv4 } from 'uuid';
-import * as tablemark from 'tablemark';
+import tablemark from 'tablemark';
 import { getSubmissionBuffer, discordSubmissionUpdate, discordSubmitCapName } from 'internal/utils';
 import type { wishlistCap } from 'internal/image-processor-v2';
 
