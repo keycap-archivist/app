@@ -4,10 +4,13 @@ import { getImgBuffer, fitText, isTextFittingSpace, drawBorder, assetsBuffer } f
 import { appLogger } from 'logger';
 import { merge } from 'lodash';
 
-export interface wishlistCap {
+export interface cap {
   id: string;
   legend?: string;
   legendColor?: string;
+}
+
+export interface wishlistCap extends cap {
   isPriority?: boolean;
 }
 
@@ -39,7 +42,8 @@ export interface wishlistSetting {
 
 export interface wishlistV2 {
   caps: wishlistCap[];
-  settings: wishlistSetting;
+  tradeCaps?: cap[];
+  settings?: wishlistSetting;
 }
 
 interface hydratedWishlistCap extends ColorwayDetailed, wishlistCap {}

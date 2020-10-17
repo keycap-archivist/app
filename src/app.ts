@@ -1,4 +1,4 @@
-import fastify from 'fastify';
+import fastify, { FastifyInstance } from 'fastify';
 import fastifyCORS from 'fastify-cors';
 import GQL from 'fastify-gql';
 import fastifyMultipart from 'fastify-multipart';
@@ -16,7 +16,7 @@ import { initImgProcessor } from 'internal/utils';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { plugin, getSummary } = require('@promster/fastify');
 
-export async function createServer(): Promise<any> {
+export async function createServer(): Promise<FastifyInstance> {
   initImgProcessor();
 
   await instance.init();

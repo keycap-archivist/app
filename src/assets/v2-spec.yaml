@@ -180,6 +180,20 @@ components:
                 type: string
               isPriority:
                 type: boolean
+        tradeCaps:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: string
+              legend:
+                type: string
+                maxLength: 50
+              legendColor:
+                type: string
         settings:
           type: object
           properties:
