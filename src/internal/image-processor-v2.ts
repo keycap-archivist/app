@@ -179,6 +179,9 @@ function calcHeight(w: wishlistV2): number {
 export async function generateWishlist(w: wishlistV2): Promise<Buffer> {
   const time = process.hrtime();
   w.settings = merge(defaultWishlistSettings, w.settings);
+  w.caps = w.caps.map(c=>{
+    return instance.getColorway(c.id);
+  }).filter(Boolean)
   const p = [];
   const canvasWidth = calcWidth(w.settings.capsPerLine);
   const canvasHeight = calcHeight(w);
@@ -191,12 +194,13 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer> {
   let y = HEADER_HEIGHT;
   let idx = 0;
   for (const cap of w.caps) {
-    const hCap = Object.assign(cap, instance.getColorway(cap.id));
+    appLogger.info(cap)
+    // const hCap = Object.assign(cap, instance.getColorway(cap.id));
     if (idx === w.settings.capsPerLine) {
       idx = 0;
       y += rowHeight;
     }
-    p.push(drawTheCap(ctx, w.settings, hCap, idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y));
+    p.push(drawTheCap(ctx, w.settings, cap as hydratedWishlistCap, idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y));
     idx++;
   }
 

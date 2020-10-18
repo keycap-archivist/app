@@ -1,0 +1,5 @@
+{
+  "exec": "yarn serve",
+  "watch": ["./src"],
+  "ext": "yaml,ts,gql"
+}

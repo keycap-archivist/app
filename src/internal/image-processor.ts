@@ -44,6 +44,7 @@ async function drawTheCap(
   Tctx.fillStyle = opt.bg;
   Tctx.fillRect(0, 0, IMG_WIDTH, IMG_HEIGTH);
 
+
   Tctx.beginPath();
   Tctx.moveTo(THUMB_RADIUS, 0);
   Tctx.lineTo(IMG_WIDTH - THUMB_RADIUS, 0);
