@@ -205,6 +205,8 @@ components:
               $ref: '#/components/schemas/textCustomization'
             title:
               $ref: '#/components/schemas/textOption'
+            tradeTitle:
+              $ref: '#/components/schemas/textOption'
             extraText:
               $ref: '#/components/schemas/textOption'
             background:
