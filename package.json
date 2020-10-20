@@ -7,8 +7,8 @@
     "prettier": "prettier -c \"./src/**/*.ts\"",
     "prettier:write": "prettier -c \"./src/**/*.ts\" --write",
     "lint": "yarn eslint && yarn prettier",
-    "serve": "nodemon -e yaml,ts,gql -w ./src -x yarn watch:serve",
-    "watch:serve": "ts-node -r dotenv/config src/server.ts",
+    "watch:serve": "nodemon",
+    "serve": "ts-node -r dotenv/config src/server.ts",
     "watch:inspect": "nodemon --inspect -e yaml,ts,gql -w ./src -x node -r ts-node/register src/server.ts",
     "build": "rm -rf dist && npx tsc && cp -R src/assets/ dist/assets/"
   },

@@ -76,11 +76,11 @@ class CatalogDB {
     };
     return out;
   }
-  getArtist(artistId: string): Artist {
+  getArtist(artistId: string): Artist | undefined {
     return this.db.data.find((x) => x.id === artistId);
   }
-  getSculpt(sculptId: string): SculptDetailed {
-    let match: Sculpt;
+  getSculpt(sculptId: string): SculptDetailed | undefined {
+    let match: Sculpt | undefined;
     for (const a of this.db.data) {
       match = a.sculpts.find((x) => {
         return x && x.id === sculptId;
@@ -91,10 +91,9 @@ class CatalogDB {
         return out;
       }
     }
-    return null;
   }
-  getColorway(colorwayId: string): ColorwayDetailed {
-    let match: Colorway;
+  getColorway(colorwayId: string): ColorwayDetailed | undefined {
+    let match: Colorway | undefined;
     for (const a of this.db.data) {
       for (const s of a.sculpts) {
         match = s.colorways.find((x) => {
@@ -107,7 +106,6 @@ class CatalogDB {
         }
       }
     }
-    return null;
   }
   getSculpts(artistId: string): Sculpt[] {
     const sculpts = this.db.data.find((x) => x.id === artistId);

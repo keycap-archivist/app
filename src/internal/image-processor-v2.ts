@@ -4,31 +4,36 @@ import { getImgBuffer, fitText, isTextFittingSpace, drawBorder, assetsBuffer } f
 import { appLogger } from 'logger';
 import { merge } from 'lodash';
 
-export interface wishlistCap {
+export interface cap {
   id: string;
   legend?: string;
+  legendColor?: string;
+}
+
+export interface wishlistCap extends cap {
   isPriority?: boolean;
 }
 
-interface textCuztomization {
+interface textCustomization {
   color: string;
   font: string;
 }
 
-interface textOption extends textCuztomization {
+interface textOption extends textCustomization {
   text: string;
 }
 
-interface social extends textCuztomization {
+interface social extends textCustomization {
   discord: string;
   reddit: string;
 }
 
 export interface wishlistSetting {
   capsPerLine: number;
-  priority: textCuztomization;
+  priority: textCustomization;
   title: textOption;
-  legends: textCuztomization;
+  tradeTitle: textOption;
+  legends: textCustomization;
   extraText: textOption;
   background: {
     color: string;
@@ -38,6 +43,13 @@ export interface wishlistSetting {
 
 export interface wishlistV2 {
   caps: wishlistCap[];
+  tradeCaps?: cap[];
+  settings?: wishlistSetting;
+}
+
+interface sanitizedWishlist {
+  caps: wishlistCap[];
+  tradeCaps: cap[];
   settings: wishlistSetting;
 }
 
@@ -47,6 +59,7 @@ const defaultWishlistSettings: wishlistSetting = {
   capsPerLine: 3,
   priority: { color: 'red', font: 'Roboto' },
   title: { color: 'red', text: '', font: 'Roboto' },
+  tradeTitle: { color: 'red', text: '', font: 'Roboto' },
   legends: { color: 'red', font: 'Roboto' },
   extraText: { color: 'red', text: '', font: 'Roboto' },
   background: { color: 'black' }
@@ -73,7 +86,6 @@ async function drawTheCap(
   y: number
 ): Promise<void> {
   const imgBuffer = await getImgBuffer(cap);
-  let color = settings.legends.color;
   const _img = await loadImage(imgBuffer);
   let h: number, w: number, sx: number, sy: number;
   if (_img.width > _img.height) {
@@ -107,10 +119,11 @@ async function drawTheCap(
   Tctx.closePath();
   Tctx.clip();
 
+  let legendColor = cap.legendColor ? cap.legendColor : settings.legends.color;
   if (cap.isPriority) {
+    legendColor = settings.priority.color;
     const thickness = 4;
-    drawBorder(Tctx, IMG_WIDTH, IMG_HEIGTH, thickness);
-    color = settings.priority.color;
+    drawBorder(Tctx, IMG_WIDTH, IMG_HEIGTH, thickness, settings.priority.color);
     Tctx.drawImage(
       _img,
       sx,
@@ -131,11 +144,11 @@ async function drawTheCap(
   context.drawImage(i, x, y);
 
   context.font = `20px ${settings.legends.font}`;
-  context.fillStyle = color;
+  context.fillStyle = legendColor;
   context.textAlign = 'center';
 
   if (cap.legend) {
-    context.fillText(cap.legend, x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
+    context.fillText(fitText(context, cap.legend, IMG_WIDTH), x + IMG_WIDTH / 2, y + IMG_HEIGTH + LINE_HEIGHT);
   } else {
     const legend = `${cap.sculpt.name} ${cap.name}`;
     if (!isTextFittingSpace(context, legend, IMG_WIDTH)) {
@@ -151,16 +164,20 @@ function calcWidth(capsPerline: number): number {
   return capsPerline * IMG_WIDTH + capsPerline * MARGIN_SIDE + MARGIN_SIDE;
 }
 
-function calcHeight(w: wishlistV2): number {
+function calcHeight(w: sanitizedWishlist): number {
   const nbCaps = w.caps.length;
-  if (w.settings.capsPerLine > nbCaps) {
-    w.settings.capsPerLine = nbCaps;
-  } else if (w.settings.capsPerLine < 1) {
+  const nbTradeCaps = w.tradeCaps.length;
+  if (w.settings.capsPerLine < 1) {
     w.settings.capsPerLine = 1;
   }
-  const nbRows = Math.ceil(nbCaps / w.settings.capsPerLine);
+  const nbRows = Math.ceil(nbCaps / w.settings.capsPerLine) + Math.ceil(nbTradeCaps / w.settings.capsPerLine);
+
   let out = HEADER_HEIGHT + rowHeight * nbRows;
 
+  // Header of tradecaps
+  if (nbTradeCaps) {
+    out += 60;
+  }
   // Add extra size for additionnal text
   if (w.settings.extraText && w.settings.extraText.text && w.settings.extraText.text.trim().length) {
     out += EXTRA_TEXT_MARGIN;
@@ -173,10 +190,22 @@ function calcHeight(w: wishlistV2): number {
 
 export async function generateWishlist(w: wishlistV2): Promise<Buffer> {
   const time = process.hrtime();
-  w.settings = merge(defaultWishlistSettings, w.settings);
+  w.settings = merge(defaultWishlistSettings, w.settings) as wishlistSetting;
+  if (!w.tradeCaps) w.tradeCaps = [];
+  w.caps = w.caps
+    .map((c) => {
+      return instance.getColorway(c.id);
+    })
+    .filter(Boolean) as wishlistCap[];
+  if (!w.caps.length) return null;
+  w.tradeCaps = w.tradeCaps
+    .map((c) => {
+      return instance.getColorway(c.id);
+    })
+    .filter(Boolean) as cap[];
   const p = [];
   const canvasWidth = calcWidth(w.settings.capsPerLine);
-  const canvasHeight = calcHeight(w);
+  const canvasHeight = calcHeight(w as sanitizedWishlist);
   const canvas = createCanvas(canvasWidth, canvasHeight);
   const ctx = canvas.getContext('2d');
   ctx.quality = 'fast';
@@ -186,13 +215,13 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer> {
   let y = HEADER_HEIGHT;
   let idx = 0;
   for (const cap of w.caps) {
-    const hCap = Object.assign(cap, instance.getColorway(cap.id));
+    appLogger.info(cap);
+    // const hCap = Object.assign(cap, instance.getColorway(cap.id));
     if (idx === w.settings.capsPerLine) {
       idx = 0;
       y += rowHeight;
     }
-    p.push(drawTheCap(ctx, w.settings, hCap, idx * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y));
-    idx++;
+    p.push(drawTheCap(ctx, w.settings, cap as hydratedWishlistCap, idx++ * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y));
   }
 
   await Promise.all(p);
@@ -203,8 +232,30 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer> {
   ctx.textAlign = 'center';
   ctx.fillText(w.settings.title.text ? w.settings.title.text : 'Wishlist', canvasWidth / 2, 60);
 
-  // Extra text
+  if (w.tradeCaps.length) {
+    let y = HEADER_HEIGHT + Math.ceil(w.caps.length / w.settings.capsPerLine) * rowHeight + LINE_HEIGHT;
+    ctx.font = `60px ${w.settings.tradeTitle.font}`;
+    ctx.fillStyle = w.settings.tradeTitle.color;
+    ctx.textAlign = 'center';
+    ctx.fillText(w.settings.tradeTitle.text ? w.settings.tradeTitle.text : 'Trade List', canvasWidth / 2, y);
+    y += 20;
+    idx = 0;
+    for (const cap of w.tradeCaps) {
+      appLogger.info(cap);
+      // const hCap = Object.assign(cap, instance.getColorway(cap.id));
+      if (idx === w.settings.capsPerLine) {
+        idx = 0;
+        y += rowHeight;
+      }
+      p.push(
+        drawTheCap(ctx, w.settings, cap as hydratedWishlistCap, idx++ * (IMG_WIDTH + MARGIN_SIDE) + MARGIN_SIDE, y)
+      );
+    }
+  }
+
+  await Promise.all(p);
   if (w.settings.extraText && w.settings.extraText.text.length) {
+    // Extra text
     ctx.font = `20px ${w.settings.extraText.font}`;
     ctx.fillStyle = w.settings.extraText.color;
     ctx.textAlign = 'left';
