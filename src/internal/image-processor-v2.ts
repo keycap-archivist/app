@@ -194,7 +194,10 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer> {
   if (!w.tradeCaps) w.tradeCaps = [];
   w.caps = w.caps
     .map((c) => {
-      return instance.getColorway(c.id);
+      const hydratedCap = instance.getColorway(c.id);
+      if (hydratedCap) {
+        return merge(c, hydratedCap);
+      }
     })
     .filter(Boolean) as wishlistCap[];
   if (!w.caps.length) return null;
@@ -215,8 +218,6 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer> {
   let y = HEADER_HEIGHT;
   let idx = 0;
   for (const cap of w.caps) {
-    appLogger.info(cap);
-    // const hCap = Object.assign(cap, instance.getColorway(cap.id));
     if (idx === w.settings.capsPerLine) {
       idx = 0;
       y += rowHeight;
@@ -241,8 +242,6 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer> {
     y += 20;
     idx = 0;
     for (const cap of w.tradeCaps) {
-      appLogger.info(cap);
-      // const hCap = Object.assign(cap, instance.getColorway(cap.id));
       if (idx === w.settings.capsPerLine) {
         idx = 0;
         y += rowHeight;
