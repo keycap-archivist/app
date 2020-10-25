@@ -38,7 +38,7 @@ interface ApiDb {
 }
 
 class CatalogDB {
-  db: ApiDb;
+  db: ApiDb = { version: '', data: [] };
   async init(): Promise<void> {
     await this.loadDb();
     setInterval(this.loadDb.bind(this), 1000 * 3600);
@@ -67,9 +67,9 @@ class CatalogDB {
     }
   }
   getDbVersion(): string {
-    return this.db ? this.db.version : '';
+    return this.db.version;
   }
-  format(_db, version): ApiDb {
+  format(_db: Artist[], version: string): ApiDb {
     const out = {
       version: version,
       data: _db
@@ -115,7 +115,7 @@ class CatalogDB {
     return sculpts.sculpts;
   }
   getColorways(sculptId: string): Colorway[] {
-    let match: Sculpt;
+    let match: Sculpt | undefined;
     for (const a of this.db.data) {
       match = a.sculpts.find((x) => {
         return x && x.id === sculptId;

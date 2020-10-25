@@ -26,7 +26,7 @@ export const postWishlist = async (req, resp): Promise<void> => {
 
 export const postWishListTable = async (req, resp): Promise<void> => {
   const requestCaps: wishlistCap[] = req.body;
-  const caps: ColorwayDetailed[] = requestCaps.map((x) => instance.getColorway(x.id)).filter(Boolean);
+  const caps: ColorwayDetailed[] = requestCaps.map((x) => instance.getColorway(x.id)).filter(Boolean) as ColorwayDetailed[];
   const out = tablemark(
     caps.map((c) => {
       return {
