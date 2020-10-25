@@ -140,8 +140,8 @@ async function drawTheCap(
   }
 
   const b: Buffer = Tcanvas.toBuffer('image/jpeg', { quality: 1, progressive: true });
-  const i: any = await loadImage(b);
-  context.drawImage(i, x, y);
+  const i = await loadImage(b);
+  context.drawImage(i as any, x, y);
 
   context.font = `20px ${settings.legends.font}`;
   context.fillStyle = legendColor;
@@ -167,7 +167,10 @@ function calcWidth(capsPerline: number): number {
 function calcHeight(w: sanitizedWishlist): number {
   const nbCaps = w.caps.length;
   const nbTradeCaps = w.tradeCaps.length;
-  if (w.settings.capsPerLine < 1) {
+  const maxCaps = Math.max(nbTradeCaps, nbCaps);
+  if (maxCaps < w.settings.capsPerLine) {
+    w.settings.capsPerLine = maxCaps;
+  } else if (w.settings.capsPerLine < 1) {
     w.settings.capsPerLine = 1;
   }
   const nbRows = Math.ceil(nbCaps / w.settings.capsPerLine) + Math.ceil(nbTradeCaps / w.settings.capsPerLine);
@@ -188,7 +191,7 @@ function calcHeight(w: sanitizedWishlist): number {
   return out;
 }
 
-export async function generateWishlist(w: wishlistV2): Promise<Buffer> {
+export async function generateWishlist(w: wishlistV2): Promise<Buffer | null> {
   const time = process.hrtime();
   w.settings = merge(defaultWishlistSettings, w.settings) as wishlistSetting;
   if (!w.tradeCaps) w.tradeCaps = [];
@@ -200,15 +203,20 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer> {
       }
     })
     .filter(Boolean) as wishlistCap[];
-  if (!w.caps.length) return null;
+
+  // If no caps founds means that ids are wrong and wishlist can't be generated
+  if (!w.caps.length) {
+    return null;
+  }
+
   w.tradeCaps = w.tradeCaps
     .map((c) => {
       return instance.getColorway(c.id);
     })
     .filter(Boolean) as cap[];
   const p = [];
-  const canvasWidth = calcWidth(w.settings.capsPerLine);
   const canvasHeight = calcHeight(w as sanitizedWishlist);
+  const canvasWidth = calcWidth(w.settings.capsPerLine);
   const canvas = createCanvas(canvasWidth, canvasHeight);
   const ctx = canvas.getContext('2d');
   ctx.quality = 'fast';

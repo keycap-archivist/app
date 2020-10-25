@@ -5,7 +5,7 @@ import fastifyMultipart from 'fastify-multipart';
 import openapiGlue from 'fastify-openapi-glue';
 import swagger from 'fastify-swagger';
 import yaml from 'js-yaml';
-import { v1, v2 } from 'api/controllers';
+import { v2 } from 'api/controllers';
 import { join } from 'path';
 import { instance } from 'db/instance';
 import { apiLogger } from 'logger';
@@ -86,59 +86,6 @@ padding: 15px;
     handler: (_, rep) => {
       rep.status(200).send('OK');
     }
-  });
-
-  server.route({
-    method: 'GET',
-    url: '/api/v1/table',
-    handler: v1.genTable
-  });
-
-  server.route({
-    method: 'GET',
-    url: '/api/v1',
-    handler: v1.genWishlistGet
-  });
-
-  server.route({
-    method: 'POST',
-    url: '/api/v1',
-    schema: {
-      body: {
-        schema: {
-          required: ['ids'],
-          type: 'object',
-          properties: {
-            ids: {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
-            },
-            priorities: {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
-            },
-            bg: { type: 'string' },
-            titleText: { type: 'string' },
-            titleColor: { type: 'string' },
-            textColor: { type: 'string' },
-            extraTextColor: { type: 'string' },
-            capsPerLine: { type: 'integer' },
-            extraText: { type: 'string' }
-          }
-        }
-      }
-    },
-    handler: v1.genWishlistPost
-  });
-
-  server.route({
-    method: 'GET',
-    url: '/api/v1/img/:id',
-    handler: v1.getKeycapImage
   });
 
   const SPECS_PATH = join(__dirname, 'assets', 'v2-spec.yaml');

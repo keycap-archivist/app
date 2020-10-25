@@ -17,9 +17,11 @@ export const assetsBuffer = {
 const cacheMap = new LRUMap(50);
 cacheMap.shift = function () {
   const entry = LRUMap.prototype.shift.call(this);
-  const imgPath = join(submissionCachePath, `${entry[0]}.jpg`);
-  if (existsSync(imgPath)) {
-    unlinkSync(imgPath);
+  if (entry) {
+    const imgPath = join(submissionCachePath, `${entry[0]}.jpg`);
+    if (existsSync(imgPath)) {
+      unlinkSync(imgPath);
+    }
   }
   return entry;
 };
@@ -147,7 +149,7 @@ export async function addSubmission(submission: any, imgBuffer: Buffer): Promise
   await writeFile(join(submissionCachePath, `${submission.id}.jpg`), imgBuffer);
 }
 
-const discordHook = process.env.DISCORD_WEBHOOK;
+const discordHook = process.env.DISCORD_WEBHOOK as string;
 
 export async function discordSubmissionUpdate(submission): Promise<void> {
   const output: string[] = [];
