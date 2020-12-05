@@ -165,6 +165,7 @@ components:
         - caps
       properties:
         caps:
+          maxItems: 50
           type: array
           items:
             type: object
@@ -182,6 +183,7 @@ components:
                 type: boolean
         tradeCaps:
           type: array
+          maxItems: 10
           items:
             type: object
             required:
