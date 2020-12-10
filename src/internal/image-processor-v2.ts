@@ -55,7 +55,7 @@ interface sanitizedWishlist {
 
 interface hydratedWishlistCap extends ColorwayDetailed, wishlistCap {}
 
-const defaultWishlistSettings: wishlistSetting = {
+const defaultWishlistSettings: wishlistSetting = Object.freeze({
   capsPerLine: 3,
   priority: { color: 'red', font: 'Roboto' },
   title: { color: 'red', text: '', font: 'Roboto' },
@@ -63,7 +63,7 @@ const defaultWishlistSettings: wishlistSetting = {
   legends: { color: 'red', font: 'Roboto' },
   extraText: { color: 'red', text: '', font: 'Roboto' },
   background: { color: 'black' }
-};
+});
 
 const MARGIN_SIDE = 10;
 const MARGIN_BOTTOM = 60;
