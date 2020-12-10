@@ -11,7 +11,8 @@ export const cachePath = resolve(join(__dirname, '..', '..', 'img-cache'));
 export const submissionCachePath = resolve(join(__dirname, '..', '..', 'submission-cache'));
 export const assetsBuffer = {
   discordLogo: readFileSync(resolve(join(__dirname, '..', 'assets', 'img', 'discord_logo.png'))),
-  redditLogo: readFileSync(resolve(join(__dirname, '..', 'assets', 'img', 'reddit_logo.png')))
+  redditLogo: readFileSync(resolve(join(__dirname, '..', 'assets', 'img', 'reddit_logo.png'))),
+  kaLogo: readFileSync(resolve(join(__dirname, '..', 'assets', 'img', 'ka_logo.png'))),
 };
 
 const cacheMap = new LRUMap(50);

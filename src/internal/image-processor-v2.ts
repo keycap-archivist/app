@@ -78,6 +78,16 @@ const IMG_HEIGTH = IMG_WIDTH;
 const rowHeight = IMG_HEIGTH + MARGIN_BOTTOM;
 const NS_PER_SEC = 1e9;
 
+let redditLogo, discordLogo, kaLogo;
+let isWarm = false;
+
+async function warmUp() {
+  redditLogo = await loadImage(assetsBuffer.redditLogo);
+  discordLogo = await loadImage(assetsBuffer.discordLogo);
+  kaLogo = await loadImage(assetsBuffer.kaLogo);
+  isWarm = true;
+}
+
 async function drawTheCap(
   context: CanvasRenderingContext2D,
   settings: wishlistSetting,
@@ -181,19 +191,29 @@ function calcHeight(w: sanitizedWishlist): number {
   if (nbTradeCaps) {
     out += 60;
   }
+
+  let botMarginAdded = false;
   // Add extra size for additionnal text
   if (w.settings.extraText && w.settings.extraText.text && w.settings.extraText.text.trim().length) {
     out += EXTRA_TEXT_MARGIN;
+    out += 25;
+    botMarginAdded = true;
   }
   if (w.settings.social) {
     out += SOCIAL_ICONS_MARGIN;
+  }
+  if (!botMarginAdded) {
+    out += 25;
   }
   return out;
 }
 
 export async function generateWishlist(w: wishlistV2): Promise<Buffer | null> {
+  if (!isWarm) {
+    await warmUp();
+  }
   const time = process.hrtime();
-  w.settings = merge(defaultWishlistSettings, w.settings) as wishlistSetting;
+  w.settings = merge(w.settings, defaultWishlistSettings) as wishlistSetting;
   if (!w.tradeCaps) w.tradeCaps = [];
   w.caps = w.caps
     .map((c) => {
@@ -287,16 +307,29 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer | null> {
     ctx.fillStyle = w.settings.social.color;
     const textMargin = MARGIN_SIDE + 35;
     if (w.settings.social.reddit) {
-      const redditLogo = await loadImage(assetsBuffer.redditLogo);
       ctx.drawImage(redditLogo, 0, 0, 100, 100, MARGIN_SIDE, canvasHeight - SOCIAL_ICONS_MARGIN - 5, 25, 25);
       ctx.fillText(w.settings.social.reddit, textMargin, canvasHeight - 55);
     }
     if (w.settings.social.discord) {
-      const discordLogo = await loadImage(assetsBuffer.discordLogo);
       ctx.drawImage(discordLogo, 0, 0, 100, 100, MARGIN_SIDE - 1, canvasHeight - SOCIAL_ICONS_MARGIN / 2 - 5, 27, 27);
       ctx.fillText(w.settings.social.discord, textMargin, canvasHeight - 20);
     }
   }
+  ctx.textAlign = 'left';
+  ctx.font = `20px ${w.settings.title.color}`;
+  ctx.fillStyle = w.settings.title.color;
+  ctx.drawImage(
+    kaLogo,
+    0,
+    0,
+    100,
+    100,
+    canvasWidth - 250 - MARGIN_SIDE,
+    canvasHeight - SOCIAL_ICONS_MARGIN / 2 - 5,
+    27,
+    27
+  );
+  ctx.fillText('keycap-archivist.com', canvasWidth - 215 - MARGIN_SIDE, canvasHeight - 20);
 
   if (w.caps.findIndex((x) => x.isPriority === true) > -1) {
     ctx.font = `20px ${w.settings.priority.font}`;
