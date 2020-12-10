@@ -2,7 +2,7 @@ import { createCanvas, loadImage } from 'canvas';
 import { instance, ColorwayDetailed } from 'db/instance';
 import { getImgBuffer, fitText, isTextFittingSpace, drawBorder, assetsBuffer } from 'internal/utils';
 import { appLogger } from 'logger';
-import { merge } from 'lodash';
+import { merge, cloneDeep } from 'lodash';
 
 export interface cap {
   id: string;
@@ -213,7 +213,7 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer | null> {
     await warmUp();
   }
   const time = process.hrtime();
-  w.settings = merge(w.settings, defaultWishlistSettings) as wishlistSetting;
+  w.settings = merge(cloneDeep(defaultWishlistSettings), w.settings) as wishlistSetting;
   if (!w.tradeCaps) w.tradeCaps = [];
   w.caps = w.caps
     .map((c) => {
