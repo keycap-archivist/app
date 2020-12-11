@@ -1,12 +1,15 @@
 {
   "configurations": [
     {
+      "name": "Attach",
       "type": "node",
+      "protocol": "inspector",
       "request": "attach",
-      "name": "Node: Nodemon",
-      "processId": "${command:PickProcess}",
       "restart": true,
-      "protocol": "inspector"
+      "address": "localhost",
+      "sourceMaps": true,
+      "skipFiles": ["node_modules"],
+      "port": 9229
     }
   ]
 }
