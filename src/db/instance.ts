@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { appLogger } from 'logger';
+
+import { appLogger } from '#app/logger';
 
 export type Artist = {
   id: string;
