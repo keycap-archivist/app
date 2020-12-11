@@ -1,11 +1,12 @@
-import { appLogger } from 'logger';
-import { getImgBuffer, supportedFonts, addSubmission } from 'internal/utils';
-import { generateWishlist } from 'internal/image-processor-v2';
-import { instance, ColorwayDetailed } from 'db/instance';
 import { v4 as uuidv4 } from 'uuid';
 import tablemark from 'tablemark';
-import { getSubmissionBuffer, discordSubmissionUpdate, discordSubmitCapName } from 'internal/utils';
-import type { wishlistCap } from 'internal/image-processor-v2';
+
+import { appLogger } from '#app/logger';
+import { getImgBuffer, supportedFonts, addSubmission } from '#app/internal/utils';
+import { generateWishlist } from '#app/internal/image-processor-v2';
+import { instance, ColorwayDetailed } from '#app/db/instance';
+import { getSubmissionBuffer, discordSubmissionUpdate, discordSubmitCapName } from '#app/internal/utils';
+import type { wishlistCap } from '#app/internal/image-processor-v2';
 
 export const postWishlist = async (req, resp): Promise<void> => {
   try {

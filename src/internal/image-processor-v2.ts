@@ -1,8 +1,9 @@
 import { createCanvas, loadImage } from 'canvas';
-import { instance, ColorwayDetailed } from 'db/instance';
-import { getImgBuffer, fitText, isTextFittingSpace, drawBorder, assetsBuffer } from 'internal/utils';
-import { appLogger } from 'logger';
 import { merge, cloneDeep } from 'lodash';
+
+import { instance, ColorwayDetailed } from '#app/db/instance';
+import { getImgBuffer, fitText, isTextFittingSpace, drawBorder, assetsBuffer } from '#app/internal/utils';
+import { appLogger } from '#app/logger';
 
 export interface cap {
   id: string;

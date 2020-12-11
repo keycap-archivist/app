@@ -1,6 +1,5 @@
-import 'app-module-path/register';
-import { appLogger } from 'logger';
-import { createServer } from 'app';
+import { appLogger } from '#app/logger';
+import { createServer } from '#app/app';
 import { FastifyInstance } from 'fastify';
 const port = Number(process.env.LISTEN_PORT) || 3000;
 const start = async (server: FastifyInstance): Promise<void> => {

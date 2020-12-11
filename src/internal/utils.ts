@@ -1,11 +1,12 @@
-import { appLogger } from 'logger';
 import { existsSync, mkdirSync, unlinkSync, readdirSync, promises as FSpromises, constants, readFileSync } from 'fs';
 import { createCanvas, loadImage, registerFont } from 'canvas';
 import { join, resolve, parse } from 'path';
 import { LRUMap } from 'lru_map';
 import axios from 'axios';
 import { writeFile } from 'fs/promises';
-import type { ColorwayDetailed } from 'db/instance';
+
+import { appLogger } from '#app/logger';
+import type { ColorwayDetailed } from '#app/db/instance';
 
 export const cachePath = resolve(join(__dirname, '..', '..', 'img-cache'));
 export const submissionCachePath = resolve(join(__dirname, '..', '..', 'submission-cache'));

@@ -5,15 +5,16 @@ import fastifyMultipart from 'fastify-multipart';
 import openapiGlue from 'fastify-openapi-glue';
 import swagger from 'fastify-swagger';
 import yaml from 'js-yaml';
-import { v2 } from 'api/controllers';
 import { join } from 'path';
-import { instance } from 'db/instance';
-import { apiLogger } from 'logger';
-import { schema, resolvers } from 'api/graphql';
 import { readFileSync } from 'fs';
-import { initImgProcessor } from 'internal/utils';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { plugin, getSummary } = require('@promster/fastify');
+
+import { apiLogger } from '#app/logger';
+import { v2 } from '#app/api/controllers';
+import { instance } from '#app/db/instance';
+import { schema, resolvers } from '#app/api/graphql';
+import { initImgProcessor } from '#app/internal/utils';
 
 export async function createServer(): Promise<FastifyInstance> {
   initImgProcessor();
