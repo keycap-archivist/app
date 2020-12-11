@@ -5,16 +5,17 @@
     "target": "es2018",
     "module": "commonjs",
     "removeComments": true,
+    "sourceMap": true,
     "newLine": "lf",
     "esModuleInterop": true,
     "baseUrl": "./src",
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "paths": {
-      "#app/*": ["./*"]
+      "#app/*": ["*"]
     },
     "moduleResolution": "node",
-    "outDir": "./dist",
+    "outDir": "dist",
     "lib": ["ES2018"]
   },
   "include": ["./src/**/*.ts"],

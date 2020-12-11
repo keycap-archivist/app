@@ -1,6 +1,8 @@
+import type { FastifyInstance } from 'fastify';
+
 import { appLogger } from '#app/logger';
 import { createServer } from '#app/app';
-import { FastifyInstance } from 'fastify';
+
 const port = Number(process.env.LISTEN_PORT) || 3000;
 const start = async (server: FastifyInstance): Promise<void> => {
   try {

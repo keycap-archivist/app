@@ -2,16 +2,17 @@
   "name": "too-much-artisans-api",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "dist/server.js",
   "scripts": {
     "eslint": "eslint --ext .ts src",
     "prettier": "prettier -c \"./src/**/*.ts\"",
     "prettier:write": "prettier -c \"./src/**/*.ts\" --write",
     "lint": "yarn eslint && yarn prettier",
-    "watch:serve": "nodemon",
-    "serve": "ts-node -r dotenv/config src/server.ts",
+    "watch:serve": "nodemon -e yaml,ts,gql -w ./src --exec \"npm run build && npm run serve\"",
+    "serve": "node --inspect -r source-map-support/register -r dotenv/config dist/server.js",
     "watch:inspect": "nodemon --inspect -e yaml,ts,gql -w ./src -x node -r ts-node/register src/server.ts",
-    "build": "rm -rf dist && npx tsc && cp -R src/assets/ dist/assets/"
+    "build": "npx tsc --incremental && cp -R src/assets/ dist/assets/",
+    "clean": "rm -rf dist"
   },
   "author": "Vincent LE GOFF",
   "license": "MIT",
@@ -51,13 +52,12 @@
     "node-html-parser": "2.0.0",
     "nodemon": "2.0.6",
     "prettier": "2.2.1",
-    "ts-node": "9.1.1",
-    "tsconfig-paths": "3.9.0",
+    "source-map-support": "^0.5.19",
     "typescript": "4.1.2"
   },
   "imports": {
     "#app/*": {
-      "require": "./*.js"
+      "require": "./dist/*.js"
     }
   }
 }

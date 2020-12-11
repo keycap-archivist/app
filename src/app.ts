@@ -7,13 +7,12 @@ import swagger from 'fastify-swagger';
 import yaml from 'js-yaml';
 import { join } from 'path';
 import { readFileSync } from 'fs';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { plugin, getSummary } = require('@promster/fastify');
+import { plugin, getSummary } from '@promster/fastify';
 
 import { apiLogger } from '#app/logger';
-import { v2 } from '#app/api/controllers';
+import { v2 } from '#app/api/controllers/index';
 import { instance } from '#app/db/instance';
-import { schema, resolvers } from '#app/api/graphql';
+import { schema, resolvers } from '#app/api/graphql/index';
 import { initImgProcessor } from '#app/internal/utils';
 
 export async function createServer(): Promise<FastifyInstance> {
@@ -79,7 +78,11 @@ export async function createServer(): Promise<FastifyInstance> {
   });
 
   server.register(plugin, {
-    skip: (req: FastifyRequest) => req.method === 'OPTIONS'
+    // @ts-ignore
+    skip: (req: FastifyRequest) => {
+      apiLogger.info(req);
+      return req.raw.method === 'OPTIONS';
+    }
   });
 
   server.route({
