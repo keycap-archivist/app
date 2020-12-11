@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance } from 'fastify';
+import fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import fastifyCORS from 'fastify-cors';
 import GQL from 'fastify-gql';
 import fastifyMultipart from 'fastify-multipart';
@@ -10,7 +10,6 @@ import { join } from 'path';
 import { instance } from 'db/instance';
 import { apiLogger } from 'logger';
 import { schema, resolvers } from 'api/graphql';
-import marked from 'marked';
 import { readFileSync } from 'fs';
 import { initImgProcessor } from 'internal/utils';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -38,44 +37,12 @@ export async function createServer(): Promise<FastifyInstance> {
   await instance.init();
 
   server.register(fastifyMultipart, { addToBody: true, limits: { files: 1, fieldSize: 5e6 } });
-  const gqlStr = readFileSync(join(__dirname, 'assets', 'schema.gql'), 'utf-8');
-  const indexFile = readFileSync(join(__dirname, 'assets', 'doc', 'index.md'), 'utf-8').replace(
-    '{gql-content}',
-    gqlStr
-  );
-  const compiledIndex = `<html><head><title>Keycap Archivist API</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-.markdown-body {
-box-sizing: border-box;
-min-width: 200px;
-max-width: 980px;
-margin: 0 auto;
-padding: 45px;
-}
-
-@media (max-width: 767px) {
-.markdown-body {
-padding: 15px;
-}
-}
-</style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css"></head><body class="markdown-body">${marked(
-    indexFile
-  )}</body></html>`;
-  server.route({
-    method: 'GET',
-    url: '/api',
-    handler: (_, resp) => {
-      resp.type('text/html').send(compiledIndex.replace('{SHA_API_VERSION}', instance.getDbVersion()));
-    }
-  });
 
   // Redirecting on / for legacy app
   server.route({
     method: 'GET',
     url: '/',
-    handler: (_, rep) => {
+    handler: (_: FastifyRequest, rep: FastifyReply) => {
       rep.redirect('https://keycap-archivist.com/');
     }
   });
@@ -83,7 +50,7 @@ padding: 15px;
   server.route({
     method: 'GET',
     url: '/health',
-    handler: (_, rep) => {
+    handler: (_: FastifyRequest, rep: FastifyReply) => {
       rep.status(200).send('OK');
     }
   });
@@ -111,13 +78,13 @@ padding: 15px;
   });
 
   server.register(plugin, {
-    skip: (req) => req.method === 'OPTIONS'
+    skip: (req: FastifyRequest) => req.method === 'OPTIONS'
   });
 
   server.route({
     method: 'GET',
     url: '/metrics',
-    handler: (_, rep) => {
+    handler: (_: FastifyRequest, rep: FastifyReply) => {
       rep.status(200).send(getSummary());
     }
   });
