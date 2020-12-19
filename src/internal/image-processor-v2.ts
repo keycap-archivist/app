@@ -5,6 +5,8 @@ import { instance, ColorwayDetailed } from '#app/db/instance';
 import { getImgBuffer, fitText, isTextFittingSpace, drawBorder, assetsBuffer } from '#app/internal/utils';
 import { appLogger } from '#app/logger';
 
+import type { Image, CanvasRenderingContext2D } from 'canvas';
+
 export interface cap {
   id: string;
   legend?: string;
@@ -79,7 +81,7 @@ const IMG_HEIGTH = IMG_WIDTH;
 const rowHeight = IMG_HEIGTH + MARGIN_BOTTOM;
 const NS_PER_SEC = 1e9;
 
-let redditLogo, discordLogo, kaLogo;
+let redditLogo: Image, discordLogo: Image, kaLogo: Image;
 let isWarm = false;
 
 async function warmUp() {
@@ -152,7 +154,7 @@ async function drawTheCap(
 
   const b: Buffer = Tcanvas.toBuffer('image/jpeg', { quality: 1, progressive: true });
   const i = await loadImage(b);
-  context.drawImage(i as any, x, y);
+  context.drawImage(i, x, y);
 
   context.font = `20px ${settings.legends.font}`;
   context.fillStyle = legendColor;
