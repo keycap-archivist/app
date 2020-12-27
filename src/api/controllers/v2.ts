@@ -18,6 +18,7 @@ export const postWishlist = async (req, resp): Promise<void> => {
         .status(200)
         .send(imgBuffer);
     }
+
     return resp.status(500).send('Oops! An error has occured');
   } catch (e) {
     appLogger.error(e);
@@ -34,7 +35,7 @@ export const postWishListTable = async (req, resp): Promise<void> => {
         Artist: c.sculpt.artist.name,
         Sculpt: c.sculpt.name,
         Colorway: c.name,
-        Image: `[link](${c.img})`
+        Image: `[link](https://cdn.keycap-archivist.com/keycaps/${c.id}.jpg)`
       };
     }),
     { columns: ['Artist', 'Sculpt', 'Colorway', 'Image'] }

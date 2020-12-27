@@ -13,7 +13,7 @@ export const submissionCachePath = resolve(join(__dirname, '..', '..', 'submissi
 export const assetsBuffer = {
   discordLogo: readFileSync(resolve(join(__dirname, '..', 'assets', 'img', 'discord_logo.png'))),
   redditLogo: readFileSync(resolve(join(__dirname, '..', 'assets', 'img', 'reddit_logo.png'))),
-  kaLogo: readFileSync(resolve(join(__dirname, '..', 'assets', 'img', 'ka_logo.png'))),
+  kaLogo: readFileSync(resolve(join(__dirname, '..', 'assets', 'img', 'ka_logo.png')))
 };
 
 const cacheMap = new LRUMap(50);
@@ -75,7 +75,7 @@ export async function getImgBuffer(colorway: ColorwayDetailed): Promise<Buffer> 
     const { data } = await axios.request({
       method: 'GET',
       responseType: 'arraybuffer',
-      url: colorway.img
+      url: `https://cdn.keycap-archivist.com/keycaps/${colorway.id}.jpg`
     });
     output = await resizeImg(data);
     FSpromises.writeFile(filePath, output);
