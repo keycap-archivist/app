@@ -29,7 +29,7 @@ export const resolvers = {
     sculpt: (_obj, args, _context, _info): Sculpt => {
       return instance.getSculpt(args.id);
     },
-    colorway: (_obj, args, _context, _info): Colorway => {
+    colorway: (_obj, args, _context, _info): Colorway | undefined => {
       return instance.getColorway(args.id);
     }
   }
