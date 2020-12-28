@@ -234,7 +234,10 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer | null> {
 
   w.tradeCaps = w.tradeCaps
     .map((c) => {
-      return instance.getColorway(c.id);
+      const hydratedCap = instance.getColorway(c.id);
+      if (hydratedCap) {
+        return merge(c, hydratedCap);
+      }
     })
     .filter(Boolean) as cap[];
   const p = [];
