@@ -19,7 +19,7 @@
   "dependencies": {
     "@promster/fastify": "5.0.0",
     "@promster/types": "^2.0.0",
-    "axios": "0.21.0",
+    "axios": "0.21.1",
     "canvas": "2.6.1",
     "fastify": "3.9.1",
     "fastify-cors": "4.1.0",
