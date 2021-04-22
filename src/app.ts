@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import fastify from 'fastify';
 import fastifyCORS from 'fastify-cors';
 import GQL from 'fastify-gql';
 import fastifyMultipart from 'fastify-multipart';
@@ -15,16 +15,19 @@ import { instance } from '#app/db/instance';
 import { schema, resolvers } from '#app/api/graphql/index';
 import { initImgProcessor } from '#app/internal/utils';
 
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+
 export async function createServer(): Promise<FastifyInstance> {
+  const p = [];
   initImgProcessor();
 
-  await instance.init();
+  p.push(instance.init());
 
   const server = fastify({
     logger: apiLogger
   });
 
-  server.register(fastifyCORS, { origin: true });
+  server.register(fastifyCORS, { origin: true, methods: 'GET,POST' });
 
   server.register(GQL, { schema, resolvers, path: '/api/graphql' });
 
@@ -34,18 +37,7 @@ export async function createServer(): Promise<FastifyInstance> {
     done(null, payload);
   });
 
-  await instance.init();
-
   server.register(fastifyMultipart, { addToBody: true, limits: { files: 1, fieldSize: 5e6 } });
-
-  // Redirecting on / for legacy app
-  server.route({
-    method: 'GET',
-    url: '/',
-    handler: (_: FastifyRequest, rep: FastifyReply) => {
-      rep.redirect('https://keycap-archivist.com/');
-    }
-  });
 
   server.route({
     method: 'GET',
@@ -56,7 +48,7 @@ export async function createServer(): Promise<FastifyInstance> {
   });
 
   const SPECS_PATH = join(__dirname, 'assets', 'v2-spec.yaml');
-  const specs = yaml.safeLoad(readFileSync(SPECS_PATH));
+  const specs = yaml.load(readFileSync(SPECS_PATH));
   server.register(openapiGlue, {
     specification: specs,
     prefix: 'api/v2',
@@ -92,6 +84,8 @@ export async function createServer(): Promise<FastifyInstance> {
       rep.status(200).send(getSummary());
     }
   });
+
+  await Promise.all(p);
 
   return server;
 }

@@ -11,9 +11,9 @@ import type { ColorwayDetailed } from '#app/db/instance';
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import type { wishlistCap, wishlistV2 } from '#app/internal/image-processor-v2';
 
-export const postWishlist = async (req: FastifyRequest, resp: FastifyReply): Promise<void> => {
+export const postWishlist = async (req: FastifyRequest<{ Body: wishlistV2 }>, resp: FastifyReply): Promise<void> => {
   try {
-    const imgBuffer = await generateWishlist(req.body as wishlistV2);
+    const imgBuffer = await generateWishlist(req.body);
     if (imgBuffer) {
       return resp
         .header('content-disposition', `attachment; filename="wishlist.png"`)
@@ -29,8 +29,11 @@ export const postWishlist = async (req: FastifyRequest, resp: FastifyReply): Pro
   }
 };
 
-export const postWishListTable = async (req: FastifyRequest, resp: FastifyReply): Promise<void> => {
-  const requestCaps: wishlistCap[] = req.body as wishlistCap[];
+export const postWishListTable = async (
+  req: FastifyRequest<{ Body: wishlistCap[] }>,
+  resp: FastifyReply
+): Promise<void> => {
+  const requestCaps = req.body;
   const caps: ColorwayDetailed[] = requestCaps
     .map((x) => instance.getColorway(x.id))
     .filter(Boolean) as ColorwayDetailed[];
@@ -80,18 +83,22 @@ export const getSubmissionCap = async (req: FastifyRequest, resp: FastifyReply):
   resp.header('content-disposition', `filename="${params.id}.jpg"`).type('image/jpeg').status(200).send(b);
 };
 
-export const submitCap = async (req: FastifyRequest, resp: FastifyReply): Promise<void> => {
-  const body = req.body as Record<string, unknown>;
-  const fileBuffer = body.file as { data: Buffer }[];
-  const { maker, sculpt, colorway } = req.body as { maker: string; sculpt: string; colorway: string };
+export const submitCap = async (
+  req: FastifyRequest<{ Body: { maker: string; sculpt: string; colorway: string; data: { data: Buffer }[] } }>,
+  resp: FastifyReply
+): Promise<void> => {
+  const { maker, sculpt, colorway, data } = req.body;
   const submission = { maker, sculpt, colorway, id: uuidv4() };
-  await addSubmission(submission, fileBuffer[0].data);
+  await addSubmission(submission, data[0].data);
   await discordSubmissionUpdate(submission);
   resp.status(200).send('OK');
 };
 
-export const submitName = async (req: FastifyRequest, resp: FastifyReply): Promise<void> => {
-  const { id, name } = req.body as Record<string, string>;
+export const submitName = async (
+  req: FastifyRequest<{ Body: { id: string; name: string } }>,
+  resp: FastifyReply
+): Promise<void> => {
+  const { id, name } = req.body;
 
   const colorway = instance.getColorway(id);
 
