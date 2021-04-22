@@ -80,8 +80,9 @@ export async function createServer(): Promise<FastifyInstance> {
   server.route({
     method: 'GET',
     url: '/metrics',
-    handler: (_: FastifyRequest, rep: FastifyReply) => {
-      rep.status(200).send(getSummary());
+    handler: async (_: FastifyRequest, rep: FastifyReply) => {
+      const metrics = await getSummary();
+      rep.status(200).send(metrics);
     }
   });
 
