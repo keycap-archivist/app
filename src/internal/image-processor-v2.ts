@@ -229,6 +229,7 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer | null> {
 
   // If no caps founds means that ids are wrong and wishlist can't be generated
   if (!w.caps.length) {
+    appLogger.error('No caps found for the wishlist.');
     return null;
   }
 
@@ -322,7 +323,7 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer | null> {
     }
   }
   ctx.textAlign = 'left';
-  ctx.font = `20px ${w.settings.title.color}`;
+  ctx.font = `20px ${w.settings.title.font}`;
   ctx.fillStyle = w.settings.title.color;
   ctx.drawImage(
     kaLogo,

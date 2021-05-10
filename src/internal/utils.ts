@@ -75,7 +75,7 @@ export async function getImgBuffer(colorway: ColorwayDetailed): Promise<Buffer> 
     const { data } = await axios.request({
       method: 'GET',
       responseType: 'arraybuffer',
-      url: `https://cdn.keycap-archivist.com/keycaps/${colorway.id}.jpg`
+      url: `https://cdn.keycap-archivist.com/keycaps/250/${colorway.id}.jpg`
     });
     output = await resizeImg(data);
     FSpromises.writeFile(filePath, output);

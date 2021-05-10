@@ -59,7 +59,7 @@ class CatalogDB {
     } else {
       appLogger.info('Loading the JSON Catalog');
       const _db = await axios
-        .get('https://raw.githubusercontent.com/keycap-archivist/database/master/db/catalog.json')
+        .get('https://cdn.keycap-archivist.com/db/catalog.json')
         .then((res) => {
           return res.data;
         });
