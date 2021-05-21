@@ -77,8 +77,8 @@ export async function getImgBuffer(colorway: ColorwayDetailed): Promise<Buffer> 
       responseType: 'arraybuffer',
       url: `https://cdn.keycap-archivist.com/keycaps/250/${colorway.id}.jpg`
     });
-    output = await resizeImg(data);
-    FSpromises.writeFile(filePath, output);
+    output = data;
+    FSpromises.writeFile(filePath, data);
   } else {
     output = await FSpromises.readFile(filePath);
   }

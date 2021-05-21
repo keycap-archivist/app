@@ -345,7 +345,7 @@ export async function generateWishlist(w: wishlistV2): Promise<Buffer | null> {
     ctx.fillText('Priorities', MARGIN_SIDE, 30);
   }
 
-  const outBuffer = canvas.toBuffer('image/png');
+  const outBuffer = canvas.toBuffer('image/jpeg', { quality: 0.9, progressive: true });
   const diff = process.hrtime(time);
   appLogger.info(`generateWishlist-v2 ${w.caps.length} caps ${(diff[0] * NS_PER_SEC + diff[1]) / 1000000} ms`);
   return outBuffer;
