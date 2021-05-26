@@ -84,12 +84,12 @@ export const getSubmissionCap = async (req: FastifyRequest, resp: FastifyReply):
 };
 
 export const submitCap = async (
-  req: FastifyRequest<{ Body: { maker: string; sculpt: string; colorway: string; data: { data: Buffer }[] } }>,
+  req: FastifyRequest<{ Body: { maker: string; sculpt: string; colorway: string; file: { data: Buffer }[] } }>,
   resp: FastifyReply
 ): Promise<void> => {
-  const { maker, sculpt, colorway, data } = req.body;
+  const { maker, sculpt, colorway, file } = req.body;
   const submission = { maker, sculpt, colorway, id: uuidv4() };
-  await addSubmission(submission, data[0].data);
+  await addSubmission(submission, file[0].data);
   await discordSubmissionUpdate(submission);
   resp.status(200).send('OK');
 };
